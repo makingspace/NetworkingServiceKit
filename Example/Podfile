@@ -1,0 +1,16 @@
+source 'https://github.com/CocoaPods/Specs.git'
+source 'git@github.com:makingspace/iOS-Specs.git'
+
+inhibit_all_warnings!
+use_frameworks!
+
+target 'NetworkingServiceKit_Example' do
+  pod 'NetworkingServiceKit', :path => '../'
+
+  target 'NetworkingServiceKit_Tests' do
+    inherit! :search_paths
+
+    pod 'Quick', '~> 1.0.0'
+  pod 'Nimble', '~> 5.1.1'
+  end
+end
