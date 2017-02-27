@@ -19,7 +19,7 @@ public enum HTTPMethod: String {
     case trace   = "TRACE"
     case connect = "CONNECT"
 }
-public typealias SuccessResponseBlock = (AnyObject) -> Void
+public typealias SuccessResponseBlock = ([String:Any]) -> Void
 public typealias ErrorBlock = (Error) -> Void
 
 public protocol NetworkManager

@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of NetworkingServiceKit.'
+  s.version          = '0.2.0'
+  s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -21,17 +21,17 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/darkzlave/NetworkingServiceKit'
+  s.homepage         = 'https://github.com/makingspace/NetworkingServiceKit'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'darkzlave' => 'phillipe@makespace.com' }
-  s.source           = { :git => 'https://github.com/darkzlave/NetworkingServiceKit.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => 'https://github.com/makingspace/NetworkingServiceKit.git', :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/darkzlave'
 
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'NetworkingServiceKit/Classes/**/*'
-  
+
   # s.resource_bundles = {
   #   'NetworkingServiceKit' => ['NetworkingServiceKit/Assets/*.png']
   # }
