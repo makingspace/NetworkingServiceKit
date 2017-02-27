@@ -20,7 +20,7 @@ class AlamoNetworkManager : NetworkManager
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         configuration.httpAdditionalHeaders?["User-Agent"] = AlamoNetworkManager.agent
-        
+        configuration.httpShouldSetCookies = false
         return SessionManager(configuration: configuration)
     }()
     
@@ -32,22 +32,25 @@ class AlamoNetworkManager : NetworkManager
         
         guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.rawValue) else { return }
         let currentToken = APITokenManager.currentToken
-        var headers: HTTPHeaders = [
-            "Accept": "application/json"
-        ]
+        var headers: HTTPHeaders = [:]
         if let token = currentToken {
             headers["Authorization"] = "Bearer \(token.accessToken)"
         }
-        
-        sessionManager.request(path,
+        let fullPath = "\(configuration.baseURL)\(path)"
+        sessionManager.request(fullPath,
                           method: httpMethod,
                           parameters: parameters,
+                          encoding: JSONEncoding.default,
                           headers: headers).validate().responseJSON { response in
-                            debugPrint(response)
-                            if let error = response.error {
+                            #if DEBUG
+                                debugPrint(response)
+                            #endif
+                            if let result = response.result.value as? [String:Any],
+                                response.error == nil {
+                                success(result)
+                            } else if let error = response.error {
+                                let erroras = response.result.value
                                 failure(error)
-                            } else {
-                                success(response.result.value as AnyObject)
                             }
         }
     }
