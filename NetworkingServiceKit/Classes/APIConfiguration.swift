@@ -8,7 +8,7 @@
 
 import Foundation
 
-let APIConfigurationKey = "APIConfigurationKey"
+let APIConfigurationKey = "Server"
 public protocol APIConfigurationAuth
 {
     var secret:String { get }

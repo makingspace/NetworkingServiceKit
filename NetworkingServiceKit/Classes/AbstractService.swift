@@ -19,6 +19,11 @@ public protocol AbstractService
     
     func servicePath(for query:String) -> String
     var isAuthenticated:Bool { get }
+    func request(path: String,
+                 method: HTTPMethod,
+                 with parameters: [String: Any],
+                 success: @escaping SuccessResponseBlock,
+                 failure: @escaping ErrorBlock)
 }
 
 open class AstractBaseService: AbstractService
@@ -61,6 +66,15 @@ open class AstractBaseService: AbstractService
     public var isAuthenticated:Bool
     {
         return (self.token != nil)
+    }
+    
+    public func request(path: String,
+                 method: HTTPMethod,
+                 with parameters: [String: Any],
+                 success: @escaping SuccessResponseBlock,
+                 failure: @escaping ErrorBlock)
+    {
+        networkManager.request(path: servicePath(for: path), method: method, with: parameters, success: success, failure: failure)
     }
     
 }
