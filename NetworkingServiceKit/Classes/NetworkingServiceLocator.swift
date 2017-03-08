@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import NetworkingServiceKit
 
 open class NetworkingServiceLocator: NSObject {
     
-    private static let shared:NetworkingServiceLocator = NetworkingServiceLocator()
+    /// Defines a private singleton, all interactions should be done through static methods
+    private static var shared:NetworkingServiceLocator = NetworkingServiceLocator()
     
     private var currentServices:[String:AbstractService]
     private var loadedServiceTypes:[AbstractService.Type]
@@ -18,19 +20,40 @@ open class NetworkingServiceLocator: NSObject {
     private var token:APIToken?
     private var networkManager:NetworkManager
     
+    
+    /// Inits default configuration and network manager
     private override init() {
         self.currentServices = [String:AbstractService]()
         self.loadedServiceTypes = [AbstractService.Type]()
         self.configuration = APIConfiguration.current!
         self.networkManager = AlamoNetworkManager(with: self.configuration)
+        self.token = APITokenManager.currentToken
     }
     
+    /// Reloads token, networkManager and configuration with existing hooked services
+    open class func reloadServiceLocator()
+    {
+        let serviceTypes = NetworkingServiceLocator.shared.loadedServiceTypes
+        NetworkingServiceLocator.shared = NetworkingServiceLocator()
+        NetworkingServiceLocator.load(withServices: serviceTypes)
+    }
+    
+    /// Load Default services that all app need
     open class func loadDefaultServices()
     {
-        let defaultServices = [AuthenticationService.self]
-        NetworkingServiceLocator.load(withServices: defaultServices)
+        //Define here default services
+        if let defaultServices = [AuthenticationService.self,
+                                  AccountService.self,
+                                  NotificationService.self,
+                                  OpsService.self] as? [AbstractService.Type] {
+            NetworkingServiceLocator.load(withServices: defaultServices)
+        }
     }
     
+    
+    /// Load a custom list of services
+    ///
+    /// - Parameter serviceTypes: list of services types that are going to get hooked
     open class func load(withServices serviceTypes:[AbstractService.Type])
     {
         NetworkingServiceLocator.shared.loadedServiceTypes = serviceTypes
@@ -44,6 +67,11 @@ open class NetworkingServiceLocator: NSObject {
         }
     }
     
+    
+    /// Returns a service for a specific type
+    ///
+    /// - Parameter type: type of service
+    /// - Returns: service object
     open class func service<T : AbstractService>(forType type: T.Type) -> T?
     {
         if let service = NetworkingServiceLocator.shared.currentServices[String(describing: type.self)] as? T {
