@@ -38,19 +38,30 @@ open class AbstractBaseService: NSObject,AbstractService
         return self.networkManager.configuration
     }
     
+    /// Init method for an AbstractService, each service must have the current token auth and access to the networkManager to execute requests
+    ///
+    /// - Parameters:
+    ///   - token: an existing APIToken
+    ///   - networkManager: an object that supports our NetworkManager protocol
     public required init(token: APIToken?, networkManager: NetworkManager) {
         self.token = token
         self.networkManager = networkManager
     }
 
+    /// Currently supported version of the service
     public var serviceVersion: String {
         return "v3"
     }
     
+    /// Name here your service path
     public var servicePath:String {
         return ""
     }
     
+    /// Returns a local path for an API request, this includes the service version and name. i.e v4/accounts/user_profile
+    ///
+    /// - Parameter query: api local path
+    /// - Returns: local path to the api for the given query
     public func servicePath(for query:String) -> String
     {
         var fullPath = ""
