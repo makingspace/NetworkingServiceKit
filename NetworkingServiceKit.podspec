@@ -36,7 +36,7 @@ NetworkingServiceKit is the rencarnation of MSNetworking, using a modular approa
   #   'NetworkingServiceKit' => ['NetworkingServiceKit/Assets/*.png']
   # }
 
-    s.public_header_files = 'Pod/Classes/**/*.h'
+#    s.public_header_files = 'Pod/Classes/**/*.h'
     s.dependency 'Alamofire'
     s.dependency 'CryptoSwift'
 end
