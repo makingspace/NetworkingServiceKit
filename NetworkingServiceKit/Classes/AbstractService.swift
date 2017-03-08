@@ -8,7 +8,6 @@
 
 import Foundation
 
-@objc
 public protocol AbstractService
 {
     init(token:APIToken?, networkManager:NetworkManager)
@@ -28,7 +27,6 @@ public protocol AbstractService
                  failure: @escaping ErrorResponseBlock)
 }
 
-@objc
 open class AbstractBaseService: NSObject,AbstractService
 {
     
