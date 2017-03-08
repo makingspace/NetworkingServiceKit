@@ -19,11 +19,13 @@ class AlamoNetworkManager : NetworkManager
         
     /// default session manager to be use with Alamofire
     private let sessionManager: SessionManager = {
-        let configuration = URLSessionConfiguration.default
-        configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
-        configuration.httpAdditionalHeaders?["User-Agent"] = AlamoNetworkManager.agent
-        configuration.httpShouldSetCookies = false
-        return SessionManager(configuration: configuration)
+        let sessionConfiguration = URLSessionConfiguration.default
+        sessionConfiguration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
+        sessionConfiguration.httpShouldSetCookies = false
+        let session = SessionManager(configuration: sessionConfiguration)
+        //custom adapter for inserting our authentication
+        session.adapter = AlamoAuthenticationAdapter()
+        return session
     }()
     
     //MARK: - Request handling
@@ -42,19 +44,16 @@ class AlamoNetworkManager : NetworkManager
                  with parameters: [String: Any] = [String: Any](),
                  paginated:Bool = false,
                  success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorResponseBlock){
+                 failure: @escaping ErrorResponseBlock)
+    {
         
         guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.string) else { return }
-        let currentToken = APITokenManager.currentToken
+
         var headers: HTTPHeaders = [:]
         
         //lets use URL encoding only for GETs / DELETEs
         let encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
         
-        //attach authentication if any
-        if let token = currentToken {
-            headers["Authorization"] = "Bearer \(token.accessToken)"
-        }
         let fullPath = "\(configuration.baseURL)\(path)"
         sessionManager.request(fullPath,
                           method: httpMethod,
@@ -91,16 +90,6 @@ class AlamoNetworkManager : NetworkManager
                                 success([String:Any]())
                             }
         }
-    }
-    
-    /// Custom makespace agent header
-    private static var agent:String{
-        let name = UIDevice.current.name
-        let version = UIDevice.current.systemVersion
-        let model = UIDevice.current.model
-        let bundleExecutableName = Bundle.main.infoDictionary?["CFBundleExecutable"] ?? ""
-        let agent = "UserAgent:(AppName:\(bundleExecutableName), DeviceName:\(name), Version:\(version), Model:\(model))"
-        return agent
     }
     
     //MARK: - Pagination
