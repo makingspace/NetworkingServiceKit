@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Custom HTTP enum types for Makespace
 @objc
 public enum HTTPMethod: Int32 {
     case options
@@ -35,9 +36,13 @@ public enum HTTPMethod: Int32 {
         return ""
     }
 }
+
+/// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
 public typealias ErrorResponseBlock = (Error,[String:Any]?) -> Void
 
+
+/// Protocol for defining a Network Manager
 @objc
 public protocol NetworkManager
 {
