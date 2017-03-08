@@ -8,6 +8,7 @@
 
 import Foundation
 
+@objc
 public protocol AbstractService
 {
     init(token:APIToken?, networkManager:NetworkManager)
@@ -22,11 +23,13 @@ public protocol AbstractService
     func request(path: String,
                  method: HTTPMethod,
                  with parameters: [String: Any],
+                 paginated:Bool,
                  success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorBlock)
+                 failure: @escaping ErrorResponseBlock)
 }
 
-open class AstractBaseService: AbstractService
+@objc
+open class AbstractBaseService: NSObject,AbstractService
 {
     
     public var networkManager: NetworkManager
@@ -68,13 +71,28 @@ open class AstractBaseService: AbstractService
         return (self.token != nil)
     }
     
+    /// Creates and executes a request using our current Network provider
+    ///
+    /// - Parameters:
+    ///   - path: full path to the URL
+    ///   - method: HTTP method, default is GET
+    ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
+    ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - success: success block with a response
+    ///   - failure: failure block with an error
     public func request(path: String,
-                 method: HTTPMethod,
-                 with parameters: [String: Any],
+                 method: HTTPMethod = .get,
+                 with parameters: [String: Any] = [String: Any](),
+                 paginated:Bool = false,
                  success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorBlock)
+                 failure: @escaping ErrorResponseBlock)
     {
-        networkManager.request(path: servicePath(for: path), method: method, with: parameters, success: success, failure: failure)
+        self.networkManager.request(path: servicePath(for: path),
+                                    method: method,
+                                    with: parameters,
+                                    paginated: paginated,
+                                    success: success,
+                                    failure: failure)
     }
     
 }
