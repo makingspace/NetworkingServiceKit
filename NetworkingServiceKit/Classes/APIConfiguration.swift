@@ -136,7 +136,7 @@ public enum MakespaceConfigurationType: Int, APIConfigurationType
     }
 }
 
-public struct APIConfiguration
+public class APIConfiguration: NSObject
 {
     let baseURL:String
     let webURL:String

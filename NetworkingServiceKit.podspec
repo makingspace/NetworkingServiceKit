@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.2.0'
+  s.version          = '0.3.0'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+NetworkingServiceKit is the rencarnation of MSNetworking, using a modular approach to services, the framework enables the user to select which services will need to have running, also NetworkingServiceKit takes a different approach when it comes to using Network Clients like AFNetworking, instead all requests are routed through a protocol, this makes the library loosely couple from the networking implementation.
                        DESC
 
   s.homepage         = 'https://github.com/makingspace/NetworkingServiceKit'
@@ -28,7 +28,7 @@ TODO: Add long description of the pod here.
   s.source           = { :git => 'https://github.com/makingspace/NetworkingServiceKit.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/darkzlave'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'NetworkingServiceKit/Classes/**/*'
 
@@ -36,9 +36,7 @@ TODO: Add long description of the pod here.
   #   'NetworkingServiceKit' => ['NetworkingServiceKit/Assets/*.png']
   # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+    s.public_header_files = 'Pod/Classes/**/*.h'
     s.dependency 'Alamofire'
     s.dependency 'CryptoSwift'
 end

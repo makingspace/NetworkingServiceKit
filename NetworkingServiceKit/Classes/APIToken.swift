@@ -16,6 +16,7 @@ public enum APITokenKey: String
     case expiresKey = "MSCurrentExpiresInKey"
     case scopeKey = "MSCurrentScopeKey"
     case emailKey = "MSCurrentEmailKey"
+    case deviceTokenKey = "MSDeviceToken"
     
     var responseKey: String {
         switch self {
@@ -25,6 +26,7 @@ public enum APITokenKey: String
             case .expiresKey: return "expires_in"
             case .scopeKey: return "scope"
             case .emailKey: return "email"
+            case .deviceTokenKey: return "device_identifier"
         }
     }
 }
