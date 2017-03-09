@@ -15,7 +15,7 @@ class AlamoAuthenticationAdapter: RequestAdapter {
     func adapt(_ urlRequest: URLRequest) throws -> URLRequest {
         var urlRequest = urlRequest
         //attach authentication if any token has been stored
-        if let token = APITokenManager.currentToken {
+        if let token = APITokenManager.currentToken, (urlRequest.value(forHTTPHeaderField: "Authorization") == nil){
             urlRequest.setValue("Bearer " + token.accessToken, forHTTPHeaderField: "Authorization")
         }
         //specify our custom user agent
