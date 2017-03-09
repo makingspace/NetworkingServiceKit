@@ -21,14 +21,16 @@ public protocol AbstractService
     var isAuthenticated:Bool { get }
     func request(path: String,
                  method: HTTPMethod,
-                 with parameters: [String: Any],
+                 with parameters: RequestParameters,
                  paginated:Bool,
+                 headers:CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
 }
 
 open class AbstractBaseService: NSObject,AbstractService
 {
+
     
     public var networkManager: NetworkManager
     
@@ -58,20 +60,25 @@ open class AbstractBaseService: NSObject,AbstractService
         return ""
     }
     
+    /// Returns the baseURL for this service, default is the current configuration URL
+    public var baseURL:String {
+        return currentConfiguration.baseURL
+    }
+    
     /// Returns a local path for an API request, this includes the service version and name. i.e v4/accounts/user_profile
     ///
     /// - Parameter query: api local path
     /// - Returns: local path to the api for the given query
     public func servicePath(for query:String) -> String
     {
-        var fullPath = ""
+        var fullPath = self.baseURL
         if (!self.servicePath.isEmpty) {
-            fullPath = (fullPath as NSString).appendingPathComponent(self.servicePath)
+            fullPath += "/" + self.servicePath
         }
         if (!self.serviceVersion.isEmpty) {
-            fullPath = (fullPath as NSString).appendingPathComponent(self.serviceVersion)
+            fullPath += "/" + self.serviceVersion
         }
-        fullPath = (fullPath as NSString).appendingPathComponent(query)
+        fullPath += "/" + query
         return fullPath
     }
     
@@ -80,19 +87,21 @@ open class AbstractBaseService: NSObject,AbstractService
         return (self.token != nil)
     }
     
-    /// Creates and executes a request using our current Network provider
+    /// Creates and executes a request using Alamofire
     ///
     /// - Parameters:
     ///   - path: full path to the URL
     ///   - method: HTTP method, default is GET
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     public func request(path: String,
                  method: HTTPMethod = .get,
-                 with parameters: [String: Any] = [String: Any](),
+                 with parameters: RequestParameters = RequestParameters(),
                  paginated:Bool = false,
+                 headers:CustomHTTPHeaders = CustomHTTPHeaders(),
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
     {
@@ -100,6 +109,7 @@ open class AbstractBaseService: NSObject,AbstractService
                                     method: method,
                                     with: parameters,
                                     paginated: paginated,
+                                    headers: headers,
                                     success: success,
                                     failure: failure)
     }

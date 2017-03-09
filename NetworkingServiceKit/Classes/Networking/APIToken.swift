@@ -17,7 +17,7 @@ public enum APITokenKey: String
     case scopeKey = "MSCurrentScopeKey"
     case emailKey = "MSCurrentEmailKey"
     case deviceTokenKey = "MSDeviceToken"
-    
+    case customURLKey = "MSCustomURLKey"
     var responseKey: String {
         switch self {
             case .refreshTokenKey: return "refresh_token"
@@ -27,6 +27,7 @@ public enum APITokenKey: String
             case .scopeKey: return "scope"
             case .emailKey: return "email"
             case .deviceTokenKey: return "device_identifier"
+            case .customURLKey: return "custom_url"
         }
     }
 }
@@ -43,7 +44,7 @@ public struct APIToken
 
 open class APITokenManager
 {
-    static var currentToken:APIToken? {
+    public static var currentToken:APIToken? {
         if let email = self.object(for: .emailKey) as? String,
             let refreshToken = self.object(for: .refreshTokenKey) as? String,
             let tokenType = self.object(for: .tokenTypeKey) as? String,
@@ -62,7 +63,7 @@ open class APITokenManager
         return nil
     }
     
-    static func store(tokenInfo:[String:Any], for email:String) -> APIToken?
+    public static func store(tokenInfo:[String:Any], for email:String) -> APIToken?
     {
         if let refreshToken = tokenInfo[APITokenKey.refreshTokenKey.responseKey] as? String,
             let tokenType = tokenInfo[APITokenKey.tokenTypeKey.responseKey] as? String,
@@ -81,17 +82,17 @@ open class APITokenManager
         return nil
     }
     
-    static func object(for key:APITokenKey) -> Any?
+    public static func object(for key:APITokenKey) -> Any?
     {
         return UserDefaults.standard.object(forKey: key.rawValue)
     }
     
-    static func set(object obj:Any?, for key:APITokenKey)
+    public static func set(object obj:Any?, for key:APITokenKey)
     {
         UserDefaults.standard.set(obj, forKey: key.rawValue)
     }
     
-    static func clearAuthentication()
+    public static func clearAuthentication()
     {
         self.set(object: nil, for: .emailKey)
         self.set(object: nil, for: .refreshTokenKey)

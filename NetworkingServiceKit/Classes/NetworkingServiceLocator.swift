@@ -45,7 +45,8 @@ open class NetworkingServiceLocator: NSObject {
         if let defaultServices = [AuthenticationService.self,
                                   AccountService.self,
                                   NotificationService.self,
-                                  OpsService.self] as? [AbstractService.Type] {
+                                  OpsService.self,
+                                  SimpleMDMService.self] as? [AbstractService.Type] {
             NetworkingServiceLocator.load(withServices: defaultServices)
         }
     }

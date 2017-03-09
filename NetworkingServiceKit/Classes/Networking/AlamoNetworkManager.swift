@@ -37,25 +37,24 @@ class AlamoNetworkManager : NetworkManager
     ///   - method: HTTP method, default is GET
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     func request(path: String,
                  method: HTTPMethod = .get,
-                 with parameters: [String: Any] = [String: Any](),
+                 with parameters: RequestParameters = RequestParameters(),
                  paginated:Bool = false,
+                 headers:CustomHTTPHeaders = CustomHTTPHeaders(),
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
     {
         
         guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.string) else { return }
-
-        var headers: HTTPHeaders = [:]
         
         //lets use URL encoding only for GETs / DELETEs
         let encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
-        
-        let fullPath = "\(configuration.baseURL)\(path)"
-        sessionManager.request(fullPath,
+
+        sessionManager.request(path,
                           method: httpMethod,
                           parameters: parameters,
                           encoding: encoding,
@@ -107,10 +106,10 @@ class AlamoNetworkManager : NetworkManager
     ///   - failure: failure block with an error
     func getNextPage(forURL urlString:String,
                      method: Alamofire.HTTPMethod,
-                     with parameters: [String: Any],
+                     with parameters: RequestParameters,
                      onExistingResponse aggregateResponse:[String: Any],
                      encoding: ParameterEncoding = URLEncoding.default,
-                     headers: HTTPHeaders? = nil,
+                     headers: CustomHTTPHeaders? = nil,
                      success: @escaping SuccessResponseBlock,
                      failure: @escaping ErrorResponseBlock)
     {
