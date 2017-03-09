@@ -38,6 +38,8 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
             }
             n += 1
         }
+        
+        //if we dont find a proper APP, we are defaulting into clouder key/secret
         self.init(rawValue: 0)
     }
     
@@ -101,13 +103,17 @@ public enum MakespaceConfigurationType: Int, APIConfigurationType
     
     /// URL for given server
     public var URL: String {
+        //return a custom URL if anything has been set
+        if let customURL = APITokenManager.object(for: .customURLKey) as? String{
+            return customURL
+        }
         switch self {
         case .staging:
-            return "https://staging.mksp.co/api/"
+            return "https://staging.mksp.co/api"
         case .production:
-            return "https://api.makespace.com/"
+            return "https://api.makespace.com"
         case .custom:
-            return "https://api.makespace.com/"
+            return "https://api.makespace.com"
         }
     }
     
@@ -138,19 +144,19 @@ public enum MakespaceConfigurationType: Int, APIConfigurationType
 
 public class APIConfiguration: NSObject
 {
-    let baseURL:String
-    let webURL:String
-    let APIKey:String
-    let APISecret:String
+    public let baseURL:String
+    public let webURL:String
+    public let APIKey:String
+    public let APISecret:String
     
-    init(type:APIConfigurationType, auth:APIConfigurationAuth){
+    public init(type:APIConfigurationType, auth:APIConfigurationAuth){
         self.baseURL = type.URL
         self.webURL = type.webURL
         self.APIKey = auth.key
         self.APISecret = auth.secret
     }
     
-    static var current:APIConfiguration? {
+    public static var current:APIConfiguration? {
         if let bundleId = Bundle.main.bundleIdentifier,
             let currentApp = MakeSpaceApp(bundleId: bundleId){
             return APIConfiguration(type: self.currentConfigurationType, auth:currentApp)

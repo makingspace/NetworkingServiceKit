@@ -40,7 +40,9 @@ public enum HTTPMethod: Int32 {
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
 public typealias ErrorResponseBlock = (Error,[String:Any]?) -> Void
-
+//Custom parameter typealias
+public typealias CustomHTTPHeaders = [String: String]
+public typealias RequestParameters = [String: Any]
 
 /// Protocol for defining a Network Manager
 @objc
@@ -49,8 +51,9 @@ public protocol NetworkManager
     var configuration:APIConfiguration {get set}
     func request(path: String,
                  method: HTTPMethod,
-                 with parameters: [String: Any],
+                 with parameters: RequestParameters,
                  paginated:Bool,
+                 headers:CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
     
