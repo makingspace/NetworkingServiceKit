@@ -7,6 +7,32 @@
 //
 
 import Foundation
+//Custom Makespace Error
+public enum MSError : Error {
+    
+    /// The underlying reason the request failed
+    ///
+    /// - tokenExpired: request received a 401 from a backend
+    /// - badRequest: generic error for responses
+    public enum ResponseFailureReason {
+        
+        case tokenExpired
+        case badRequest
+    }
+    
+    case responseValidationFailed(reason: ResponseFailureReason)
+}
+
+extension MSError {
+    /// Returns whether the MSError is because our token expired
+    public var hasTokenExpired: Bool {
+        switch self {
+        case .responseValidationFailed(let reason):
+            return reason == .tokenExpired
+        }
+    }
+}
+
 
 /// Custom HTTP enum types for Makespace
 @objc
@@ -39,13 +65,12 @@ public enum HTTPMethod: Int32 {
 
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
-public typealias ErrorResponseBlock = (Error,[String:Any]?) -> Void
+public typealias ErrorResponseBlock = (MSError,[String:Any]?) -> Void
 //Custom parameter typealias
 public typealias CustomHTTPHeaders = [String: String]
 public typealias RequestParameters = [String: Any]
 
 /// Protocol for defining a Network Manager
-@objc
 public protocol NetworkManager
 {
     var configuration:APIConfiguration {get set}

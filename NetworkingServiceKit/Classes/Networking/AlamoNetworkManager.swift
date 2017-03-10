@@ -83,7 +83,14 @@ class AlamoNetworkManager : NetworkManager
                                     success(response)
                                 }
                             } else if let error = rawResponse.error {
-                                failure(error, self.errorResponse(fromData: rawResponse.data))
+                                var reason = MSError.ResponseFailureReason.badRequest
+                                if let statusCode = rawResponse.response?.statusCode, statusCode == 401
+                                {
+                                    reason = MSError.ResponseFailureReason.tokenExpired
+                                }
+                                
+                                failure(MSError.responseValidationFailed(reason: reason),
+                                        self.errorResponse(fromData: rawResponse.data))
                             } else {
                                 //if the request is succesful but has no response (validation for http code has passed also)
                                 success([String:Any]())
@@ -144,7 +151,7 @@ class AlamoNetworkManager : NetworkManager
                                         success(currentResponse)
                                     }
                                 } else if let error = rawResponse.error {
-                                    failure(error, self.errorResponse(fromData: rawResponse.data))
+                                    failure(MSError.responseValidationFailed(reason: .badRequest), self.errorResponse(fromData: rawResponse.data))
                                 }
         }
     }

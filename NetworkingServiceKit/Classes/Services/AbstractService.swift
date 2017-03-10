@@ -82,6 +82,7 @@ open class AbstractBaseService: NSObject,AbstractService
         return fullPath
     }
     
+    /// Returns if this service has a valid token for authentication with our systems
     public var isAuthenticated:Bool
     {
         return (self.token != nil)
@@ -111,7 +112,13 @@ open class AbstractBaseService: NSObject,AbstractService
                                     paginated: paginated,
                                     headers: headers,
                                     success: success,
-                                    failure: failure)
+                                    failure: { error, errorResponse in
+                                        if error.hasTokenExpired && self.isAuthenticated {
+                                            //If our error response was because our token expired, then lets tell the delegate
+                                            NetworkingServiceLocator.shared.delegate?.networkLocatorTokenDidExpired()
+                                        }
+                                        failure(error, errorResponse)
+        })
     }
     
 }
