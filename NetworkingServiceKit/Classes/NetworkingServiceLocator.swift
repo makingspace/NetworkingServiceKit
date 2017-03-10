@@ -8,18 +8,22 @@
 
 import UIKit
 import NetworkingServiceKit
+public protocol NetworkingServiceLocatorDelegate
+{
+    func networkLocatorTokenDidExpired()
+}
 
 open class NetworkingServiceLocator: NSObject {
     
     /// Defines a private singleton, all interactions should be done through static methods
-    private static var shared:NetworkingServiceLocator = NetworkingServiceLocator()
+    internal static var shared:NetworkingServiceLocator = NetworkingServiceLocator()
+    internal var delegate:NetworkingServiceLocatorDelegate?
     
     private var currentServices:[String:AbstractService]
     private var loadedServiceTypes:[AbstractService.Type]
     private var configuration:APIConfiguration
     private var token:APIToken?
     private var networkManager:NetworkManager
-    
     
     /// Inits default configuration and network manager
     private override init() {
@@ -79,5 +83,11 @@ open class NetworkingServiceLocator: NSObject {
             return service
         }
         return nil
+    }
+    
+    /// Sets a global delegate for the service locator
+    open class func setDelegate(delegate: NetworkingServiceLocatorDelegate)
+    {
+        self.shared.delegate = delegate
     }
 }
