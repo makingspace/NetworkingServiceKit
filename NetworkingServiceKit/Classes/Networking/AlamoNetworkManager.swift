@@ -84,10 +84,13 @@ class AlamoNetworkManager : NetworkManager
                                     success(response)
                                 }
                             } else if rawResponse.error != nil {
-                                var reason = MSError.ResponseFailureReason.badRequest
-                                if let statusCode = rawResponse.response?.statusCode, statusCode == 401
+                                var reason = MSError.ResponseFailureReason.badStatusCode
+
+                                if let statusCode = rawResponse.response?.statusCode
                                 {
-                                    reason = MSError.ResponseFailureReason.tokenExpired
+                                    //if the response has a 401 that means we have an authentication issue
+                                    reason = statusCode == 401 ? MSError.ResponseFailureReason.tokenExpired(code: statusCode) :
+                                        MSError.ResponseFailureReason.badRequest(code: statusCode)
                                 }
                                 
                                 failure(MSError.responseValidationFailed(reason: reason),
@@ -152,7 +155,13 @@ class AlamoNetworkManager : NetworkManager
                                         success(currentResponse)
                                     }
                                 } else if rawResponse.error != nil {
-                                    failure(MSError.responseValidationFailed(reason: .badRequest), self.errorResponse(fromData: rawResponse.data))
+                                    var reason = MSError.ResponseFailureReason.badStatusCode
+                                    
+                                    if let statusCode = rawResponse.response?.statusCode
+                                    {
+                                        reason = MSError.ResponseFailureReason.badRequest(code: statusCode)
+                                    }
+                                    failure(MSError.responseValidationFailed(reason: reason), self.errorResponse(fromData: rawResponse.data))
                                 }
         }
     }
