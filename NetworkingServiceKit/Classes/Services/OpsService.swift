@@ -626,8 +626,7 @@ open class OpsService: AbstractBaseService {
     }
     // MARK: - Staff
     
-    public func getStaffInfo(forAccessToken token: String,
-                             success successBlock: @escaping SuccessResponseBlock,
+    public func getStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
         var path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
         request(path: path,
