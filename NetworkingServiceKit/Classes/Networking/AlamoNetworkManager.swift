@@ -83,16 +83,15 @@ class AlamoNetworkManager : NetworkManager
                                     //return inmediatly
                                     success(response)
                                 }
-                            } else if rawResponse.error != nil {
-                                var reason = MSError.ResponseFailureReason.badStatusCode
-
+                            } else if let error = rawResponse.error as? NSError {
+                                var reason = MSError.ResponseFailureReason.badRequest(code: error.code)
+                                
                                 if let statusCode = rawResponse.response?.statusCode
                                 {
                                     //if the response has a 401 that means we have an authentication issue
                                     reason = statusCode == 401 ? MSError.ResponseFailureReason.tokenExpired(code: statusCode) :
                                         MSError.ResponseFailureReason.badRequest(code: statusCode)
                                 }
-                                
                                 failure(MSError.responseValidationFailed(reason: reason),
                                         self.errorResponse(fromData: rawResponse.data))
                             } else {
@@ -154,12 +153,14 @@ class AlamoNetworkManager : NetworkManager
                                     } else {
                                         success(currentResponse)
                                     }
-                                } else if rawResponse.error != nil {
-                                    var reason = MSError.ResponseFailureReason.badStatusCode
+                                } else if let error = rawResponse.error as? NSError {
+                                    var reason = MSError.ResponseFailureReason.badRequest(code: error.code)
                                     
                                     if let statusCode = rawResponse.response?.statusCode
                                     {
-                                        reason = MSError.ResponseFailureReason.badRequest(code: statusCode)
+                                        //if the response has a 401 that means we have an authentication issue
+                                        reason = statusCode == 401 ? MSError.ResponseFailureReason.tokenExpired(code: statusCode) :
+                                            MSError.ResponseFailureReason.badRequest(code: statusCode)
                                     }
                                     failure(MSError.responseValidationFailed(reason: reason), self.errorResponse(fromData: rawResponse.data))
                                 }
