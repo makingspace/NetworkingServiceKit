@@ -21,9 +21,10 @@ extension Array {
     }
 }
 
-extension Dictionary {
+extension Dictionary where Key: ExpressibleByStringLiteral, Key.StringLiteralType == String, Value: Any {
     func validArrayRequest() -> Bool {
-        if let dic = self as? [String:Any], dic[arrayParametersKey] != nil {
+        let key = Key(stringLiteral: arrayParametersKey)
+        if self[key] != nil {
             return true
         }
         return false
