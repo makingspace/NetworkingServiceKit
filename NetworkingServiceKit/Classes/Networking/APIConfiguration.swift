@@ -170,7 +170,8 @@ public class APIConfiguration: NSObject
             let currentType = MakespaceConfigurationType(stringValue: environmentConfiguration) {
             return currentType
         }
-        #if DEBUG
+        
+        #if DEBUG || STAGING
             return MakespaceConfigurationType.staging
         #else
             return MakespaceConfigurationType.production
