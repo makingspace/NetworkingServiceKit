@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.3.3'
+  s.version          = '0.3.4'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -27,7 +27,10 @@ NetworkingServiceKit is the rencarnation of MSNetworking, using a modular approa
   s.author           = { 'darkzlave' => 'phillipe@makespace.com' }
   s.source           = { :git => 'https://github.com/makingspace/NetworkingServiceKit.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/darkzlave'
-
+  s.pod_target_xcconfig = {
+    'OTHER_SWIFT_FLAGS[config=Debug]' => '-D DEBUG',
+    'OTHER_SWIFT_FLAGS[config=Staging]' => '-D STAGING'
+  }
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'NetworkingServiceKit/Classes/**/*'
