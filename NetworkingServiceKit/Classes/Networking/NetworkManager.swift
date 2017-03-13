@@ -9,18 +9,38 @@
 import Foundation
 //Custom Makespace Error
 public enum MSError : Error {
-    
     /// The underlying reason the request failed
     ///
     /// - tokenExpired: request received a 401 from a backend
     /// - badRequest: generic error for responses
+    /// - unknownReason: a request that could not validate a status code
     public enum ResponseFailureReason {
         
-        case tokenExpired
-        case badRequest
+        case tokenExpired(code: Int)
+        case badRequest(code: Int)
+        case badStatusCode
     }
     
     case responseValidationFailed(reason: ResponseFailureReason)
+}
+
+extension MSError.ResponseFailureReason {
+    var responseCode: Int {
+        switch self {
+        case .tokenExpired(let code),.badRequest(let code):
+            return code
+        default:
+            return 0
+        }
+    }
+    var hasTokenExpired: Bool {
+        switch self {
+        case .tokenExpired(let code):
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 extension MSError {
@@ -28,7 +48,13 @@ extension MSError {
     public var hasTokenExpired: Bool {
         switch self {
         case .responseValidationFailed(let reason):
-            return reason == .tokenExpired
+            return reason.hasTokenExpired
+        }
+    }
+    public var responseCode: Int {
+        switch self {
+        case .responseValidationFailed(let reason):
+            return reason.responseCode
         }
     }
 }
