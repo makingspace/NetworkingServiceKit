@@ -449,39 +449,6 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    public func seeTimedContainers(_ timedContainers: [Any],
-                                   withJobXid jobXid: String,
-                                   placeXid: String,
-                                   success successBlock: @escaping SuccessResponseBlock,
-                                   error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "v2/ops/jobs/\(jobXid)/see_containers"
-        var params: [String: Any] = ["place": placeXid,
-                                     "container_times": timedContainers]
-        request(path: path,
-                method: .post,
-                with: params,
-                paginated: true,
-                success: successBlock,
-                failure: errorBlock)
-    }
-    
-    public func unseeTimedContainers(_ timedContainers: [Any],
-                                     withJobXid jobXid: String,
-                                     placeXid: String,
-                                     success successBlock: @escaping SuccessResponseBlock,
-                                     error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "v2/ops/jobs/\(jobXid)/unsee_containers"
-        var params: [String: Any] = ["place": placeXid,
-                                     "container_times": timedContainers]
-        
-        request(path: path,
-                method: .post,
-                with: params,
-                paginated: true,
-                success: successBlock,
-                failure: errorBlock)
-    }
-    
     // MARK: - Images
     func getS3UploadParametersForFile(withXid xid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
@@ -515,18 +482,6 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    public func deleteItemImage(withXid itemImageXid: String,
-                                withItemXid itemXid: String,
-                                success successBlock: @escaping SuccessResponseBlock,
-                                error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "v2/ops/items/\(itemXid)/images/\(itemImageXid)"
-        request(path: path,
-                method: .delete,
-                with: [String: Any](),
-                paginated: true,
-                success: successBlock,
-                failure: errorBlock)
-    }
     // MARK: - Tasks
     
     public func getTasksWithSuccessBlock(_ successBlock: @escaping SuccessResponseBlock,
@@ -814,20 +769,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    // MARK: - debug call
-    
-    public func submitDebugData(_ data: String,
-                                success successBlock: @escaping SuccessResponseBlock,
-                                error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "/api/v2/ops/log/debug"
-        var params: [String: Any] = ["log_data": data]
-        request(path: path,
-                method: .post,
-                with: params,
-                paginated: true,
-                success: successBlock,
-                failure: errorBlock)
-    }
+
     // MARK: - Pickup Fees
     
     public func getPickupFeesForCustomer(withXid customerXid: String,
