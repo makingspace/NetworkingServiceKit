@@ -51,8 +51,9 @@ class AlamoNetworkManager : NetworkManager
         
         guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.string) else { return }
         
-        //lets use URL encoding only for GETs / DELETEs
-        let encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
+        //lets use URL encoding only for GETs / DELETEs OR use a specific encoding for arrays
+        var encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
+        encoding = parameters.validArrayRequest() ? ArrayEncoding() : encoding
 
         sessionManager.request(path,
                           method: httpMethod,
