@@ -83,7 +83,7 @@ class AlamoNetworkManager : NetworkManager
                                     //return inmediatly
                                     success(response)
                                 }
-                            } else if let error = rawResponse.error {
+                            } else if rawResponse.error != nil {
                                 var reason = MSError.ResponseFailureReason.badRequest
                                 if let statusCode = rawResponse.response?.statusCode, statusCode == 401
                                 {
@@ -151,7 +151,7 @@ class AlamoNetworkManager : NetworkManager
                                     } else {
                                         success(currentResponse)
                                     }
-                                } else if let error = rawResponse.error {
+                                } else if rawResponse.error != nil {
                                     failure(MSError.responseValidationFailed(reason: .badRequest), self.errorResponse(fromData: rawResponse.data))
                                 }
         }
