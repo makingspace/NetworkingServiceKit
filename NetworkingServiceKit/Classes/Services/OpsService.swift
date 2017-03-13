@@ -450,7 +450,18 @@ open class OpsService: AbstractBaseService {
     }
     
     // MARK: - Images
-    func getS3UploadParametersForFile(withXid xid: String,
+    public func createFile(withSuccess successBlock: @escaping SuccessResponseBlock, error errorBlock: @escaping ErrorResponseBlock) {
+        let params: [String: Any] = ["mime_type": "image/jpeg", "description": "Uploaded Image"]
+        
+        request(path: MS_FILES_LOOKUP_PATH,
+                method: .post,
+                with: params,
+                paginated: false,
+                success: successBlock,
+                failure: errorBlock)
+    }
+    
+    public func getS3UploadParametersForFile(withXid xid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
         var path = "\(MS_FILES_LOOKUP_PATH)/\(xid)/s3-upload-params"
@@ -462,7 +473,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    func addImageToRemoteCache(withURL imageUrl: String,
+    public func addImageToRemoteCache(withURL imageUrl: String,
                                locator: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
