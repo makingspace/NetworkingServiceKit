@@ -23,7 +23,7 @@ open class AccountService: AbstractBaseService {
             "email" : email
         ]
         request(path: "account", method: .get, with: params, paginated: false, success: { response in
-            completion(response != nil ? true : false)
+            completion(response.count > 0 ? true : false)
         }, failure: { error, errorResponse in
             completion(false)
         })

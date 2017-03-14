@@ -74,8 +74,7 @@ open class SimpleMDMService: AbstractBaseService {
     
     public func getDevice(_ success: @escaping SuccessResponseBlock, failure: @escaping Failure) {
         request(path: "devices", success: { response in
-            guard let responseDict = response as? [String: AnyObject],
-                let data = responseDict["data"] as? [[String: AnyObject]] else {
+            guard let data = response["data"] as? [[String: AnyObject]] else {
                     failure(.serializationError)
                     return
             }
@@ -106,8 +105,7 @@ open class SimpleMDMService: AbstractBaseService {
     
     public func getDevicePhoneNumber(_ success: @escaping (String) -> Void, failure: @escaping Failure) {
         request(path: "devices", success: { response in
-            guard let responseDict = response as? [String: AnyObject],
-                let data = responseDict["data"] as? [[String: AnyObject]] else {
+            guard let data = response["data"] as? [[String: AnyObject]] else {
                     failure(.serializationError)
                     return
             }
@@ -143,14 +141,16 @@ open class SimpleMDMService: AbstractBaseService {
     }
     
     public func pushAppsForDevice(_ identifier: Int, completion:@escaping (_ completed:Bool)-> Void) {
-        request(path: "devices/\(deviceId)/push_apps",
-            method: .post,
-            with: [String : Any](),
-            paginated: false,
-            success: { response in
-                completion(true)
-        }) { (error, errorResponse) in
-            completion(false)
+        if let deviceId = self.deviceId {
+            request(path: "devices/\(deviceId)/push_apps",
+                method: .post,
+                with: [String : Any](),
+                paginated: false,
+                success: { response in
+                    completion(true)
+            }) { (error, errorResponse) in
+                completion(false)
+            }
         }
     }
 }

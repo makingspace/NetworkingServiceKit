@@ -28,7 +28,7 @@ open class NotificationService: AbstractBaseService {
     ///   - completion: a completion block indicating if anything went good
     public func registerDeviceToken(forPhoneNumber number:String,
                              completion:@escaping (_ registered:Bool,_ error:Error?)-> Void) {
-        if let existingToken = APITokenManager.set(object: token, for: .deviceTokenKey) as? String,
+        if let existingToken = APITokenManager.object(for: .deviceTokenKey) as? String,
             let deviceID = UIDevice.current.identifierForVendor?.uuidString
         {
             

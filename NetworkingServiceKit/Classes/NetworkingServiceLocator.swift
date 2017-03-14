@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import NetworkingServiceKit
 public protocol NetworkingServiceLocatorDelegate
 {
     func networkLocatorTokenDidExpired()
@@ -80,6 +79,19 @@ open class NetworkingServiceLocator: NSObject {
     open class func service<T : AbstractService>(forType type: T.Type) -> T?
     {
         if let service = NetworkingServiceLocator.shared.currentServices[String(describing: type.self)] as? T {
+            return service
+        }
+        return nil
+    }
+    
+    
+    /// Returns a service given a string class name (Useful to be call from Obj-c)
+    ///
+    /// - Parameter className: string name for the class we are looking
+    /// - Returns: a working service
+    @objc
+    open class func service(forClassName className:String) -> NSObject? {
+        if let service = NetworkingServiceLocator.shared.currentServices[className] as? NSObject {
             return service
         }
         return nil

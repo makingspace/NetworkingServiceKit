@@ -102,9 +102,7 @@ open class OpsService: AbstractBaseService {
         if parentXid != "" {
             params["parent"] = parentXid
         }
-        try? self.getPlacesWithParameters(params,
-                                          success: successBlock,
-                                          error: errorBlock)
+        self.getPlacesWithParameters(params, success: successBlock, error: errorBlock)
     }
     
     public func getPlacesWithLocator(_ locator: String,
@@ -126,7 +124,7 @@ open class OpsService: AbstractBaseService {
                             locator updatedLocator: String,
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
-        var params: [String: Any] = ["marker": updatedLocator]
+        let params: [String: Any] = ["marker": updatedLocator]
         request(path: "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)",
             method: .patch,
             with: params,
@@ -141,7 +139,7 @@ open class OpsService: AbstractBaseService {
                                        success successBlock: @escaping SuccessResponseBlock,
                                        error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
-        if (facilityXid is String) && (facilityXid.characters.count ?? 0) > 0 {
+        if facilityXid.characters.count > 0 {
             params["facility"] = facilityXid
         }
         params["status"] = status.stringKey
@@ -159,7 +157,7 @@ open class OpsService: AbstractBaseService {
     public func getJobWithXid(_ jobXid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -176,7 +174,7 @@ open class OpsService: AbstractBaseService {
         
         var params = additionalValues
         params["status"] = status.stringKey
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
         request(path: path,
                 method: .patch,
                 with: [String: Any](),
@@ -189,8 +187,8 @@ open class OpsService: AbstractBaseService {
                                      numberOfDays: Int,
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
-        var params: [String: Any] = ["days": (numberOfDays)]
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-summaries"
+        let params: [String: Any] = ["days": (numberOfDays)]
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-summaries"
         request(path: path,
                 method: .get,
                 with: params,
@@ -205,13 +203,10 @@ open class OpsService: AbstractBaseService {
                                     success successBlock: @escaping SuccessResponseBlock,
                                     error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
-        if (date is Date) {
-            params["date"] = DateFormatter.makespaceYearMonthDay().string(from: date)
-        }
-        if (slug is String) {
-            params["equipment"] = slug
-        }
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-places"
+        params["date"] = DateFormatter.makespaceYearMonthDay().string(from: date)
+        params["equipment"] = slug
+
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-places"
         request(path: path,
                 method: .get,
                 with: params,
@@ -223,7 +218,7 @@ open class OpsService: AbstractBaseService {
     public func getDeliveryItems(withJobXid jobXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/delivery-items"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/delivery-items"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -240,15 +235,12 @@ open class OpsService: AbstractBaseService {
                                   error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
         params["delivery_places"] = placeXids
-        if (slug is String) {
-            params["equipment"] = [slug]
-        }
-        if (facilityXid is String) {
-            params["from_place"] = facilityXid
-        }
+        params["equipment"] = [slug]
+        params["from_place"] = facilityXid
         params["type"] = "DELIVERY"
         params["status"] = "STARTED"
-        var dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
+        
+        let dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["scheduled_date"] = dateString
         request(path: MS_JOBS_LOOKUP_PATH,
                 method: .post,
@@ -267,16 +259,11 @@ open class OpsService: AbstractBaseService {
         var params = [String: Any]()
         params["type"] = "TRANSIT"
         params["status"] = "STARTED"
-        if (fromPlaceXid is String) {
-            params["from_place"] = fromPlaceXid
-        }
-        if (toPlaceXid is String) {
-            params["to_place"] = toPlaceXid
-        }
-        if (description is String) {
-            params["description"] = description
-        }
-        var dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
+        params["from_place"] = fromPlaceXid
+        params["to_place"] = toPlaceXid
+        params["description"] = description
+
+        let dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["scheduled_date"] = dateString
         request(path: MS_JOBS_LOOKUP_PATH,
                 method: .post,
@@ -289,7 +276,7 @@ open class OpsService: AbstractBaseService {
     public func getTransitItems(withJobXid jobXid: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -303,12 +290,11 @@ open class OpsService: AbstractBaseService {
                                scanTime: Date,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
         var params = [String: Any]()
-        if (palletXid is String) {
-            params["place"] = palletXid
-        }
-        var dateString: String = DateFormatter.makespace().string(from: scanTime)
+        params["place"] = palletXid
+
+        let dateString: String = DateFormatter.makespace().string(from: scanTime)
         params["scanned_on"] = dateString
         request(path: path,
                 method: .post,
@@ -322,7 +308,7 @@ open class OpsService: AbstractBaseService {
                                     palletXid: String,
                                     success successBlock: @escaping SuccessResponseBlock,
                                     error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items/\(palletXid)"
+        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items/\(palletXid)"
         request(path: path,
                 method: .delete,
                 with: [String: Any](),
@@ -351,7 +337,7 @@ open class OpsService: AbstractBaseService {
         if standardSizeName != "" {
             params["standard_size"] = standardSizeName
         }
-        var path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
         request(path: path,
                 method: .patch,
                 with: params,
@@ -370,7 +356,7 @@ open class OpsService: AbstractBaseService {
             params["handling_class"] = handlingClass
         }
         params["standard_size"] = standardSizeName
-        var path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
         request(path: path,
                 method: .patch,
                 with: params,
@@ -382,7 +368,7 @@ open class OpsService: AbstractBaseService {
     public func getContainerWithLocator(_ containerLocator: String,
                                         success successBlock: @escaping SuccessResponseBlock,
                                         error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -406,7 +392,7 @@ open class OpsService: AbstractBaseService {
                                    requestKey key: String,
                                    success successBlock: @escaping SuccessResponseBlock,
                                    error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/containers"
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/containers"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -423,7 +409,7 @@ open class OpsService: AbstractBaseService {
         if !timedContainers.isEmpty {
             params = ["scans": timedContainers]
         }
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan"
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan"
         request(path: path,
                 method: .post,
                 with: params,
@@ -440,7 +426,7 @@ open class OpsService: AbstractBaseService {
         if !timedContainers.isEmpty {
             params = ["scans": timedContainers]
         }
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan?remove=true"
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan?remove=true"
         request(path: path,
                 method: .post,
                 with: params,
@@ -464,7 +450,7 @@ open class OpsService: AbstractBaseService {
     public func getS3UploadParametersForFile(withXid xid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        var path = "\(MS_FILES_LOOKUP_PATH)/\(xid)/s3-upload-params"
+        let path = "\(MS_FILES_LOOKUP_PATH)/\(xid)/s3-upload-params"
         request(path: path,
                 method: .post,
                 with: [String:Any](),
@@ -477,14 +463,11 @@ open class OpsService: AbstractBaseService {
                                locator: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        var path = "\(MS_CONTAINERS_LOOKUP_PATH)/\(locator)/image-cache"
+        let path = "\(MS_CONTAINERS_LOOKUP_PATH)/\(locator)/image-cache"
         var params = [String: Any]()
-        if (imageUrl is String) {
-            params["image"] = imageUrl
-        }
-        if (locator is String) {
-            params["container"] = locator
-        }
+        params["image"] = imageUrl
+        params["container"] = locator
+
         request(path: path,
                 method: .post,
                 with: params,
@@ -497,7 +480,7 @@ open class OpsService: AbstractBaseService {
     
     public func getTasksWithSuccessBlock(_ successBlock: @escaping SuccessResponseBlock,
                                          error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_TASKS_LOOKUP_PATH)/me"
+        let path: String = "\(MS_TASKS_LOOKUP_PATH)/me"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -509,7 +492,7 @@ open class OpsService: AbstractBaseService {
     public func getTaskWithXid(_ xid: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
+        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -522,8 +505,8 @@ open class OpsService: AbstractBaseService {
                            taskStatus: String,
                            success successBlock: @escaping SuccessResponseBlock,
                            error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
-        var params: [String: Any] = ["status": taskStatus]
+        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
+        let params: [String: Any] = ["status": taskStatus]
         request(path: path,
                 method: .patch,
                 with: params,
@@ -536,8 +519,8 @@ open class OpsService: AbstractBaseService {
                          forTaskXid taskXid: String,
                          success successBlock: @escaping SuccessResponseBlock,
                          error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_TASKS_LOOKUP_PATH)/\(taskXid)"
-        var params: [String: Any] = ["booking": ["admin_notes": [["content": note]]]]
+        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(taskXid)"
+        let params: [String: Any] = ["booking": ["admin_notes": [["content": note]]]]
         request(path: path,
                 method: .patch,
                 with: params,
@@ -549,7 +532,7 @@ open class OpsService: AbstractBaseService {
     public func getTaskEvents(withTaskXid xid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)/events"
+        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)/events"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -572,7 +555,7 @@ open class OpsService: AbstractBaseService {
     public func deleteEvent(withXid xid: String,
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_EVENTS_LOOKUP_PATH)/\(xid)"
+        let path: String = "\(MS_EVENTS_LOOKUP_PATH)/\(xid)"
         request(path: path,
                 method: .delete,
                 with: [String: Any](),
@@ -588,7 +571,7 @@ open class OpsService: AbstractBaseService {
                                 withEventXidArray eventXids: [String],
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "signatures"
+        let path: String = "signatures"
         var eventsXids = [[String:String]]()
         for xid: String in eventXids {
             eventsXids.append(["xid": xid])
@@ -616,7 +599,7 @@ open class OpsService: AbstractBaseService {
     public func getBookingsWithUserXid(_ userXid: String,
                                        success successBlock: @escaping SuccessResponseBlock,
                                        error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)/bookings"
+        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)/bookings"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -628,7 +611,7 @@ open class OpsService: AbstractBaseService {
     
     public func getStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -639,9 +622,7 @@ open class OpsService: AbstractBaseService {
     
     public func getMyStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        try? self.getMyStaffInfoExpanded(false,
-                                         success: successBlock,
-                                         error: errorBlock)
+        self.getMyStaffInfoExpanded(false, success: successBlock, error: errorBlock)
     }
     
     public func getMyStaffInfoExpanded(_ expanded: Bool,
@@ -680,11 +661,11 @@ open class OpsService: AbstractBaseService {
                                       booking currentBooking: String?,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
         var params: [String: Any] = ["lat": lat,
                                      "lon": lon]
         if let eta = eta {
-            var etaString: String = DateFormatter.makespace().string(from: eta)
+            let etaString: String = DateFormatter.makespace().string(from: eta)
             params["expected_on"] = etaString
         }
         if let currentBooking = currentBooking,
@@ -702,8 +683,8 @@ open class OpsService: AbstractBaseService {
     public func getCustomerInfo(withXid userXid: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)"
-        var params: [String: Any] = ["expand": "container_cycles"]
+        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)"
+        let params: [String: Any] = ["expand": "container_cycles"]
         request(path: path,
                 method: .get,
                 with: params,
@@ -715,8 +696,8 @@ open class OpsService: AbstractBaseService {
     public func searchCustomers(withText searchText: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        var params: [String: Any] = ["q": searchText]
-        var path: String = "search/accounts"
+        let params: [String: Any] = ["q": searchText]
+        let path: String = "search/accounts"
         request(path: path,
                 method: .get,
                 with: params,
@@ -730,8 +711,8 @@ open class OpsService: AbstractBaseService {
                                      withScanDataArray scanData: [Any],
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/scan"
-        var params: [String: Any] = ["scans": scanData]
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/scan"
+        let params: [String: Any] = ["scans": scanData]
         request(path: path,
                 method: .post,
                 with: params,
@@ -743,7 +724,7 @@ open class OpsService: AbstractBaseService {
     public func getPlaceWithMarkerLocator(_ locator: String,
                                           success successBlock: @escaping SuccessResponseBlock,
                                           error errorBlock: @escaping ErrorResponseBlock) {
-        var params: [String: Any] = ["marker_locator": locator]
+        let params: [String: Any] = ["marker_locator": locator]
         request(path: MS_PLACES_LOOKUP_PATH,
                 method: .get,
                 with: params,
@@ -756,8 +737,8 @@ open class OpsService: AbstractBaseService {
                                            markerLocator: String,
                                            success successBlock: @escaping SuccessResponseBlock,
                                            error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)"
-        var params: [String: Any] = ["marker": markerLocator]
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)"
+        let params: [String: Any] = ["marker": markerLocator]
         request(path: path,
                 method: .patch,
                 with: params,
@@ -770,8 +751,8 @@ open class OpsService: AbstractBaseService {
                                            parentXid: String,
                                            success successBlock: @escaping SuccessResponseBlock,
                                            error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_PLACES_LOOKUP_PATH)/\(subplaceXid)"
-        var params: [String: Any] = ["parent": parentXid]
+        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(subplaceXid)"
+        let params: [String: Any] = ["parent": parentXid]
         request(path: path,
                 method: .patch,
                 with: params,
@@ -786,7 +767,7 @@ open class OpsService: AbstractBaseService {
                                          bookingXid: String,
                                          success successBlock: @escaping SuccessResponseBlock,
                                          error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
+        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -798,7 +779,7 @@ open class OpsService: AbstractBaseService {
     public func getProductPrices(withFulfillerXid fulfillerXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "fulfillers/\(fulfillerXid)/prices"
+        let path: String = "fulfillers/\(fulfillerXid)/prices"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -812,7 +793,7 @@ open class OpsService: AbstractBaseService {
                                       bookingXid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
+        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
         request(path: path,
                 method: .put,
                 with: [String: Any](),
@@ -826,8 +807,8 @@ open class OpsService: AbstractBaseService {
                                            count: Int,
                                            success successBlock: @escaping SuccessResponseBlock,
                                            error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "bookings/\(bookingXid)/questions"
-        var params: [String: Any] = ["count": (count)]
+        let path: String = "bookings/\(bookingXid)/questions"
+        let params: [String: Any] = ["count": (count)]
         request(path: path,
                 method: .get,
                 with: params,
@@ -839,7 +820,7 @@ open class OpsService: AbstractBaseService {
     public func submitQuestionAnswers(withParams params: [[String: Any]],
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        var path: String = "question_answers"
+        let path: String = "question_answers"
         request(path: path,
                 method: .post,
                 with: params.asParameters(),

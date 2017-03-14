@@ -35,7 +35,7 @@ extension MSError.ResponseFailureReason {
     }
     var hasTokenExpired: Bool {
         switch self {
-        case .tokenExpired(let code):
+        case .tokenExpired( _):
             return true
         default:
             return false
@@ -85,7 +85,6 @@ public enum HTTPMethod: Int32 {
         case .trace: return "TRACE"
         case .connect: return "CONNECT"
         }
-        return ""
     }
 }
 
