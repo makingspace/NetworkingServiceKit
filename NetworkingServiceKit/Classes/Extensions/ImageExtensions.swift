@@ -28,6 +28,7 @@ extension UIImage
         } else if let dataJPEG = UIImageJPEGRepresentation(self, 1.0)
         {
             imageData = dataJPEG
+            mimeType = "image/jpeg"
         }
         return String(format: "data:%@;base64,%@", mimeType, imageData.base64EncodedString())
     }
