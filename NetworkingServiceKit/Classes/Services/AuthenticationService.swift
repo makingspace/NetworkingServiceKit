@@ -60,7 +60,7 @@ open class AuthenticationService : AbstractBaseService
             return
         }
         
-        let parameters = ["device_identifier" : UIDevice.current.identifierForVendor?.uuidString]
+        let parameters:[String: Any] = ["device_identifier" : UIDevice.current.identifierForVendor?.uuidString ?? ""]
         request(path: "logout",
                 method: .post,
                 with: parameters,
