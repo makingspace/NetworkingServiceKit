@@ -65,7 +65,10 @@ class AlamoNetworkManager : NetworkManager
                                 debugPrint(rawResponse)
                             #endif
                             
-                            if let response = rawResponse.value as? [String:Any],
+                            if let response = rawResponse.value as? [Any] {
+                                let responseDic = ["results" : response]
+                                success(responseDic)
+                            } else if let response = rawResponse.value as? [String:Any],
                                 rawResponse.error == nil {
                                 if let nextPage = response["next"] as? String,
                                     paginated
