@@ -389,7 +389,6 @@ open class OpsService: AbstractBaseService {
     // MARK: - Timed Containers
     
     public func getTimedContainers(withPlaceXid placeXid: String,
-                                   requestKey key: String,
                                    success successBlock: @escaping SuccessResponseBlock,
                                    error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/containers"
@@ -401,7 +400,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    public func seeTimedContainers(_ timedContainers: [Any],
+    public func seeTimedContainers(_ timedContainers: [[String: Any]],
                                    withPlaceXid xid: String,
                                    success successBlock: @escaping SuccessResponseBlock,
                                    error errorBlock: @escaping ErrorResponseBlock) {
@@ -418,7 +417,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    public func unseeTimedContainers(_ timedContainers: [Any],
+    public func unseeTimedContainers(_ timedContainers: [[String: Any]],
                                      withPlaceXid xid: String,
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
@@ -541,7 +540,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     
-    public func createEvent(withParams requestParams: [Any],
+    public func createEvent(withParams requestParams: [[String:Any]],
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
         request(path: MS_EVENTS_LOOKUP_PATH,
