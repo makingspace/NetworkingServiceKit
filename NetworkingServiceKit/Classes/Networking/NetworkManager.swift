@@ -19,9 +19,17 @@ public enum MSError : Error {
         case tokenExpired(code: Int)
         case badRequest(code: Int)
         case badStatusCode
+        case persistanceFailure(code: Int)
+    }
+    
+    public enum PersistanceFailureReason {
+        
+        case invalidData
+        case persistanceFailure(code: Int)
     }
     
     case responseValidationFailed(reason: ResponseFailureReason)
+    case persistanceValidationFailed(reason: PersistanceFailureReason)
 }
 
 extension MSError.ResponseFailureReason {
@@ -49,12 +57,15 @@ extension MSError {
         switch self {
         case .responseValidationFailed(let reason):
             return reason.hasTokenExpired
+        default: return false
         }
     }
     public var responseCode: Int {
         switch self {
         case .responseValidationFailed(let reason):
             return reason.responseCode
+        default:
+            return 0
         }
     }
 }
