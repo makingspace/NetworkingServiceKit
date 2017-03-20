@@ -92,8 +92,7 @@ class AlamoNetworkManager : NetworkManager
                                 if let statusCode = rawResponse.response?.statusCode
                                 {
                                     //if the response has a 401 that means we have an authentication issue
-                                    reason = statusCode == 401 ? MSError.ResponseFailureReason.tokenExpired(code: statusCode) :
-                                        MSError.ResponseFailureReason.badRequest(code: statusCode)
+                                    reason = MSError.ResponseFailureReason(code: statusCode)
                                 }
                                 failure(MSError.responseValidationFailed(reason: reason),
                                         self.errorResponse(fromData: rawResponse.data))
@@ -175,14 +174,17 @@ class AlamoNetworkManager : NetworkManager
     ///
     /// - Parameter data: data stream
     /// - Returns: a response, empty dictionary if there were issues parsing the data
-    private func errorResponse(fromData data:Data?) -> [String: Any]
+    private func errorResponse(fromData data:Data?) -> MSErrorDetails?
     {
-        var errorResponse = [String:Any]()
+        var errorResponse:MSErrorDetails? = nil
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
             let responseDictionary = self.convertToDictionary(text: responseDataString),
-            let responseError = responseDictionary["error"] as? [String: Any]{
-            errorResponse = responseError
+            let responseError = responseDictionary["error"] as? [String: Any],
+            let errorType = responseError["type"] as? String,
+            let message = responseError["message"] as? String
+        {
+            errorResponse = MSErrorDetails(errorType: errorType, message: message)
         }
         return errorResponse
     }
