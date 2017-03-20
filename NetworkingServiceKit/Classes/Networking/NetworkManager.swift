@@ -7,6 +7,11 @@
 //
 
 import Foundation
+//Custom Makespace Error Response Object
+public struct MSErrorDetails {
+    public let errorType:String
+    public let message:String
+}
 //Custom Makespace Error
 public enum MSError : Error {
     /// The underlying reason the request failed
@@ -18,6 +23,7 @@ public enum MSError : Error {
         
         case tokenExpired(code: Int)
         case badRequest(code: Int)
+        case internalServerError
         case badStatusCode
         case persistanceFailure(code: Int)
     }
@@ -37,6 +43,8 @@ extension MSError.ResponseFailureReason {
         switch self {
         case .tokenExpired(let code),.badRequest(let code):
             return code
+        case .internalServerError:
+            return 500
         default:
             return 0
         }
@@ -47,6 +55,17 @@ extension MSError.ResponseFailureReason {
             return true
         default:
             return false
+        }
+    }
+    init(code:Int) {
+        switch code {
+        case 401:
+            self = .tokenExpired(code: code)
+        case 500:
+            self = .internalServerError
+            
+        default:
+            self = .badRequest(code: code)
         }
     }
 }
@@ -101,7 +120,7 @@ public enum HTTPMethod: Int32 {
 
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
-public typealias ErrorResponseBlock = (MSError,[String:Any]?) -> Void
+public typealias ErrorResponseBlock = (MSError,MSErrorDetails?) -> Void
 //Custom parameter typealias
 public typealias CustomHTTPHeaders = [String: String]
 public typealias RequestParameters = [String: Any]
