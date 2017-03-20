@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+import AlamofireImage
 
 extension UIImage
 {
@@ -31,5 +33,13 @@ extension UIImage
             mimeType = "image/jpeg"
         }
         return String(format: "data:%@;base64,%@", mimeType, imageData.base64EncodedString())
+    }
+}
+
+extension UIImageView
+{
+    public func setImageWith(url:URL, placeholderImage placeholder:UIImage?)
+    {
+        self.af_setImage(withURL: url, placeholderImage: placeholder)
     }
 }
