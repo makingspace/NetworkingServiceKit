@@ -92,14 +92,14 @@ open class OpsService: AbstractBaseService {
     
     public func getPlacesWithLatitude(_ lat: Double,
                                       longitude lon: Double,
-                                      parentXid: String,
+                                      parentXid: String?,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
         params["lat"] = lat
         params["lon"] = lon
         
-        if parentXid != "" {
+        if let parentXid = parentXid, !parentXid.isEmpty {
             params["parent"] = parentXid
         }
         self.getPlacesWithParameters(params, success: successBlock, error: errorBlock)
