@@ -5,6 +5,11 @@
 [![License](https://img.shields.io/cocoapods/l/NetworkingServiceKit.svg?style=flat)](http://cocoapods.org/pods/NetworkingServiceKit)
 [![Platform](https://img.shields.io/cocoapods/p/NetworkingServiceKit.svg?style=flat)](http://cocoapods.org/pods/NetworkingServiceKit)
 
+<p align="center" >
+  <img src="https://github.com/makingspace/NetworkingServiceKit/blob/master/NetworkingServiceKit/Assets/logo.png" alt="NetworkingServiceKit" title="NetworkingServiceKit" height ="100" width="525">
+</p>
+
+
 ## Description
 
 NetworkingServiceKit( originally [MSNetworking](https://github.com/makingspace/MSNetworking)). It's a networking library for our internal apps built 100% in swift and following a design pattern known as the [Service Locator](https://msdn.microsoft.com/en-us/library/ff648968.aspx).
