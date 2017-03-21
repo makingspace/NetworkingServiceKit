@@ -1,5 +1,3 @@
-# NetworkingServiceKit
-
 [![CI Status](http://img.shields.io/travis/darkzlave/NetworkingServiceKit.svg?style=flat)](https://travis-ci.org/darkzlave/NetworkingServiceKit)
 [![Version](https://img.shields.io/cocoapods/v/NetworkingServiceKit.svg?style=flat)](http://cocoapods.org/pods/NetworkingServiceKit)
 [![License](https://img.shields.io/cocoapods/l/NetworkingServiceKit.svg?style=flat)](http://cocoapods.org/pods/NetworkingServiceKit)
