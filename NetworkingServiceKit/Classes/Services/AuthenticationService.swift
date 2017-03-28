@@ -72,4 +72,47 @@ open class AuthenticationService : AbstractBaseService
             completion(false)
         })
     }
+    
+    
+    /// Does a logout call with a custom access token(authentication) on the headers
+    /// if succesful all token data will get automatically clear, service locator will get reset also
+    /// - Parameters:
+    ///   - token: authentication token
+    ///   - completion: a completion block indicating if the logout was successful
+    public func logoutUser(withAcessToken token:String, completion:@escaping (_ completed:Bool)-> Void)
+    {
+        guard self.isAuthenticated else {
+            completion(false)
+            return
+        }
+        
+        let parameters:[String: Any] = ["device_identifier" : UIDevice.current.identifierForVendor?.uuidString ?? ""]
+        request(path: "logout",
+                method: .post,
+                with: parameters,
+                paginated: false,
+                headers: ["Authorization" : "Bearer " + token],
+                success: { response in
+                    APITokenManager.clearAuthentication()
+                    NetworkingServiceLocator.reloadServiceLocator()
+                    completion(true)
+        }, failure: { error, errorResponse in
+            completion(false)
+        })
+    }
+    
+    /// Does a logout call with a custom access token(authentication) on the headers for the given email
+    /// if succesful all token data will get automatically clear, service locator will get reset also
+    /// - Parameters:
+    ///   - token: authentication token
+    ///   - completion: a completion block indicating if the logout was successful
+    public func logoutUser(withEmail email:String, completion:@escaping (_ completed:Bool)-> Void)
+    {
+        if let token = APITokenManager.accessToken(for: email) {
+            self.logoutUser(withAcessToken: token, completion: completion)
+        } else {
+            completion(false)
+        }
+        
+    }
 }
