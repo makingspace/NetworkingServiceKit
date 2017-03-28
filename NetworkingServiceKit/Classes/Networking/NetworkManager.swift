@@ -7,10 +7,18 @@
 //
 
 import Foundation
+
 //Custom Makespace Error Response Object
-public struct MSErrorDetails {
+@objc
+public class MSErrorDetails: NSObject {
     public let errorType:String
     public let message:String
+    
+    public init(errorType: String, message: String)
+    {
+        self.errorType = errorType
+        self.message = message
+    }
 }
 //Custom Makespace Error
 public enum MSError : Error {
@@ -79,12 +87,26 @@ extension MSError {
         default: return false
         }
     }
+    
+    //Returns the response code for an error
     public var responseCode: Int {
         switch self {
         case .responseValidationFailed(let reason):
             return reason.responseCode
         default:
             return 0
+        }
+    }
+    
+    /// Helper method for determining whether an error is a connectivity issue
+    ///
+    /// - returns: returns true if the error is a connectivity issue and false if not
+    public var isNetworkError: Bool {
+        switch self.responseCode {
+        case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
+            return true
+        default:
+            return false
         }
     }
 }
@@ -120,7 +142,7 @@ public enum HTTPMethod: Int32 {
 
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
-public typealias ErrorResponseBlock = (MSError,MSErrorDetails?) -> Void
+public typealias ErrorResponseBlock = (MSError, MSErrorDetails?) -> Void
 //Custom parameter typealias
 public typealias CustomHTTPHeaders = [String: String]
 public typealias RequestParameters = [String: Any]

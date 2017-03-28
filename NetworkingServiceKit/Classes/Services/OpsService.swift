@@ -18,6 +18,7 @@ let MS_EVENTS_LOOKUP_PATH = "events"
 let MS_STAFF_LOOKUP_PATH = "staff"
 let MS_ACCOUNTS_LOOKUP_PATH = "accounts"
 
+@objc
 public enum JobStatusType: Int
 {
     case created = 10
@@ -606,6 +607,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
+    
     // MARK: - Staff
     
     public func getStaffInfo(success successBlock: @escaping SuccessResponseBlock,
@@ -615,6 +617,20 @@ open class OpsService: AbstractBaseService {
                 method: .get,
                 with: [String: Any](),
                 paginated: true,
+                success: successBlock,
+                failure: errorBlock)
+    }
+    
+    public func getStaffInfo(forAccessToken token:String,
+                             success successBlock: @escaping SuccessResponseBlock,
+                             error errorBlock: @escaping ErrorResponseBlock) {
+        //set a specific token on the api call
+        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        request(path: path,
+                method: .get,
+                with: [String: Any](),
+                paginated: true,
+                headers: ["Authorization" : "Bearer " + token],
                 success: successBlock,
                 failure: errorBlock)
     }
