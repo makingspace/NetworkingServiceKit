@@ -164,7 +164,7 @@ public class APIConfiguration: NSObject
         return nil
     }
     
-    fileprivate static var currentConfigurationType:APIConfigurationType {
+    public static var currentConfigurationType:APIConfigurationType {
         let environmentDictionary = ProcessInfo.processInfo.environment;
         if let environmentConfiguration = environmentDictionary[APIConfigurationKey],
             let currentType = MakespaceConfigurationType(stringValue: environmentConfiguration) {
