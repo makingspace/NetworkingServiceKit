@@ -8,6 +8,12 @@
 
 import UIKit
 
+extension Data {
+    var hexString: String {
+        return map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
+    }
+}
+
 @objc
 open class NotificationService: AbstractBaseService {
     
@@ -15,9 +21,9 @@ open class NotificationService: AbstractBaseService {
     /// Save a device token with our APITokenManager
     ///
     /// - Parameter token: device token
-    public func saveDeviceToken(token:String)
+    public func saveDeviceToken(token:Data)
     {
-        APITokenManager.set(object: token, for: .deviceTokenKey)
+        APITokenManager.set(object: token.hexString, for: .deviceTokenKey)
     }
     
     
