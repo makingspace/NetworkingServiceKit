@@ -32,7 +32,8 @@ public enum APITokenKey: String
     }
 }
 
-public struct APIToken
+@objc
+public class APIToken : NSObject
 {
     var refreshToken:String
     var tokenType:String
@@ -40,9 +41,25 @@ public struct APIToken
     var expiresIn:Int
     var scope:String
     var email:String
+    
+    public init(refreshToken: String,
+                tokenType: String,
+                accessToken: String,
+                expiresIn: Int,
+                scope: String,
+                email: String) {
+        
+        self.refreshToken = refreshToken
+        self.tokenType = tokenType
+        self.accessToken = accessToken
+        self.expiresIn = expiresIn
+        self.scope = scope
+        self.email = email
+    }
 }
 
-open class APITokenManager
+@objc
+open class APITokenManager : NSObject
 {
     public static var currentToken:APIToken? {
         if let email = self.object(for: .emailKey) as? String,
@@ -77,6 +94,10 @@ open class APITokenManager
             self.set(object: accessToken, for: .accessTokenKey)
             self.set(object: expiresIn, for: .expiresKey)
             self.set(object: scope, for: .scopeKey)
+            
+            //save tokens for specific email key (helps differntiate between multiple signed accounts)
+            UserDefaults.standard.set(accessToken, forKey: APITokenManager.accessTokenKey(for: email))
+            UserDefaults.standard.set(refreshToken, forKey: APITokenManager.refreshTokenKey(for: email))
             return self.currentToken
         }
         return nil
@@ -94,23 +115,42 @@ open class APITokenManager
     
     public static func clearAuthentication()
     {
+        if let email = self.object(for: .emailKey) as? String {
+            //clear specific tokens for current email
+            UserDefaults.standard.set(nil, forKey: APITokenManager.accessTokenKey(for: email))
+            UserDefaults.standard.set(nil, forKey: APITokenManager.refreshTokenKey(for: email))
+        }
+        
         self.set(object: nil, for: .emailKey)
         self.set(object: nil, for: .refreshTokenKey)
         self.set(object: nil, for: .tokenTypeKey)
         self.set(object: nil, for: .accessTokenKey)
         self.set(object: nil, for: .expiresKey)
         self.set(object: nil, for: .scopeKey)
+        self.set(object: nil, for: .scopeKey)
     }
     
-    private static func accessTokeKey(for email:String) -> String {
+    public static func setCurrentToken(for email:String) {
+        UserDefaults.standard.set(accessToken, forKey: APITokenManager.accessTokenKey(for: email))
+    }
+    
+    public static func accessToken(for email:String) -> String? {
+        return UserDefaults.standard.object(forKey: self.accessTokenKey(for: email)) as? String
+    }
+    
+    public static func refreshToken(for email:String) -> String? {
+        return UserDefaults.standard.object(forKey: self.refreshTokenKey(for: email)) as? String
+    }
+    
+    private static func accessTokenKey(for email:String) -> String {
         if let bundleExecutable = Bundle.main.infoDictionary?["CFBundleExecutable"] as? NSString {
             return "\(email)@com.makespace.\(bundleExecutable).access"
         }
         return email
     }
-    private static func refreshTokeKey(for email:String) -> String {
+    private static func refreshTokenKey(for email:String) -> String {
         if let bundleExecutable = Bundle.main.infoDictionary?["CFBundleExecutable"] as? NSString {
-            return "\(email)@com.makespace.\(bundleExecutable).access"
+            return "\(email)@com.makespace.\(bundleExecutable).refresh"
         }
         return email
     }
