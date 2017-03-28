@@ -91,7 +91,13 @@ open class NetworkingServiceLocator: NSObject {
     /// - Returns: a working service
     @objc
     open class func service(forClassName className:String) -> NSObject? {
-        if let service = NetworkingServiceLocator.shared.currentServices[className] as? NSObject {
+        //check if className contains framework name
+        let components = className.components(separatedBy: ".")
+        var realClassName = className
+        if components.count == 2 {
+            realClassName = components[1]
+        }
+        if let service = NetworkingServiceLocator.shared.currentServices[realClassName] as? NSObject {
             return service
         }
         return nil
@@ -101,5 +107,10 @@ open class NetworkingServiceLocator: NSObject {
     open class func setDelegate(delegate: NetworkingServiceLocatorDelegate)
     {
         self.shared.delegate = delegate
+    }
+    
+    // Returns current NetworkManager
+    open class var currentNetworkManager:NetworkManager {
+        return NetworkingServiceLocator.shared.networkManager
     }
 }
