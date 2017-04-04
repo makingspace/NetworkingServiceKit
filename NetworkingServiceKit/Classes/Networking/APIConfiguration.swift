@@ -13,7 +13,7 @@ public protocol APIConfigurationAuth
 {
     var secret:String { get }
     var key:String { get }
-    init?(bundleId:String)
+    init(bundleId:String?)
 }
 public protocol APIConfigurationType
 {
@@ -23,24 +23,29 @@ public protocol APIConfigurationType
 }
 
 public enum MakeSpaceApp: Int, APIConfigurationAuth {
-    case clouder
-    case rocket
-    case photoSpace
-    case photoKit
+    case clouder = 0
+    case rocket = 1
+    case photoSpace = 2
+    case photoKit = 3
     
-    public init?(bundleId:String)
+    public init(bundleId:String?)
     {
+        guard let bundleId = bundleId else {
+            self.init(rawValue: 0)!
+            return
+        }
+        
         var n = 0
         while let app = MakeSpaceApp(rawValue: n) {
             if app.bundleID.hasPrefix(bundleId) {
-                self.init(rawValue: app.rawValue)
+                self.init(rawValue: app.rawValue)!
                 return
             }
             n += 1
         }
         
         //if we dont find a proper APP, we are defaulting into clouder key/secret
-        self.init(rawValue: 0)
+        self.init(rawValue: 0)!
     }
     
     public var bundleID: String {
@@ -156,12 +161,9 @@ public class APIConfiguration: NSObject
         self.APISecret = auth.secret
     }
     
-    public static var current:APIConfiguration? {
-        if let bundleId = Bundle.main.bundleIdentifier,
-            let currentApp = MakeSpaceApp(bundleId: bundleId){
-            return APIConfiguration(type: self.currentConfigurationType, auth:currentApp)
-        }
-        return nil
+    public static var current:APIConfiguration {
+        return APIConfiguration(type: self.currentConfigurationType,
+                                auth: MakeSpaceApp(bundleId: Bundle.main.bundleIdentifier))
     }
     
     public static var currentConfigurationType:APIConfigurationType {
