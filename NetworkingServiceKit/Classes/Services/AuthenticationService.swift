@@ -66,7 +66,7 @@ open class AuthenticationService : AbstractBaseService
                 with: parameters,
                 success: { response in
                     APITokenManager.clearAuthentication()
-                    NetworkingServiceLocator.reloadServiceLocator()
+                    NetworkingServiceLocator.reloadExistingServices()
                     completion(true)
         }, failure: { error, errorResponse in
             completion(false)
@@ -94,7 +94,7 @@ open class AuthenticationService : AbstractBaseService
                 headers: ["Authorization" : "Bearer " + token],
                 success: { response in
                     APITokenManager.clearAuthentication()
-                    NetworkingServiceLocator.reloadServiceLocator()
+                    NetworkingServiceLocator.reloadExistingServices()
                     completion(true)
         }, failure: { error, errorResponse in
             completion(false)
