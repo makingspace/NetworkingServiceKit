@@ -28,13 +28,19 @@ open class NetworkingServiceLocator: NSObject {
     private override init() {
         self.currentServices = [String:AbstractService]()
         self.loadedServiceTypes = [AbstractService.Type]()
-        self.configuration = APIConfiguration.current!
+        self.configuration = APIConfiguration.current
         self.networkManager = AlamoNetworkManager(with: self.configuration)
         self.token = APITokenManager.currentToken
     }
     
+    /// Resets the NetworkingServiceLocator singleton instance
+    open class func reset()
+    {
+        NetworkingServiceLocator.shared = NetworkingServiceLocator()
+    }
+    
     /// Reloads token, networkManager and configuration with existing hooked services
-    open class func reloadServiceLocator()
+    open class func reloadExistingServices()
     {
         let serviceTypes = NetworkingServiceLocator.shared.loadedServiceTypes
         NetworkingServiceLocator.shared = NetworkingServiceLocator()
