@@ -84,20 +84,20 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
 
 public enum MakespaceConfigurationType: Int, APIConfigurationType
 {
-    case staging
-    case production
-    case custom
+    case staging = 0
+    case production = 1
+    case custom = 2
     
-    public init?(stringValue:String) {
+    public init(stringValue:String) {
         switch stringValue {
         case "STAGING":
-            self.init(rawValue: 0)
+            self.init(rawValue: 0)!
         case "PRODUCTION":
-            self.init(rawValue: 1)
+            self.init(rawValue: 1)!
         case "CUSTOM":
-            self.init(rawValue: 2)
+            self.init(rawValue: 2)!
         default:
-            self.init(rawValue: 0)
+            self.init(rawValue: 0)!
         }
     }
     
@@ -166,9 +166,8 @@ public class APIConfiguration: NSObject
     
     public static var currentConfigurationType:APIConfigurationType {
         let environmentDictionary = ProcessInfo.processInfo.environment;
-        if let environmentConfiguration = environmentDictionary[APIConfigurationKey],
-            let currentType = MakespaceConfigurationType(stringValue: environmentConfiguration) {
-            return currentType
+        if let environmentConfiguration = environmentDictionary[APIConfigurationKey] {
+            return MakespaceConfigurationType(stringValue: environmentConfiguration)
         }
         
         #if DEBUG || STAGING
