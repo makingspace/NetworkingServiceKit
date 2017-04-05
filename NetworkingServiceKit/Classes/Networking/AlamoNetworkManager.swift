@@ -161,8 +161,7 @@ class AlamoNetworkManager : NetworkManager
                                     if let statusCode = rawResponse.response?.statusCode
                                     {
                                         //if the response has a 401 that means we have an authentication issue
-                                        reason = statusCode == 401 ? MSError.ResponseFailureReason.tokenExpired(code: statusCode) :
-                                            MSError.ResponseFailureReason.badRequest(code: statusCode)
+                                        reason = MSError.ResponseFailureReason(code: statusCode)
                                     }
                                     failure(MSError.responseValidationFailed(reason: reason), self.errorResponse(fromData: rawResponse.data))
                                 }
