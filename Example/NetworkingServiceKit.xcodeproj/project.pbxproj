@@ -16,6 +16,8 @@
 		BAEE03D2E21B6D7A803FDA55 /* Pods_NetworkingServiceKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACA3C77E36EDA7EF4CF6572C /* Pods_NetworkingServiceKit_Tests.framework */; };
 		D957D2241E944BA8001FAB87 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957D2231E944BA8001FAB87 /* APITokenTests.swift */; };
 		D97E2AA51E94340600D32301 /* NetworkingServiceLocatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */; };
+		D98EF4791E958038004D6F71 /* AuthenticationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */; };
+		D98EF47B1E959131004D6F71 /* AlamoNetworkManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,8 @@
 		B2F3AC0D5CB32C0536B52CB4 /* Pods-NetworkingServiceKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NetworkingServiceKit_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NetworkingServiceKit_Tests/Pods-NetworkingServiceKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		D957D2231E944BA8001FAB87 /* APITokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APITokenTests.swift; sourceTree = "<group>"; };
 		D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingServiceLocatorTests.swift; sourceTree = "<group>"; };
+		D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationServiceTests.swift; sourceTree = "<group>"; };
+		D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamoNetworkManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +134,8 @@
 			children = (
 				D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */,
 				D957D2231E944BA8001FAB87 /* APITokenTests.swift */,
+				D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */,
+				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -375,8 +381,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D98EF4791E958038004D6F71 /* AuthenticationServiceTests.swift in Sources */,
 				D957D2241E944BA8001FAB87 /* APITokenTests.swift in Sources */,
 				D97E2AA51E94340600D32301 /* NetworkingServiceLocatorTests.swift in Sources */,
+				D98EF47B1E959131004D6F71 /* AlamoNetworkManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

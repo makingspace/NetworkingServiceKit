@@ -10,7 +10,6 @@ import Quick
 import Nimble
 import NetworkingServiceKit
 
-
 class APITokenTests: QuickSpec {
         
     override func spec() {
