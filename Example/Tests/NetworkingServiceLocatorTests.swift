@@ -10,10 +10,6 @@ import Quick
 import Nimble
 import NetworkingServiceKit
 
-class fdwfsdfSpec: QuickSpec {
-
-}
-
 class NetworkingServiceLocatorSpec: QuickSpec {
     
     override func spec() {
@@ -70,6 +66,15 @@ class NetworkingServiceLocatorSpec: QuickSpec {
                         expect(service).toNot(beNil())
                     }
                 }
+            }
+        }
+        
+        describe("Services should get clear after resetting") {
+            context("when loading a service after resetting") {
+                NetworkingServiceLocator.load(withServices: [AuthenticationService.self])
+                NetworkingServiceLocator.reset()
+                let authService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                expect(authService).to(beNil())
             }
         }
     }
