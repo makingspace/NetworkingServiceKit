@@ -137,8 +137,8 @@ class AlamoNetworkManager : NetworkManager
                                     
                                     //attach new response into existing response
                                     if var currentResults = currentResponse["results"] as? [[String: Any]],
-                                        let newResults = response["results"] as? [String : Any]{
-                                        currentResults.append(newResults)
+                                        let newResults = response["results"] as? [[String : Any]] {
+                                        currentResults.append(contentsOf: newResults)
                                         currentResponse["results"] = currentResults
                                     }
                                     
