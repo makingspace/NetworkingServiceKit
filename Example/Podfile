@@ -12,5 +12,6 @@ target 'NetworkingServiceKit_Example' do
 
     pod 'Quick', '~> 1.0.0'
     pod 'Nimble', '~> 5.1.1'
+    pod 'Mockingjay'
   end
 end

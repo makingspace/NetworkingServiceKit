@@ -108,6 +108,7 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
         describe("when the current user is NOT authenticated") {
             context("and is trying to logout") {
                 it("should not return succesfully") {
+                    APITokenManager.clearAuthentication()
                     let token = APITokenManager.currentToken
                     expect(token).to(beNil())
                     
