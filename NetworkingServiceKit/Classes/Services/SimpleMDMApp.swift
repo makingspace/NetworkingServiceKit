@@ -34,14 +34,11 @@ public struct SimpleMDMApp {
         self.version = attributes["version"].stringValue
         self.bundleId = attributes["bundle_identifier"].stringValue
         
-        self.currentMDMApp = Bundle.main.bundleIdentifier == self.bundleId
-        if let localVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
-            self.versionIsUpdated = SimpleMDMApp.isVersionNewer(localVersion: localVersion, serverVersion: self.version)
-            self.localVersion = localVersion
-        } else {
-            self.versionIsUpdated = false
-            self.localVersion = ""
-        }
+        self.currentMDMApp = Bundle.main.appBundleIdentifier == self.bundleId
+        
+        let localVersion = Bundle.main.bundleVersion
+        self.versionIsUpdated = SimpleMDMApp.isVersionNewer(localVersion: localVersion, serverVersion: self.version)
+        self.localVersion = localVersion
     }
     
     public static func isVersionNewer(localVersion:String, serverVersion:String) -> Bool

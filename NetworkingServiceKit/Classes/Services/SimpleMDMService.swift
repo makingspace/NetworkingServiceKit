@@ -58,6 +58,7 @@ open class SimpleMDMService: AbstractBaseService {
         
         request(path: "apps",
                 success: { response in
+                    
             let jsonData = JSON(response)["data"].arrayValue
             for appJSON in jsonData {
                 let appObject = SimpleMDMApp(json: appJSON)
@@ -74,12 +75,13 @@ open class SimpleMDMService: AbstractBaseService {
     
     public func getDevice(_ success: @escaping SuccessResponseBlock, failure: @escaping Failure) {
         request(path: "devices", success: { response in
+            
             guard let data = response["data"] as? [[String: AnyObject]] else {
                     failure(.serializationError)
                     return
             }
             
-            let deviceName = UIDevice.current.name
+            let deviceName = UIDevice.current.deviceName
             
             let foundIndex = data.index { dataDict in
                 guard let attributes = dataDict["attributes"] as? [String: AnyObject],
@@ -110,7 +112,7 @@ open class SimpleMDMService: AbstractBaseService {
                     return
             }
             
-            let deviceName = UIDevice.current.name
+            let deviceName = UIDevice.current.deviceName
             
             let foundIndex = data.index { dataDict in
                 guard let attributes = dataDict["attributes"] as? [String: AnyObject],
@@ -147,6 +149,9 @@ open class SimpleMDMService: AbstractBaseService {
                 with: [String : Any](),
                 paginated: false,
                 success: { response in
+                    let jsonObject = try! JSONSerialization.data(withJSONObject: response, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    let jsonString = NSString(data: jsonObject, encoding: String.Encoding.utf8.rawValue)! as String
+                    print(jsonString)
                     completion(true)
             }) { (error, errorResponse) in
                 completion(false)

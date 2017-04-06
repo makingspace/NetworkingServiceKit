@@ -33,7 +33,7 @@ open class NotificationService: AbstractBaseService {
     ///   - number: phone number been used
     ///   - completion: a completion block indicating if anything went good
     public func registerDeviceToken(forPhoneNumber number:String,
-                             completion:@escaping (_ registered:Bool,_ error:Error?)-> Void) {
+                             completion:@escaping (_ registered:Bool,_ error:MSError?)-> Void) {
         if let existingToken = APITokenManager.object(for: .deviceTokenKey) as? String,
             let deviceID = UIDevice.current.identifierForVendor?.uuidString
         {
@@ -50,6 +50,8 @@ open class NotificationService: AbstractBaseService {
             }, failure: { error, errorResponse in
                 completion(false, error)
             })
+        } else {
+            completion(false, nil)
         }
     
     }

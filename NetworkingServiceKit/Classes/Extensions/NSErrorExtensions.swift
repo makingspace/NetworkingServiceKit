@@ -15,7 +15,7 @@ extension NSError
         var errorMessage = errorDetails?.message ?? ""
         errorMessage = errorMessage.replacingOccurrences(of: "[u\'", with: "")
         errorMessage = errorMessage.replacingOccurrences(of: "\']", with: "")
-        return NSError(domain: Bundle.main.bundleIdentifier ?? "com.makespace",
+        return NSError(domain: Bundle.main.appBundleIdentifier,
                        code: msError.responseCode,
                        userInfo: ["errorType" : errorDetails?.errorType ?? "", "message" : errorMessage])
     }

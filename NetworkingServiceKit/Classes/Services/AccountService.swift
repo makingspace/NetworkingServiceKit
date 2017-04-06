@@ -22,7 +22,7 @@ open class AccountService: AbstractBaseService {
         let params = [
             "email" : email
         ]
-        request(path: "account", method: .get, with: params, paginated: false, success: { response in
+        request(path: "account", method: .get, with: params, success: { response in
             completion(response.count > 0 ? true : false)
         }, failure: { error, errorResponse in
             completion(false)
