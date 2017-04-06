@@ -163,7 +163,7 @@ public class APIConfiguration: NSObject
     
     public static var current:APIConfiguration {
         return APIConfiguration(type: self.currentConfigurationType,
-                                auth: MakeSpaceApp(bundleId: Bundle.main.bundleIdentifier))
+                                auth: MakeSpaceApp(bundleId: Bundle.main.appBundleIdentifier))
     }
     
     public static var currentConfigurationType:APIConfigurationType {
