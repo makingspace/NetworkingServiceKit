@@ -143,11 +143,11 @@ open class APITokenManager : NSObject
     }
     
     private static func accessTokenKey(for email:String) -> String {
-        let bundleExecutable = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String ?? "com.makespace"
+        let bundleExecutable = Bundle.main.bundleExecutableName
         return "\(email)@com.makespace.\(bundleExecutable).access"
     }
     private static func refreshTokenKey(for email:String) -> String {
-        let bundleExecutable = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String ?? "com.makespace"
+        let bundleExecutable = Bundle.main.bundleExecutableName
         return "\(email)@com.makespace.\(bundleExecutable).refresh"
     }
 }

@@ -29,7 +29,7 @@ class AlamoAuthenticationAdapter: RequestAdapter {
         let name = UIDevice.current.name
         let version = UIDevice.current.systemVersion
         let model = UIDevice.current.model
-        let bundleExecutableName = Bundle.main.infoDictionary?["CFBundleExecutable"] ?? ""
+        let bundleExecutableName = Bundle.main.bundleExecutableName
         let agent = "UserAgent:(AppName:\(bundleExecutableName), DeviceName:\(name), Version:\(version), Model:\(model))"
         return agent
     }
