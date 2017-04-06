@@ -44,5 +44,4 @@ NetworkingServiceKit is the rencarnation of MSNetworking, using a modular approa
     s.dependency 'AlamofireImage'
     s.dependency 'CryptoSwift'
     s.dependency 'SwiftyJSON'
-    s.dependency 'Mockingjay'
 end

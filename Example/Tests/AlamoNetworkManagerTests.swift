@@ -20,8 +20,11 @@ class AlamoNetworkManagerTests: QuickSpec
     override func spec() {
         let arrayResponse = [["param" : "value"],["param" : "value"]] as [[String : Any]]
         let dictionaryResponse = ["param" : "value"] as [String : Any]
+        let dictionaryNextResponse2 = ["next" : "https://random.com/api/v3/dictionary_next2", "results" : [["obj1" : "value"]]] as [String : Any]
+        let dictionaryNextResponse3 = ["next" : "https://random.com/api/v3/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
+        let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
-        beforeSuite {
+        beforeEach {
             NetworkingServiceLocator.load(withServices: [RandomService.self])
         }
         describe("when executing a request") {
@@ -58,7 +61,22 @@ class AlamoNetworkManagerTests: QuickSpec
             }
             
             context("that returns a paginated dictionary") {
-                
+                it("should have a merged dictionary from all the requests") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next1"), builder: json(dictionaryNextResponse2))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next2"), builder: json(dictionaryNextResponse3))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next3"), builder: json(dictionaryNextResponse4))
+                    
+                    waitUntil { done in
+                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary_next1", paginated:true, success: { response in
+                            expect(response["results"]).toNot(beNil())
+                            let results = response["results"] as! [[String:Any]]
+                            expect(results.count).to(equal(3))
+                            done()
+                        }, failure: { error, errorDetails in
+                        })
+                    }
+                }
             }
             
             context("that returns an empty response") {
