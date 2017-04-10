@@ -81,12 +81,13 @@ open class OpsService: AbstractBaseService {
     // MARK: - Places
     
     public func getPlacesWithParameters(_ parameters: [String: Any],
+                                        paginated: Bool = true,
                                         success successBlock: @escaping SuccessResponseBlock,
                                         error errorBlock: @escaping ErrorResponseBlock) {
         request(path: MS_PLACES_LOOKUP_PATH,
                 method: .get,
                 with: parameters,
-                paginated: true,
+                paginated: paginated,
                 success: successBlock,
                 failure: errorBlock)
     }
@@ -94,6 +95,8 @@ open class OpsService: AbstractBaseService {
     public func getPlacesWithLatitude(_ lat: Double,
                                       longitude lon: Double,
                                       parentXid: String?,
+                                      page: Int?,
+                                      paginated: Bool = true,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
@@ -103,10 +106,14 @@ open class OpsService: AbstractBaseService {
         if let parentXid = parentXid, !parentXid.isEmpty {
             params["parent"] = parentXid
         }
-        self.getPlacesWithParameters(params, success: successBlock, error: errorBlock)
+        if let page = page {
+            params["page"] = page
+        }
+        self.getPlacesWithParameters(params, paginated: paginated, success: successBlock, error: errorBlock)
     }
     
     public func getPlacesWithLocator(_ locator: String,
+                                     paginated: Bool = true,
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
         var params = [String: Any]()
@@ -116,7 +123,7 @@ open class OpsService: AbstractBaseService {
         request(path: MS_PLACES_LOOKUP_PATH,
                 method: .get,
                 with: params,
-                paginated: true,
+                paginated: paginated,
                 success: successBlock,
                 failure: errorBlock)
     }
@@ -730,18 +737,6 @@ open class OpsService: AbstractBaseService {
         let params: [String: Any] = ["scans": scanData]
         request(path: path,
                 method: .post,
-                with: params,
-                paginated: true,
-                success: successBlock,
-                failure: errorBlock)
-    }
-    
-    public func getPlaceWithMarkerLocator(_ locator: String,
-                                          success successBlock: @escaping SuccessResponseBlock,
-                                          error errorBlock: @escaping ErrorResponseBlock) {
-        let params: [String: Any] = ["marker_locator": locator]
-        request(path: MS_PLACES_LOOKUP_PATH,
-                method: .get,
                 with: params,
                 paginated: true,
                 success: successBlock,
