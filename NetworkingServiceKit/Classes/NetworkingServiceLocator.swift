@@ -51,13 +51,12 @@ open class NetworkingServiceLocator: NSObject {
     open class func loadDefaultServices()
     {
         //Define here default services
-        if let defaultServices = [AuthenticationService.self,
-                                  AccountService.self,
-                                  NotificationService.self,
-                                  OpsService.self,
-                                  SimpleMDMService.self] as? [AbstractService.Type] {
-            NetworkingServiceLocator.load(withServices: defaultServices)
-        }
+        let defaultServices = [AuthenticationService.self,
+                               AccountService.self,
+                               NotificationService.self,
+                               OpsService.self,
+                               SimpleMDMService.self]
+        NetworkingServiceLocator.load(withServices: defaultServices)
     }
     
     
