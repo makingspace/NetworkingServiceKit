@@ -8,36 +8,29 @@
 
 import Foundation
 
-let MS_PLACES_LOOKUP_PATH = "places"
-let MS_CONTAINERS_LOOKUP_PATH = "containers"
-let MS_CONTAINER_SETS_LOOKUP_PATH = "container-sets"
-let MS_JOBS_LOOKUP_PATH = "jobs"
-let MS_FILES_LOOKUP_PATH = "files"
-let MS_TASKS_LOOKUP_PATH = "tasks"
-let MS_EVENTS_LOOKUP_PATH = "events"
-let MS_STAFF_LOOKUP_PATH = "staff"
-let MS_ACCOUNTS_LOOKUP_PATH = "accounts"
-
-@objc
-public enum JobStatusType: Int
+public enum MakespacePath : String
 {
-    case created = 10
-    case started = 50
-    case completed = 70
-    case canceled = 90
-    
-    var stringKey:String {
-        switch self {
-        case .created:
-            return "CREATED"
-        case .started:
-            return "STARTED"
-        case .completed:
-            return "COMPLETED"
-        case .canceled:
-            return "CANCELED"
-        }
-    }
+    case places = "places"
+    case containers = "containers"
+    case containerSet = "container-sets"
+    case jobs = "jobs"
+    case files = "files"
+    case tasks = "tasks"
+    case events = "events"
+    case staff = "staff"
+    case accounts = "accounts"
+    case signatures = "signatures"
+    case fulfillers = "fulfillers"
+    case questions = "question_answers"
+}
+
+
+public enum JobStatusType: String
+{
+    case created = "CREATED"
+    case started = "STARTED"
+    case completed = "COMPLETED"
+    case canceled = "CANCELED"
 }
 
 open class OpsService: AbstractBaseService {
@@ -47,7 +40,7 @@ open class OpsService: AbstractBaseService {
     public func getContainerSet(withLocator locator: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        request(path: "container-sets/\(locator)",
+        request(path: "\(MakespacePath.containerSet.rawValue)/\(locator)",
             method: .get,
             with: [String: Any](),
             paginated: true,
@@ -71,7 +64,7 @@ open class OpsService: AbstractBaseService {
         if height != 0 {
             params["height"] = height
         }
-        request(path: "container-sets/\(locator)",
+        request(path: "\(MakespacePath.containerSet.rawValue)/\(locator)",
             method: .patch,
             with: params,
             paginated: true,
@@ -84,7 +77,7 @@ open class OpsService: AbstractBaseService {
                                         paginated: Bool = true,
                                         success successBlock: @escaping SuccessResponseBlock,
                                         error errorBlock: @escaping ErrorResponseBlock) {
-        request(path: MS_PLACES_LOOKUP_PATH,
+        request(path: MakespacePath.places.rawValue,
                 method: .get,
                 with: parameters,
                 paginated: paginated,
@@ -120,7 +113,7 @@ open class OpsService: AbstractBaseService {
         if locator != "" {
             params["marker_locator"] = locator
         }
-        request(path: MS_PLACES_LOOKUP_PATH,
+        request(path: MakespacePath.places.rawValue,
                 method: .get,
                 with: params,
                 paginated: paginated,
@@ -133,7 +126,7 @@ open class OpsService: AbstractBaseService {
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
         let params: [String: Any] = ["marker": updatedLocator]
-        request(path: "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)",
+        request(path: "\(MakespacePath.places.rawValue)/\(placeXid)",
             method: .patch,
             with: params,
             paginated: true,
@@ -150,11 +143,11 @@ open class OpsService: AbstractBaseService {
         if facilityXid.characters.count > 0 {
             params["facility"] = facilityXid
         }
-        params["status"] = status.stringKey
+        params["status"] = status.rawValue
         if status == .completed {
             params["completed_on"] = DateFormatter.makespaceYearMonthDay().string(from: Date())
         }
-        request(path: "jobs",
+        request(path: MakespacePath.jobs.rawValue,
                 method: .get,
                 with: params,
                 paginated: true,
@@ -165,7 +158,7 @@ open class OpsService: AbstractBaseService {
     public func getJobWithXid(_ jobXid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -181,8 +174,8 @@ open class OpsService: AbstractBaseService {
                           error errorBlock: @escaping ErrorResponseBlock) {
         
         var params = additionalValues
-        params["status"] = status.stringKey
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)"
+        params["status"] = status.rawValue
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)"
         request(path: path,
                 method: .patch,
                 with: [String: Any](),
@@ -196,7 +189,7 @@ open class OpsService: AbstractBaseService {
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
         let params: [String: Any] = ["days": (numberOfDays)]
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-summaries"
+        let path: String = "\(MakespacePath.places.rawValue)/\(facilityXid)/delivery-summaries"
         request(path: path,
                 method: .get,
                 with: params,
@@ -214,7 +207,7 @@ open class OpsService: AbstractBaseService {
         params["date"] = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["equipment"] = slug
 
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(facilityXid)/delivery-places"
+        let path: String = "\(MakespacePath.places.rawValue)/\(facilityXid)/delivery-places"
         request(path: path,
                 method: .get,
                 with: params,
@@ -226,7 +219,7 @@ open class OpsService: AbstractBaseService {
     public func getDeliveryItems(withJobXid jobXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/delivery-items"
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)/delivery-items"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -250,7 +243,7 @@ open class OpsService: AbstractBaseService {
         
         let dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["scheduled_date"] = dateString
-        request(path: MS_JOBS_LOOKUP_PATH,
+        request(path: MakespacePath.jobs.rawValue,
                 method: .post,
                 with: params,
                 paginated: true,
@@ -273,7 +266,7 @@ open class OpsService: AbstractBaseService {
 
         let dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["scheduled_date"] = dateString
-        request(path: MS_JOBS_LOOKUP_PATH,
+        request(path: MakespacePath.jobs.rawValue,
                 method: .post,
                 with: params,
                 paginated: true,
@@ -284,7 +277,7 @@ open class OpsService: AbstractBaseService {
     public func getTransitItems(withJobXid jobXid: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)/transit-items"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -298,7 +291,7 @@ open class OpsService: AbstractBaseService {
                                scanTime: Date,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items"
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)/transit-items"
         var params = [String: Any]()
         params["place"] = palletXid
 
@@ -316,7 +309,7 @@ open class OpsService: AbstractBaseService {
                                     palletXid: String,
                                     success successBlock: @escaping SuccessResponseBlock,
                                     error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_JOBS_LOOKUP_PATH)/\(jobXid)/transit-items/\(palletXid)"
+        let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)/transit-items/\(palletXid)"
         request(path: path,
                 method: .delete,
                 with: [String: Any](),
@@ -345,7 +338,7 @@ open class OpsService: AbstractBaseService {
         if standardSizeName != "" {
             params["standard_size"] = standardSizeName
         }
-        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MakespacePath.containers.rawValue)/\(containerLocator)"
         request(path: path,
                 method: .patch,
                 with: params,
@@ -364,7 +357,7 @@ open class OpsService: AbstractBaseService {
             params["handling_class"] = handlingClass
         }
         params["standard_size"] = standardSizeName
-        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MakespacePath.containers.rawValue)/\(containerLocator)"
         request(path: path,
                 method: .patch,
                 with: params,
@@ -376,7 +369,7 @@ open class OpsService: AbstractBaseService {
     public func getContainerWithLocator(_ containerLocator: String,
                                         success successBlock: @escaping SuccessResponseBlock,
                                         error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_CONTAINERS_LOOKUP_PATH)/\(containerLocator)"
+        let path: String = "\(MakespacePath.containers.rawValue)/\(containerLocator)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -399,7 +392,7 @@ open class OpsService: AbstractBaseService {
     public func getTimedContainers(withPlaceXid placeXid: String,
                                    success successBlock: @escaping SuccessResponseBlock,
                                    error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/containers"
+        let path: String = "\(MakespacePath.places.rawValue)/\(placeXid)/containers"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -416,7 +409,7 @@ open class OpsService: AbstractBaseService {
         if !timedContainers.isEmpty {
             params = ["scans": timedContainers]
         }
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan"
+        let path: String = "\(MakespacePath.places.rawValue)/\(xid)/scan"
         request(path: path,
                 method: .post,
                 with: params,
@@ -433,7 +426,7 @@ open class OpsService: AbstractBaseService {
         if !timedContainers.isEmpty {
             params = ["scans": timedContainers]
         }
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(xid)/scan?remove=true"
+        let path: String = "\(MakespacePath.places.rawValue)/\(xid)/scan?remove=true"
         request(path: path,
                 method: .post,
                 with: params,
@@ -446,7 +439,7 @@ open class OpsService: AbstractBaseService {
     public func createFile(withSuccess successBlock: @escaping SuccessResponseBlock, error errorBlock: @escaping ErrorResponseBlock) {
         let params: [String: Any] = ["mime_type": "image/jpeg", "description": "Uploaded Image"]
         
-        request(path: MS_FILES_LOOKUP_PATH,
+        request(path: MakespacePath.files.rawValue,
                 method: .post,
                 with: params,
                 paginated: false,
@@ -457,7 +450,7 @@ open class OpsService: AbstractBaseService {
     public func getS3UploadParametersForFile(withXid xid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        let path = "\(MS_FILES_LOOKUP_PATH)/\(xid)/s3-upload-params"
+        let path = "\(MakespacePath.files.rawValue)/\(xid)/s3-upload-params"
         request(path: path,
                 method: .post,
                 with: [String:Any](),
@@ -470,7 +463,7 @@ open class OpsService: AbstractBaseService {
                                locator: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        let path = "\(MS_CONTAINERS_LOOKUP_PATH)/\(locator)/image-cache"
+        let path = "\(MakespacePath.containers.rawValue)/\(locator)/image-cache"
         var params = [String: Any]()
         params["image"] = imageUrl
         params["container"] = locator
@@ -487,7 +480,7 @@ open class OpsService: AbstractBaseService {
     
     public func getTasksWithSuccessBlock(_ successBlock: @escaping SuccessResponseBlock,
                                          error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_TASKS_LOOKUP_PATH)/me"
+        let path: String = "\(MakespacePath.tasks.rawValue)/me"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -499,7 +492,7 @@ open class OpsService: AbstractBaseService {
     public func getTaskWithXid(_ xid: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
+        let path: String = "\(MakespacePath.tasks.rawValue)/\(xid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -512,7 +505,7 @@ open class OpsService: AbstractBaseService {
                            taskStatus: String,
                            success successBlock: @escaping SuccessResponseBlock,
                            error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)"
+        let path: String = "\(MakespacePath.tasks.rawValue)/\(xid)"
         let params: [String: Any] = ["status": taskStatus]
         request(path: path,
                 method: .patch,
@@ -526,7 +519,7 @@ open class OpsService: AbstractBaseService {
                          forTaskXid taskXid: String,
                          success successBlock: @escaping SuccessResponseBlock,
                          error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(taskXid)"
+        let path: String = "\(MakespacePath.tasks.rawValue)/\(taskXid)"
         let params: [String: Any] = ["booking": ["admin_notes": [["content": note]]]]
         request(path: path,
                 method: .patch,
@@ -539,7 +532,7 @@ open class OpsService: AbstractBaseService {
     public func getTaskEvents(withTaskXid xid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_TASKS_LOOKUP_PATH)/\(xid)/events"
+        let path: String = "\(MakespacePath.tasks.rawValue)/\(xid)/events"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -551,7 +544,7 @@ open class OpsService: AbstractBaseService {
     public func createEvent(withParams requestParams: [[String:Any]],
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
-        request(path: MS_EVENTS_LOOKUP_PATH,
+        request(path: MakespacePath.events.rawValue,
                 method: .post,
                 with: requestParams.asParameters(),
                 paginated: true,
@@ -562,7 +555,7 @@ open class OpsService: AbstractBaseService {
     public func deleteEvent(withXid xid: String,
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_EVENTS_LOOKUP_PATH)/\(xid)"
+        let path: String = "\(MakespacePath.events.rawValue)/\(xid)"
         request(path: path,
                 method: .delete,
                 with: [String: Any](),
@@ -578,7 +571,6 @@ open class OpsService: AbstractBaseService {
                                 withEventXidArray eventXids: [String],
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "signatures"
         var eventsXids = [[String:String]]()
         for xid: String in eventXids {
             eventsXids.append(["xid": xid])
@@ -594,7 +586,7 @@ open class OpsService: AbstractBaseService {
         if fullName != nil {
             params["full_name"] = fullName
         }
-        request(path: path,
+        request(path: MakespacePath.signatures.rawValue,
                 method: .post,
                 with: params,
                 paginated: true,
@@ -606,7 +598,7 @@ open class OpsService: AbstractBaseService {
     public func getBookingsWithUserXid(_ userXid: String,
                                        success successBlock: @escaping SuccessResponseBlock,
                                        error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)/bookings"
+        let path: String = "\(MakespacePath.accounts.rawValue)/\(userXid)/bookings"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -619,7 +611,7 @@ open class OpsService: AbstractBaseService {
     
     public func getStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        let path: String = "\(MakespacePath.staff.rawValue)/me"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -632,7 +624,7 @@ open class OpsService: AbstractBaseService {
                              success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
         //set a specific token on the api call
-        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        let path: String = "\(MakespacePath.staff.rawValue)/me"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -652,10 +644,10 @@ open class OpsService: AbstractBaseService {
                                        error errorBlock: @escaping ErrorResponseBlock) {
         var path: String
         if expanded {
-            path = "\(MS_STAFF_LOOKUP_PATH)/me?expand=profile"
+            path = "\(MakespacePath.staff.rawValue)/me?expand=profile"
         }
         else {
-            path = "\(MS_STAFF_LOOKUP_PATH)/me"
+            path = "\(MakespacePath.staff.rawValue)/me"
         }
         request(path: path,
                 method: .get,
@@ -683,7 +675,7 @@ open class OpsService: AbstractBaseService {
                                       booking currentBooking: String?,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_STAFF_LOOKUP_PATH)/me"
+        let path: String = "\(MakespacePath.staff.rawValue)/me"
         var params: [String: Any] = ["lat": lat,
                                      "lon": lon]
         if let eta = eta {
@@ -705,7 +697,7 @@ open class OpsService: AbstractBaseService {
     public func getCustomerInfo(withXid userXid: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(userXid)"
+        let path: String = "\(MakespacePath.accounts.rawValue)/\(userXid)"
         let params: [String: Any] = ["expand": "container_cycles"]
         request(path: path,
                 method: .get,
@@ -733,7 +725,7 @@ open class OpsService: AbstractBaseService {
                                      withScanDataArray scanData: [Any],
                                      success successBlock: @escaping SuccessResponseBlock,
                                      error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)/scan"
+        let path: String = "\(MakespacePath.places.rawValue)/\(placeXid)/scan"
         let params: [String: Any] = ["scans": scanData]
         request(path: path,
                 method: .post,
@@ -747,7 +739,7 @@ open class OpsService: AbstractBaseService {
                                            markerLocator: String,
                                            success successBlock: @escaping SuccessResponseBlock,
                                            error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(placeXid)"
+        let path: String = "\(MakespacePath.places.rawValue)/\(placeXid)"
         let params: [String: Any] = ["marker": markerLocator]
         request(path: path,
                 method: .patch,
@@ -761,7 +753,7 @@ open class OpsService: AbstractBaseService {
                                            parentXid: String,
                                            success successBlock: @escaping SuccessResponseBlock,
                                            error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_PLACES_LOOKUP_PATH)/\(subplaceXid)"
+        let path: String = "\(MakespacePath.places.rawValue)/\(subplaceXid)"
         let params: [String: Any] = ["parent": parentXid]
         request(path: path,
                 method: .patch,
@@ -777,7 +769,7 @@ open class OpsService: AbstractBaseService {
                                          bookingXid: String,
                                          success successBlock: @escaping SuccessResponseBlock,
                                          error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
+        let path: String = "\(MakespacePath.accounts.rawValue)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -789,7 +781,7 @@ open class OpsService: AbstractBaseService {
     public func getProductPrices(withFulfillerXid fulfillerXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "fulfillers/\(fulfillerXid)/prices"
+        let path: String = "\(MakespacePath.fulfillers.rawValue)/\(fulfillerXid)/prices"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
@@ -803,7 +795,7 @@ open class OpsService: AbstractBaseService {
                                       bookingXid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "\(MS_ACCOUNTS_LOOKUP_PATH)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
+        let path: String = "\(MakespacePath.accounts.rawValue)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
         request(path: path,
                 method: .put,
                 with: [String: Any](),
@@ -830,8 +822,7 @@ open class OpsService: AbstractBaseService {
     public func submitQuestionAnswers(withParams params: [[String: Any]],
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
-        let path: String = "question_answers"
-        request(path: path,
+        request(path: MakespacePath.questions.rawValue,
                 method: .post,
                 with: params.asParameters(),
                 paginated: true,
