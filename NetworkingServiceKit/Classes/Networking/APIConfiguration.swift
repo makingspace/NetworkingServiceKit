@@ -19,7 +19,6 @@ public protocol APIConfigurationType
 {
     var URL:String { get }
     var webURL:String { get }
-    init?(stringValue:String)
 }
 
 public enum MakeSpaceApp: Int, APIConfigurationAuth {
@@ -87,24 +86,11 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
     }
 }
 
-public enum MakespaceConfigurationType: Int, APIConfigurationType
+public enum MakespaceConfigurationType: String, APIConfigurationType
 {
-    case staging = 0
-    case production = 1
-    case custom = 2
-    
-    public init(stringValue:String) {
-        switch stringValue {
-        case "STAGING":
-            self.init(rawValue: 0)!
-        case "PRODUCTION":
-            self.init(rawValue: 1)!
-        case "CUSTOM":
-            self.init(rawValue: 2)!
-        default:
-            self.init(rawValue: 0)!
-        }
-    }
+    case staging = "STAGING"
+    case production = "PRODUCTION"
+    case custom = "CUSTOM"
     
     /// URL for given server
     public var URL: String {
@@ -136,14 +122,7 @@ public enum MakespaceConfigurationType: Int, APIConfigurationType
     
     /// Display name for given server
     public var displayName: String {
-        switch self {
-        case .staging:
-            return "Staging"
-        case .production:
-            return "Production"
-        case .custom:
-            return "Custom"
-        }
+        return self.rawValue.capitalized
     }
 }
 
@@ -169,7 +148,7 @@ public class APIConfiguration: NSObject
     public static var currentConfigurationType:APIConfigurationType {
         let environmentDictionary = ProcessInfo.processInfo.environment;
         if let environmentConfiguration = environmentDictionary[APIConfigurationKey] {
-            return MakespaceConfigurationType(stringValue: environmentConfiguration)
+            return MakespaceConfigurationType(rawValue: environmentConfiguration)!
         }
         
         #if DEBUG || STAGING
