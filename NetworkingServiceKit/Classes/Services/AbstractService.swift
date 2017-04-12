@@ -1,0 +1,124 @@
+//
+//  AbstractService.swift
+//  Pods
+//
+//  Created by Phillipe Casorla Sagot on 2/27/17.
+//
+//
+
+import Foundation
+
+public protocol AbstractService
+{
+    init(token:APIToken?, networkManager:NetworkManager)
+    var token:APIToken? { get set }
+    var networkManager:NetworkManager { get set }
+    var currentConfiguration:APIConfiguration { get }
+    var serviceVersion: String { get }
+    var servicePath: String { get }
+    
+    func servicePath(for query:String) -> String
+    var isAuthenticated:Bool { get }
+    func request(path: String,
+                 method: HTTPMethod,
+                 with parameters: RequestParameters,
+                 paginated:Bool,
+                 headers:CustomHTTPHeaders,
+                 success: @escaping SuccessResponseBlock,
+                 failure: @escaping ErrorResponseBlock)
+}
+
+open class AbstractBaseService: NSObject,AbstractService
+{
+
+    
+    public var networkManager: NetworkManager
+    
+    public var token: APIToken?
+    
+    public var currentConfiguration: APIConfiguration {
+        return self.networkManager.configuration
+    }
+    
+    /// Init method for an AbstractService, each service must have the current token auth and access to the networkManager to execute requests
+    ///
+    /// - Parameters:
+    ///   - token: an existing APIToken
+    ///   - networkManager: an object that supports our NetworkManager protocol
+    public required init(token: APIToken?, networkManager: NetworkManager) {
+        self.token = token
+        self.networkManager = networkManager
+    }
+
+    /// Currently supported version of the service
+    public var serviceVersion: String {
+        return "v3"
+    }
+    
+    /// Name here your service path
+    public var servicePath:String {
+        return ""
+    }
+    
+    /// Returns the baseURL for this service, default is the current configuration URL
+    public var baseURL:String {
+        return currentConfiguration.baseURL
+    }
+    
+    /// Returns a local path for an API request, this includes the service version and name. i.e v4/accounts/user_profile
+    ///
+    /// - Parameter query: api local path
+    /// - Returns: local path to the api for the given query
+    public func servicePath(for query:String) -> String
+    {
+        var fullPath = self.baseURL
+        if (!self.servicePath.isEmpty) {
+            fullPath += "/" + self.servicePath
+        }
+        if (!self.serviceVersion.isEmpty) {
+            fullPath += "/" + self.serviceVersion
+        }
+        fullPath += "/" + query
+        return fullPath
+    }
+    
+    /// Returns if this service has a valid token for authentication with our systems
+    public var isAuthenticated:Bool
+    {
+        return (self.token != nil)
+    }
+    
+    /// Creates and executes a request using Alamofire
+    ///
+    /// - Parameters:
+    ///   - path: full path to the URL
+    ///   - method: HTTP method, default is GET
+    ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
+    ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - headers: custom headers that should be attached with this request
+    ///   - success: success block with a response
+    ///   - failure: failure block with an error
+    public func request(path: String,
+                 method: HTTPMethod = .get,
+                 with parameters: RequestParameters = RequestParameters(),
+                 paginated:Bool = false,
+                 headers:CustomHTTPHeaders = CustomHTTPHeaders(),
+                 success: @escaping SuccessResponseBlock,
+                 failure: @escaping ErrorResponseBlock)
+    {
+        self.networkManager.request(path: servicePath(for: path),
+                                    method: method,
+                                    with: parameters,
+                                    paginated: paginated,
+                                    headers: headers,
+                                    success: success,
+                                    failure: { error, errorResponse in
+                                        if error.hasTokenExpired && self.isAuthenticated {
+                                            //If our error response was because our token expired, then lets tell the delegate
+                                            NetworkingServiceLocator.shared.delegate?.networkLocatorTokenDidExpired()
+                                        }
+                                        failure(error, errorResponse)
+        })
+    }
+    
+}
