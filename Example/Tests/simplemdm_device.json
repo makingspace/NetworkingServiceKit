@@ -1,0 +1,65 @@
+{
+    "data": [{
+             "id": 68128,
+             "relationships": {
+             "device_group": {
+             "data": {
+             "type": "device_group",
+             "id": 15464
+             }
+             }
+             },
+             "type": "device",
+             "attributes": {
+             "os_version": "10.2.1",
+             "simmnc": "260",
+             "hardware_encryption_caps": 3,
+             "passcode_compliant": true,
+             "subscriber_carrier_network": "T-Mobile",
+             "modem_firmware_version": "2.41.00",
+             "current_carrier_network": "T-Mobile",
+             "sim_carrier_network": "T-Mobile",
+             "voice_roaming_enabled": null,
+             "meid": "35328407390702",
+             "product_name": "iPhone8,2",
+             "location_latitude": "40.71857785800193",
+             "build_version": "14D27",
+             "location_accuracy": 1414,
+             "unique_identifier": "05e51c5680f6dd09f6f9d7ba06d4fc361276a96b",
+             "phone_number": "+13479715605",
+             "is_do_not_disturb_in_effect": false,
+             "passcode_present": true,
+             "is_activation_lock_enabled": false,
+             "is_cloud_backup_enabled": true,
+             "serial_number": "C38QHUTVGRWV",
+             "current_mnc": "260",
+             "name": "Default iPhone",
+             "model": "MKU62QN",
+             "data_roaming_enabled": true,
+             "status": "enrolled",
+             "is_supervised": false,
+             "location_updated_at": "2017-01-19T19:15:20.000-08:00",
+             "device_capacity": 54.8628,
+             "bluetooth_mac": "7c:01:91:83:c6:ff",
+             "subscriber_mcc": "310",
+             "available_device_capacity": 6.72202,
+             "current_mcc": "310",
+             "passcode_compliant_with_profiles": true,
+             "personal_hotspot_enabled": false,
+             "itunes_store_account_is_active": true,
+             "location_longitude": "-73.98940418290429",
+             "cellular_technology": 3,
+             "battery_level": "45%",
+             "wifi_mac": "7c:01:91:83:c6:fe",
+             "is_roaming": false,
+             "is_device_locator_service_enabled": false,
+             "last_cloud_backup_date": "2017-04-04T17:52:07.000-07:00",
+             "model_name": "iPhone 6s Plus",
+             "iccid": "8901 2607 5279 0537 916",
+             "last_seen_at": "2017-04-06T08:30:14.000-07:00",
+             "imei": "35 328407 390702 7",
+             "device_name": "Default iPhone",
+             "carrier_settings_version": "27.3"
+             }
+             }]
+}
