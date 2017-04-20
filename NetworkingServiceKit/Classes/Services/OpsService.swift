@@ -178,7 +178,7 @@ open class OpsService: AbstractBaseService {
         let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)"
         request(path: path,
                 method: .patch,
-                with: [String: Any](),
+                with: params,
                 paginated: true,
                 success: successBlock,
                 failure: errorBlock)
