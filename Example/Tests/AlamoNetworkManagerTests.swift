@@ -2,14 +2,14 @@
 //  AlamoNetworkManagerTests.swift
 //  NetworkingServiceKit
 //
-//  Created by Phillipe Casorla Sagot on 4/5/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 4/5/17.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import XCTest
 import Quick
 import Nimble
-import NetworkingServiceKit
+import MakespaceServiceKit
 import Mockingjay
 
 class RandomService : AbstractBaseService {
@@ -20,21 +20,21 @@ class AlamoNetworkManagerTests: QuickSpec
     override func spec() {
         let arrayResponse = [["param" : "value"],["param" : "value"]] as [[String : Any]]
         let dictionaryResponse = ["param" : "value"] as [String : Any]
-        let dictionaryNextResponse2 = ["next" : "https://random.com/api/v3/dictionary_next2", "results" : [["obj1" : "value"]]] as [String : Any]
-        let dictionaryNextResponse3 = ["next" : "https://random.com/api/v3/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
+        let dictionaryNextResponse2 = ["next" : "https://random.com/dictionary_next2", "results" : [["obj1" : "value"]]] as [String : Any]
+        let dictionaryNextResponse3 = ["next" : "https://random.com/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
         beforeEach {
-            NetworkingServiceLocator.load(withServices: [RandomService.self])
+            ServiceLocator.load(withServices: [RandomService.self])
         }
         describe("when executing a request") {
             context("that returns an array") {
                 
                 it("should have a response dictionary with an array of results inside") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/array"), builder: json(arrayResponse))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/array"), builder: json(arrayResponse))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "array", success: { response in
                             let results = response["results"] as! [[String : Any]]
                             expect(results).toNot(beNil())
@@ -47,10 +47,10 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a dictionary"){
                 it("should have a response dictionary with a dictionary response") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary"), builder: json(dictionaryResponse))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/dictionary"), builder: json(dictionaryResponse))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary", success: { response in
                             expect(response).toNot(beNil())
                             done()
@@ -62,12 +62,12 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a paginated dictionary") {
                 it("should have a merged dictionary from all the requests") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next1"), builder: json(dictionaryNextResponse2))
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next2"), builder: json(dictionaryNextResponse3))
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/dictionary_next3"), builder: json(dictionaryNextResponse4))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/dictionary_next1"), builder: json(dictionaryNextResponse2))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/dictionary_next2"), builder: json(dictionaryNextResponse3))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/dictionary_next3"), builder: json(dictionaryNextResponse4))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary_next1", paginated:true, success: { response in
                             expect(response["results"]).toNot(beNil())
                             let results = response["results"] as! [[String:Any]]
@@ -81,10 +81,10 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns an empty response") {
                 it("should have a empty dictionary") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/empty_dictionary"), builder: json([String : Any]()))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/empty_dictionary"), builder: json([String : Any]()))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "empty_dictionary", success: { response in
                             expect(response).toNot(beNil())
                             expect(response.count).to(equal(0))
@@ -97,10 +97,10 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a 500") {
                 it("should return an error of type .internalServerError") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/error500"), builder: http(500))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/error500"), builder: http(500))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
                         }, failure: { error, errorDetails in
                             expect(error.responseCode).to(equal(500))
@@ -119,10 +119,10 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a error on the response") {
                 it("should return an error of type .badRequest") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/error500"), builder: http(404))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/error500"), builder: http(404))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
                         }, failure: { error, errorDetails in
                             expect(error.responseCode).to(equal(404))
@@ -143,10 +143,10 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a 401") {
                 it("should return an error of type .tokenExpired") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/error500"), builder: http(401))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/error500"), builder: http(401))
                     
                     waitUntil { done in
-                        let randomService = NetworkingServiceLocator.service(forType: RandomService.self)
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
                         }, failure: { error, errorDetails in
                             expect(error.responseCode).to(equal(401))
