@@ -12,15 +12,15 @@ NetworkingServiceKit( originally [MSNetworking](https://github.com/makingspace/M
 NetworkingServiceKit is launched by either running the default services or specifying a specifc set of services, for example:
 
 ```swift
-NetworkingServiceLocator.loadDefaultServices()
+ServiceLocator.loadDefaultServices()
 //or with custom services
-NetworkingServiceLocator.load(withServices: [AuthenticationService.self])
+ServiceLocator.load(withServices: [AuthenticationService.self])
 
 ```
 For using one of loaded services you simply ask the service locator, for example:
 
 ```swift
-let service = NetworkingServiceLocator.service(forType: OpsService.self)
+let service = ServiceLocator.service(forType: OpsService.self)
 service?.getBookingsWithUserXid("usr_La4Jb7zTbkFSgmBLeKuLbN", success: { response in
     print("Success")
 }, error: { error, errorResponse in

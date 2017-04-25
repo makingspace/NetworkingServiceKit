@@ -4,10 +4,10 @@ platform :ios, '9.0'
 inhibit_all_warnings!
 use_frameworks!
 
-target 'NetworkingServiceKit_Example' do
-  pod 'NetworkingServiceKit', :path => '../'
+target 'MakespaceServiceKit_Example' do
+  pod 'MakespaceServiceKit', :path => '../'
 
-  target 'NetworkingServiceKit_Tests' do
+  target 'MakespaceServiceKit_Tests' do
     inherit! :search_paths
 
     pod 'Quick', '~> 1.0.0'
