@@ -22,6 +22,7 @@ public enum MakespacePath : String
     case signatures = "signatures"
     case fulfillers = "fulfillers"
     case questions = "question_answers"
+    case pricing = "pricing"
 }
 
 
@@ -782,6 +783,18 @@ open class OpsService: AbstractBaseService {
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.fulfillers.rawValue)/\(fulfillerXid)/prices"
+        request(path: path,
+                method: .get,
+                with: [String: Any](),
+                paginated: true,
+                success: successBlock,
+                failure: errorBlock)
+    }
+    
+    public func getProductPrices(withBookingXid bookingXid: String,
+                                 success successBlock: @escaping SuccessResponseBlock,
+                                 error errorBlock: @escaping ErrorResponseBlock) {
+        let path = "\(MakespacePath.pricing.rawValue)/booking/\(bookingXid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
