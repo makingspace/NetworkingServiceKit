@@ -25,13 +25,18 @@ public enum MakespacePath : String
     case pricing = "pricing"
 }
 
-
 public enum JobStatusType: String
 {
     case created = "CREATED"
     case started = "STARTED"
     case completed = "COMPLETED"
     case canceled = "CANCELED"
+}
+
+public enum CustomerExpandOptions : String
+{
+    case containerCycles = "container_cycles"
+    case tickets = "open_tickets"
 }
 
 open class OpsService: AbstractBaseService {
@@ -696,10 +701,13 @@ open class OpsService: AbstractBaseService {
     }
     
     public func getCustomerInfo(withXid userXid: String,
+                                expand options:[CustomerExpandOptions] = [CustomerExpandOptions](),
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.accounts.rawValue)/\(userXid)"
-        let params: [String: Any] = ["expand": "container_cycles"]
+        let optionsStrings = options.flatMap {$0.rawValue}
+        let mergedOptionsString = optionsStrings.joined(separator: ",")
+        let params: [String: Any] = ["expand": mergedOptionsString]
         request(path: path,
                 method: .get,
                 with: params,
