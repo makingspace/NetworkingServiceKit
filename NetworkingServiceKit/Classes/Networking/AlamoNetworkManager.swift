@@ -59,7 +59,7 @@ class AlamoNetworkManager : NetworkManager
                           method: httpMethod,
                           parameters: parameters,
                           encoding: encoding,
-                          headers: headers).validate().responseJSON { rawResponse in
+                          headers: headers).validate(statusCode: 200...299).responseJSON { rawResponse in
                             //print response in DEBUG mode
                             #if DEBUG
                                 debugPrint(rawResponse)
