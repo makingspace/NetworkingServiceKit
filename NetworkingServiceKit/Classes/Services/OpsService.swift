@@ -819,7 +819,7 @@ open class OpsService: AbstractBaseService {
         let path: String = "\(MakespacePath.accounts.rawValue)/\(customerXid)/bookings/\(bookingXid)/pickup-fees"
         request(path: path,
                 method: .put,
-                with: [String: Any](),
+                with: pickupFees.asParameters(),
                 paginated: true,
                 success: successBlock,
                 failure: errorBlock)
