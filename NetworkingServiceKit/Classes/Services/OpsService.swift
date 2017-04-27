@@ -22,8 +22,8 @@ public enum MakespacePath : String
     case signatures = "signatures"
     case fulfillers = "fulfillers"
     case questions = "question_answers"
+    case pricing = "pricing"
 }
-
 
 public enum JobStatusType: String
 {
@@ -31,6 +31,12 @@ public enum JobStatusType: String
     case started = "STARTED"
     case completed = "COMPLETED"
     case canceled = "CANCELED"
+}
+
+public enum CustomerExpandOptions : String
+{
+    case containerCycles = "container_cycles"
+    case tickets = "open_tickets"
 }
 
 open class OpsService: AbstractBaseService {
@@ -695,10 +701,13 @@ open class OpsService: AbstractBaseService {
     }
     
     public func getCustomerInfo(withXid userXid: String,
+                                expand options:[CustomerExpandOptions] = [CustomerExpandOptions](),
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.accounts.rawValue)/\(userXid)"
-        let params: [String: Any] = ["expand": "container_cycles"]
+        let optionsStrings = options.flatMap {$0.rawValue}
+        let mergedOptionsString = optionsStrings.joined(separator: ",")
+        let params: [String: Any] = ["expand": mergedOptionsString]
         request(path: path,
                 method: .get,
                 with: params,
@@ -782,6 +791,18 @@ open class OpsService: AbstractBaseService {
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.fulfillers.rawValue)/\(fulfillerXid)/prices"
+        request(path: path,
+                method: .get,
+                with: [String: Any](),
+                paginated: true,
+                success: successBlock,
+                failure: errorBlock)
+    }
+    
+    public func getProductPrices(withBookingXid bookingXid: String,
+                                 success successBlock: @escaping SuccessResponseBlock,
+                                 error errorBlock: @escaping ErrorResponseBlock) {
+        let path = "\(MakespacePath.pricing.rawValue)/booking/\(bookingXid)"
         request(path: path,
                 method: .get,
                 with: [String: Any](),
