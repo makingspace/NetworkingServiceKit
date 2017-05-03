@@ -131,7 +131,7 @@ open class APITokenManager : NSObject
     }
     
     public static func setCurrentToken(for email:String) {
-        if let currentToken = self.object(for: .tokenTypeKey) as? String {
+        if let currentToken = self.object(for: .accessTokenKey) as? String {
             UserDefaults.standard.set(currentToken, forKey: APITokenManager.accessTokenKey(for: email))
         }
     }
