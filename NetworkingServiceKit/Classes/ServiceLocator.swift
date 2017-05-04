@@ -1,8 +1,8 @@
 //
 //  APIServiceLocator.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/23/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/23/17.
 //
 //
 

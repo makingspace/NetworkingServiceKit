@@ -1,8 +1,8 @@
 //
 //  UIDeviceExtensions.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 4/6/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 4/6/17.
 //
 //
 
