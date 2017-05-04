@@ -1,8 +1,8 @@
 //
 //  NetworkManagerProtocol.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
@@ -46,6 +46,7 @@ public enum MSError : Error {
     case persistanceValidationFailed(reason: PersistanceFailureReason)
 }
 
+// Mapped Error response failures
 extension MSError.ResponseFailureReason {
     var responseCode: Int {
         switch self {
@@ -112,7 +113,7 @@ extension MSError {
 }
 
 
-/// Custom HTTP enum types for Makespace
+/// Custom HTTP enum types for our network protocol
 @objc
 public enum HTTPMethod: Int32 {
     case options
