@@ -1,8 +1,8 @@
 //
 //  SimpleMDMApp.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 1/17/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 1/17/17.
 //
 //
 

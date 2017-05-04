@@ -1,8 +1,8 @@
 //
 //  ImageExtensions.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 3/13/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 3/13/17.
 //
 //
 
