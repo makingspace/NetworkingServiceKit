@@ -1,8 +1,8 @@
 //
 //  ArrayExtensions.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 3/13/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 3/13/17.
 //
 //
 
@@ -11,23 +11,13 @@ import UIKit
 import Foundation
 import Alamofire
 
-private let arrayParametersKey = "arrayParametersKey"
+internal let arrayParametersKey = "arrayParametersKey"
 
 /// Extenstion that allows an array be sent as a request parameters
 extension Array {
     /// Convert the receiver array to a `Parameters` object.
     func asParameters() -> Parameters {
         return [arrayParametersKey: self]
-    }
-}
-
-extension Dictionary where Key: ExpressibleByStringLiteral, Key.StringLiteralType == String, Value: Any {
-    func validArrayRequest() -> Bool {
-        let key = Key(stringLiteral: arrayParametersKey)
-        if self[key] != nil {
-            return true
-        }
-        return false
     }
 }
 

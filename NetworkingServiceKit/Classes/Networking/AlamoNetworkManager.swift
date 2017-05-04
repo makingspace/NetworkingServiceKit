@@ -1,8 +1,8 @@
 //
 //  AlamoNetworkManager.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
@@ -54,6 +54,7 @@ class AlamoNetworkManager : NetworkManager
         //lets use URL encoding only for GETs / DELETEs OR use a specific encoding for arrays
         var encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
         encoding = parameters.validArrayRequest() ? ArrayEncoding() : encoding
+        encoding = parameters.validStringRequest() ? StringEncoding() : encoding        
 
         sessionManager.request(path,
                           method: httpMethod,
