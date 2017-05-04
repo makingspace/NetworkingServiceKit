@@ -1,8 +1,8 @@
 //
 //  AbstractService.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
@@ -115,7 +115,7 @@ open class AbstractBaseService: NSObject,AbstractService
                                     failure: { error, errorResponse in
                                         if error.hasTokenExpired && self.isAuthenticated {
                                             //If our error response was because our token expired, then lets tell the delegate
-                                            NetworkingServiceLocator.shared.delegate?.networkLocatorTokenDidExpired()
+                                            ServiceLocator.shared.delegate?.networkLocatorTokenDidExpired()
                                         }
                                         failure(error, errorResponse)
         })

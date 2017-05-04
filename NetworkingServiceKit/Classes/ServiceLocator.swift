@@ -7,16 +7,16 @@
 //
 
 import UIKit
-public protocol NetworkingServiceLocatorDelegate
+public protocol ServiceLocatorDelegate
 {
     func networkLocatorTokenDidExpired()
 }
 
-open class NetworkingServiceLocator: NSObject {
+open class ServiceLocator: NSObject {
     
     /// Defines a private singleton, all interactions should be done through static methods
-    internal static var shared:NetworkingServiceLocator = NetworkingServiceLocator()
-    internal var delegate:NetworkingServiceLocatorDelegate?
+    internal static var shared:ServiceLocator = ServiceLocator()
+    internal var delegate:ServiceLocatorDelegate?
     
     private var currentServices:[String:AbstractService]
     private var loadedServiceTypes:[AbstractService.Type]
@@ -33,18 +33,18 @@ open class NetworkingServiceLocator: NSObject {
         self.token = APITokenManager.currentToken
     }
     
-    /// Resets the NetworkingServiceLocator singleton instance
+    /// Resets the ServiceLocator singleton instance
     open class func reset()
     {
-        NetworkingServiceLocator.shared = NetworkingServiceLocator()
+        ServiceLocator.shared = ServiceLocator()
     }
     
     /// Reloads token, networkManager and configuration with existing hooked services
     open class func reloadExistingServices()
     {
-        let serviceTypes = NetworkingServiceLocator.shared.loadedServiceTypes
-        NetworkingServiceLocator.shared = NetworkingServiceLocator()
-        NetworkingServiceLocator.load(withServices: serviceTypes)
+        let serviceTypes = ServiceLocator.shared.loadedServiceTypes
+        ServiceLocator.shared = ServiceLocator()
+        ServiceLocator.load(withServices: serviceTypes)
     }
     
     /// Load Default services that all app need
@@ -56,7 +56,7 @@ open class NetworkingServiceLocator: NSObject {
                                                       NotificationService.self,
                                                       OpsService.self,
                                                       SimpleMDMService.self]
-        NetworkingServiceLocator.load(withServices: defaultServices)
+        ServiceLocator.load(withServices: defaultServices)
     }
     
     
@@ -65,13 +65,13 @@ open class NetworkingServiceLocator: NSObject {
     /// - Parameter serviceTypes: list of services types that are going to get hooked
     open class func load(withServices serviceTypes:[AbstractService.Type])
     {
-        NetworkingServiceLocator.shared.loadedServiceTypes = serviceTypes
+        ServiceLocator.shared.loadedServiceTypes = serviceTypes
         
-        NetworkingServiceLocator.shared.currentServices = NetworkingServiceLocator.shared.loadedServiceTypes.reduce(
+        ServiceLocator.shared.currentServices = ServiceLocator.shared.loadedServiceTypes.reduce(
         [String:AbstractService]()) { (dict, entry) in
             var dict = dict
-            dict[String(describing: entry.self)] = entry.init(token: NetworkingServiceLocator.shared.token,
-                                                              networkManager: NetworkingServiceLocator.shared.networkManager)
+            dict[String(describing: entry.self)] = entry.init(token: ServiceLocator.shared.token,
+                                                              networkManager: ServiceLocator.shared.networkManager)
             return dict
         }
     }
@@ -83,7 +83,7 @@ open class NetworkingServiceLocator: NSObject {
     /// - Returns: service object
     open class func service<T : AbstractService>(forType type: T.Type) -> T?
     {
-        if let service = NetworkingServiceLocator.shared.currentServices[String(describing: type.self)] as? T {
+        if let service = ServiceLocator.shared.currentServices[String(describing: type.self)] as? T {
             return service
         }
         return nil
@@ -102,20 +102,20 @@ open class NetworkingServiceLocator: NSObject {
         if components.count == 2 {
             realClassName = components[1]
         }
-        if let service = NetworkingServiceLocator.shared.currentServices[realClassName] as? NSObject {
+        if let service = ServiceLocator.shared.currentServices[realClassName] as? NSObject {
             return service
         }
         return nil
     }
     
     /// Sets a global delegate for the service locator
-    open class func setDelegate(delegate: NetworkingServiceLocatorDelegate)
+    open class func setDelegate(delegate: ServiceLocatorDelegate)
     {
         self.shared.delegate = delegate
     }
     
     // Returns current NetworkManager
     open class var currentNetworkManager:NetworkManager {
-        return NetworkingServiceLocator.shared.networkManager
+        return ServiceLocator.shared.networkManager
     }
 }

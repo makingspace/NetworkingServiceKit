@@ -16,7 +16,7 @@ class NotificationServiceTests: QuickSpec {
     override func spec() {
         
         beforeEach {
-            NetworkingServiceLocator.load(withServices: [NotificationService.self])
+            ServiceLocator.load(withServices: [NotificationService.self])
         }
         
         describe("when storing a device token") {
@@ -26,7 +26,7 @@ class NotificationServiceTests: QuickSpec {
                     
                     waitUntil { done in
                         APITokenManager.set(object: nil, for: .deviceTokenKey)
-                        let notificationService = NetworkingServiceLocator.service(forType: NotificationService.self)
+                        let notificationService = ServiceLocator.service(forType: NotificationService.self)
                         notificationService?.registerDeviceToken(forPhoneNumber: "305464646", completion: { registered, error in
                             expect(registered).to(beFalse())
                             done()
@@ -40,7 +40,7 @@ class NotificationServiceTests: QuickSpec {
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/devices"), builder: json([String : Any]()))
 
                     waitUntil { done in
-                        let notificationService = NetworkingServiceLocator.service(forType: NotificationService.self)
+                        let notificationService = ServiceLocator.service(forType: NotificationService.self)
                         notificationService?.saveDeviceToken(token: Data(count: 100))
                         notificationService?.registerDeviceToken(forPhoneNumber: "305464646", completion: { registered, error in
                             expect(registered).to(beTrue())
