@@ -15,7 +15,7 @@ import Mockingjay
 class SimpleMDMServiceTests: QuickSpec {
     override func spec() {
         beforeEach {
-            NetworkingServiceLocator.load(withServices: [SimpleMDMService.self])
+            ServiceLocator.load(withServices: [SimpleMDMService.self])
         }
         
         describe("when loading a simpleMDM app for the current build"){
@@ -25,7 +25,7 @@ class SimpleMDMServiceTests: QuickSpec {
                     let data = NSData(contentsOfFile: path)!
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v1/apps"), builder: jsonData(data as Data))
                     waitUntil { done in
-                        let simpleMDMService = NetworkingServiceLocator.service(forType: SimpleMDMService.self)
+                        let simpleMDMService = ServiceLocator.service(forType: SimpleMDMService.self)
                         simpleMDMService?.getApp({ app in
                             done()
                         }, failure: { error in
@@ -42,7 +42,7 @@ class SimpleMDMServiceTests: QuickSpec {
                     let data = NSData(contentsOfFile: path)!
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v1/devices"), builder: jsonData(data as Data))
                     waitUntil { done in
-                        let simpleMDMService = NetworkingServiceLocator.service(forType: SimpleMDMService.self)
+                        let simpleMDMService = ServiceLocator.service(forType: SimpleMDMService.self)
                         simpleMDMService?.getDevice({ response in
                             done()
                         }, failure: { error in
@@ -59,7 +59,7 @@ class SimpleMDMServiceTests: QuickSpec {
                     let data = NSData(contentsOfFile: path)!
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v1/devices"), builder: jsonData(data as Data))
                     waitUntil { done in
-                        let simpleMDMService = NetworkingServiceLocator.service(forType: SimpleMDMService.self)
+                        let simpleMDMService = ServiceLocator.service(forType: SimpleMDMService.self)
                         simpleMDMService?.getDevicePhoneNumber({ phone in
                             expect(phone).to(equal("+13479715605"))
                             done()
