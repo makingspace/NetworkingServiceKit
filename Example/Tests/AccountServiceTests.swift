@@ -17,7 +17,7 @@ class AccountServiceTests: QuickSpec
     override func spec() {
         
         beforeEach {
-            NetworkingServiceLocator.load(withServices: [AccountService.self])
+            ServiceLocator.load(withServices: [AccountService.self])
         }
         
         describe("when looking up for a user given an email") {
@@ -26,7 +26,7 @@ class AccountServiceTests: QuickSpec
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/account"), builder: json(["email" : "email@email.com"]))
                     
                     waitUntil { done in
-                        let accountService = NetworkingServiceLocator.service(forType: AccountService.self)
+                        let accountService = ServiceLocator.service(forType: AccountService.self)
                         accountService?.lookupUser(with: "email@email.com", completion: { foundUser in
                             expect(foundUser).to(beTrue())
                             done()
@@ -39,7 +39,7 @@ class AccountServiceTests: QuickSpec
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/api/v3/account"), builder: http(200))
                     
                     waitUntil { done in
-                        let accountService = NetworkingServiceLocator.service(forType: AccountService.self)
+                        let accountService = ServiceLocator.service(forType: AccountService.self)
                         accountService?.lookupUser(with: "email@email.com", completion: { foundUser in
                             expect(foundUser).to(beFalse())
                             done()

@@ -1,8 +1,8 @@
 //
 //  AuthenticationService.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
@@ -66,7 +66,7 @@ open class AuthenticationService : AbstractBaseService
                 with: parameters,
                 success: { response in
                     APITokenManager.clearAuthentication()
-                    NetworkingServiceLocator.reloadExistingServices()
+                    ServiceLocator.reloadExistingServices()
                     completion(true)
         }, failure: { error, errorResponse in
             completion(false)
@@ -94,7 +94,7 @@ open class AuthenticationService : AbstractBaseService
                 headers: ["Authorization" : "Bearer " + token],
                 success: { response in
                     APITokenManager.clearAuthentication()
-                    NetworkingServiceLocator.reloadExistingServices()
+                    ServiceLocator.reloadExistingServices()
                     completion(true)
         }, failure: { error, errorResponse in
             completion(false)

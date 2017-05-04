@@ -1,6 +1,6 @@
 //
 //  SimpleMDMService.swift
-//  Pods
+//  Makespace Inc.
 //
 //  Created by AL TYUS on 6/27/16.
 //
