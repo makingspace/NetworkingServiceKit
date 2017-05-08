@@ -9,10 +9,12 @@
 import UIKit
 public protocol ServiceLocatorDelegate
 {
-    func networkLocatorTokenDidExpired()
+    func authenticationTokenDidExpired()
 }
 
 open class ServiceLocator: NSObject {
+    /// Our Default Networking Client
+    public static var defaultNetworkClientType:NetworkManager.Type = AlamoNetworkManager.self
     
     /// Defines a private singleton, all interactions should be done through static methods
     internal static var shared:ServiceLocator = ServiceLocator()
@@ -20,16 +22,14 @@ open class ServiceLocator: NSObject {
     
     private var currentServices:[String:AbstractService]
     private var loadedServiceTypes:[AbstractService.Type]
-    private var configuration:APIConfiguration
+    private var configuration:APIConfiguration!
+    private var networkManager:NetworkManager!    
     private var token:APIToken?
-    private var networkManager:NetworkManager
     
     /// Inits default configuration and network manager
     private override init() {
         self.currentServices = [String:AbstractService]()
         self.loadedServiceTypes = [AbstractService.Type]()
-        self.configuration = APIConfiguration.current
-        self.networkManager = AlamoNetworkManager(with: self.configuration)
         self.token = APITokenManager.currentToken
     }
     
@@ -44,29 +44,46 @@ open class ServiceLocator: NSObject {
     {
         let serviceTypes = ServiceLocator.shared.loadedServiceTypes
         ServiceLocator.shared = ServiceLocator()
-        ServiceLocator.load(withServices: serviceTypes)
+        if let configType = APIConfiguration.apiConfigurationType,
+            let authType = APIConfiguration.authConfigurationType,
+            let tokenType = APITokenManager.tokenType {
+            ServiceLocator.set(services: serviceTypes,
+                               api: configType,
+                               auth: authType,
+                               token: tokenType)
+        }
     }
-    
-    /// Load Default services that all app need
-    open class func loadDefaultServices()
-    {
-        //Define here default services
-        let defaultServices:[AbstractService.Type] = [AuthenticationService.self,
-                                                      AccountService.self,
-                                                      NotificationService.self,
-                                                      OpsService.self,
-                                                      SimpleMDMService.self]
-        ServiceLocator.load(withServices: defaultServices)
-    }
-    
     
     /// Load a custom list of services
     ///
     /// - Parameter serviceTypes: list of services types that are going to get hooked
-    open class func load(withServices serviceTypes:[AbstractService.Type])
+    
+    /// Sets the current supported services
+    ///
+    /// - Parameters:
+    ///   - serviceTypes: an array of servide types that will be supported when asking for a service
+    ///   - apiConfigurationType: the type of APIConfigurationType this services will access
+    ///   - authConfigurationType: the type of APIConfigurationAuth this services will include in their requests
+    ///   - tokenType: the type of APIToken that will guarantee auth for our service requests
+    open class func set(services serviceTypes:[AbstractService.Type],
+                         api apiConfigurationType:APIConfigurationType.Type,
+                         auth authConfigurationType: APIConfigurationAuth.Type,
+                         token tokenType: APIToken.Type)
     {
+        //Set of services that we support
         ServiceLocator.shared.loadedServiceTypes = serviceTypes
         
+        //Hold references to the defined API Configuration and Auth
+        APIConfiguration.apiConfigurationType = apiConfigurationType
+        APIConfiguration.authConfigurationType = authConfigurationType
+        APITokenManager.tokenType = tokenType
+        
+        //Init our Default Network Client
+        let configuration = APIConfiguration.current
+        ServiceLocator.shared.configuration = configuration
+        ServiceLocator.shared.networkManager = ServiceLocator.defaultNetworkClientType.init(with: configuration)
+        
+        //Allocate services
         ServiceLocator.shared.currentServices = ServiceLocator.shared.loadedServiceTypes.reduce(
         [String:AbstractService]()) { (dict, entry) in
             var dict = dict
