@@ -16,7 +16,7 @@ internal let arrayParametersKey = "arrayParametersKey"
 /// Extenstion that allows an array be sent as a request parameters
 extension Array {
     /// Convert the receiver array to a `Parameters` object.
-    func asParameters() -> Parameters {
+    public func asParameters() -> Parameters {
         return [arrayParametersKey: self]
     }
 }

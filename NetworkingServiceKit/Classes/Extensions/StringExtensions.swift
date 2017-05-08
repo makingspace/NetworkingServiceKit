@@ -14,7 +14,7 @@ internal let stringParametersKey = "stringParametersKey"
 /// Extenstion that allows a string to be sent as a request parameters
 extension String {
     /// Convert the receiver string to a `Parameters` object.
-    func asParameters() -> Parameters {
+    public func asParameters() -> Parameters {
         return [stringParametersKey: self]
     }
 }
