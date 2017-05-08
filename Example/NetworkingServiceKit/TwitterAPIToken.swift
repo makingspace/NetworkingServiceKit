@@ -45,6 +45,8 @@ public class TwitterAPIToken : NSObject, APIToken
             let accessToken = tokenResponse[TwitterAPITokenKey.accessTokenKey.responseKey] as? String
         {
             let token = TwitterAPIToken(tokenType: tokenType, accessToken: accessToken)
+            self.set(object: tokenType, for: .tokenTypeKey)
+            self.set(object: accessToken, for: .accessTokenKey)
             return token
         }
         return nil
