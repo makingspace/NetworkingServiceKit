@@ -26,10 +26,12 @@ class TwitterSearchServiceTests: QuickSpec {
                 it("should correctly parse and return the search results as objects") {
                     let searchResponse = ["statuses" : [["text" : "tweet1" ,
                                                          "user" : ["screen_name" : "darkzlave",
-                                                                   "profile_image_url_https" : "https://lol.png"]],
+                                                                   "profile_image_url_https" : "https://lol.png",
+                                                                   "location" : "Stockholm, Sweden"]],
                                                         ["text" : "tweet2" ,
                                                          "user" : ["screen_name" : "makespace",
-                                                                   "profile_image_url_https" : "https://lol2.png"]]],
+                                                                   "profile_image_url_https" : "https://lol2.png",
+                                                                   "location" : "New York"]]],
                                           "search_metadata" : ["next_results" : "https://search.com/next?pageId=2"]
                         ] as [String : Any]
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/1.1/search/tweets.json"), builder: json(searchResponse))
@@ -80,10 +82,12 @@ class TwitterSearchServiceTests: QuickSpec {
                 it("should correctly parse and return the search results as objects") {
                     let searchResponse = ["statuses" : [["text" : "tweet1" ,
                                                          "user" : ["screen_name" : "darkzlave",
-                                                                   "profile_image_url_https" : "https://lol.png"]],
+                                                                   "profile_image_url_https" : "https://lol.png",
+                                                                   "location" : "Stockholm, Sweden"]],
                                                         ["text" : "tweet2" ,
                                                          "user" : ["screen_name" : "makespace",
-                                                                   "profile_image_url_https" : "https://lol2.png"]]],
+                                                                   "profile_image_url_https" : "https://lol2.png",
+                                                                   "location" : "New York"]]],
                                           "search_metadata" : ["next_results" : "?id=2"]
                         ] as [String : Any]
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/1.1/search/tweets.json"), builder: json(searchResponse))
