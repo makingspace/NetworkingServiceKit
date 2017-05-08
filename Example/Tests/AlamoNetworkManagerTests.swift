@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/5/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import XCTest
@@ -13,7 +13,9 @@ import NetworkingServiceKit
 import Mockingjay
 
 class RandomService : AbstractBaseService {
-    
+    override var serviceVersion: String {
+        return "v3"
+    }
 }
 class AlamoNetworkManagerTests: QuickSpec
 {
@@ -25,7 +27,10 @@ class AlamoNetworkManagerTests: QuickSpec
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
         beforeEach {
-            ServiceLocator.load(withServices: [RandomService.self])
+            ServiceLocator.set(services: [RandomService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         describe("when executing a request") {
             context("that returns an array") {

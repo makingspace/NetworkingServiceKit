@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/6/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import XCTest
@@ -15,7 +15,10 @@ import Mockingjay
 class SimpleMDMServiceTests: QuickSpec {
     override func spec() {
         beforeEach {
-            ServiceLocator.load(withServices: [SimpleMDMService.self])
+            ServiceLocator.set(services: [SimpleMDMService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         
         describe("when loading a simpleMDM app for the current build"){

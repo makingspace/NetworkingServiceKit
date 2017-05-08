@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/6/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import XCTest
@@ -16,7 +16,10 @@ class NotificationServiceTests: QuickSpec {
     override func spec() {
         
         beforeEach {
-            ServiceLocator.load(withServices: [NotificationService.self])
+            ServiceLocator.set(services: [NotificationService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         
         describe("when storing a device token") {
@@ -25,7 +28,7 @@ class NotificationServiceTests: QuickSpec {
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/devices"), builder: json([String : Any]()))
                     
                     waitUntil { done in
-                        APITokenManager.set(object: nil, for: .deviceTokenKey)
+                        UserDefaults.standard.set(nil, forKey: MakespaceAPITokenKey.deviceTokenKey.rawValue)
                         let notificationService = ServiceLocator.service(forType: NotificationService.self)
                         notificationService?.registerDeviceToken(forPhoneNumber: "305464646", completion: { registered, error in
                             expect(registered).to(beFalse())
