@@ -16,10 +16,11 @@ class AlamoAuthenticationAdapter: RequestAdapter {
         var urlRequest = urlRequest
         //attach authentication if any token has been stored
         if let token = APITokenManager.currentToken, (urlRequest.value(forHTTPHeaderField: "Authorization") == nil){
-            urlRequest.setValue("Bearer " + token.accessToken, forHTTPHeaderField: "Authorization")
+            urlRequest.setValue("Bearer " + token.authorization, forHTTPHeaderField: "Authorization")
         }
         //specify our custom user agent
         urlRequest.setValue(AlamoAuthenticationAdapter.agent, forHTTPHeaderField: "User-Agent")
+        urlRequest.setValue("application/x-www-form-urlencoded;charset=UTF-8", forHTTPHeaderField: "Content-Type")
         
         return urlRequest
     }
