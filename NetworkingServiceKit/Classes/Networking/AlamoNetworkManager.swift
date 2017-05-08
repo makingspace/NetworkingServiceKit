@@ -179,12 +179,23 @@ class AlamoNetworkManager : NetworkManager
         var errorResponse:MSErrorDetails? = nil
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
-            let responseDictionary = self.convertToDictionary(text: responseDataString),
-            let responseError = responseDictionary["error"] as? [String: Any],
-            let errorType = responseError["type"] as? String,
-            let message = responseError["message"] as? String
-        {
-            errorResponse = MSErrorDetails(errorType: errorType, message: message)
+            let responseDictionary = self.convertToDictionary(text: responseDataString) {
+            
+            if let responseError = responseDictionary["error"] as? [String: Any],
+                let errorType = responseError["type"] as? String,
+                let message = responseError["message"] as? String
+            {
+                //single error
+                errorResponse = MSErrorDetails(errorType: errorType, message: message)
+            } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
+                let responseFirstError = responseError.first,
+                let errorType = responseFirstError["label"] as? String,
+                let message = responseFirstError["message"] as? String,
+                let code = responseFirstError["code"] as? Int
+            {
+                //multiple error
+                errorResponse = MSErrorDetails(errorType: errorType, message: message, code: code)
+            }
         }
         return errorResponse
     }
