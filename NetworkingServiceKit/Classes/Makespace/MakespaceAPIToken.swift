@@ -76,6 +76,14 @@ public class MakespaceAPIToken : NSObject, APIToken
                                           expiresIn: expiresIn,
                                           scope: scope,
                                           email: email)
+            
+            self.set(object: email, for: .emailKey)
+            self.set(object: refreshToken, for: .refreshTokenKey)
+            self.set(object: tokenType, for: .tokenTypeKey)
+            self.set(object: accessToken, for: .accessTokenKey)
+            self.set(object: expiresIn, for: .expiresKey)
+            self.set(object: scope, for: .scopeKey)
+            
             //save tokens for specific email key (helps differntiate between multiple signed accounts)
             UserDefaults.standard.set(accessToken, forKey: MakespaceAPIToken.accessTokenKey(for: email))
             UserDefaults.standard.set(refreshToken, forKey: MakespaceAPIToken.refreshTokenKey(for: email))
