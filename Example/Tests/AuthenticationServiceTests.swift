@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/5/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import Quick
@@ -26,7 +26,10 @@ class AuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
             self.delegateGot401 = false
             APITokenManager.clearAuthentication()
             ServiceLocator.reset()
-            ServiceLocator.loadDefaultServices()
+            ServiceLocator.set(services: [AuthenticationService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         
         describe("when a user is authenticating through our Authenticate service") {
@@ -147,7 +150,7 @@ class AuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         }
     }
     
-    func networkLocatorTokenDidExpired() {
+    func authenticationTokenDidExpired() {
         self.delegateGot401 = true
     }
 }
