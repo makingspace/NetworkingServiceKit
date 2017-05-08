@@ -13,11 +13,13 @@ import Foundation
 public class MSErrorDetails: NSObject {
     public let errorType:String
     public let message:String
+    public let code:Int
     
-    public init(errorType: String, message: String)
+    public init(errorType: String, message: String, code:Int = 0)
     {
         self.errorType = errorType
         self.message = message
+        self.code = code
     }
 }
 //Custom Makespace Error
