@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/6/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import XCTest
@@ -17,7 +17,10 @@ class AccountServiceTests: QuickSpec
     override func spec() {
         
         beforeEach {
-            ServiceLocator.load(withServices: [AccountService.self])
+            ServiceLocator.set(services: [AccountService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         
         describe("when looking up for a user given an email") {
