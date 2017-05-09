@@ -95,7 +95,7 @@ class AlamoNetworkManager : NetworkManager
                                     reason = MSError.ResponseFailureReason(code: statusCode)
                                 }
                                 failure(MSError.responseValidationFailed(reason: reason),
-                                        self.errorResponse(fromData: rawResponse.data))
+                                        self.errorResponse(fromData: rawResponse.data, request: rawResponse.request))
                             } else {
                                 //if the request is succesful but has no response (validation for http code has passed also)
                                 success([String:Any]())
@@ -163,7 +163,9 @@ class AlamoNetworkManager : NetworkManager
                                         //if the response has a 401 that means we have an authentication issue
                                         reason = MSError.ResponseFailureReason(code: statusCode)
                                     }
-                                    failure(MSError.responseValidationFailed(reason: reason), self.errorResponse(fromData: rawResponse.data))
+
+                                    failure(MSError.responseValidationFailed(reason: reason),
+                                            self.errorResponse(fromData: rawResponse.data, request: rawResponse.request))
                                 }
         }
     }
@@ -173,7 +175,7 @@ class AlamoNetworkManager : NetworkManager
     ///
     /// - Parameter data: data stream
     /// - Returns: a response, empty dictionary if there were issues parsing the data
-    private func errorResponse(fromData data:Data?) -> MSErrorDetails?
+    private func errorResponse(fromData data:Data?, request:URLRequest?) -> MSErrorDetails?
     {
         var errorResponse:MSErrorDetails? = nil
         if let responseData = data,
@@ -183,7 +185,16 @@ class AlamoNetworkManager : NetworkManager
             let errorType = responseError["type"] as? String,
             let message = responseError["message"] as? String
         {
-            errorResponse = MSErrorDetails(errorType: errorType, message: message)
+            var body:String? = nil
+            var path:String? = nil
+            if let request = request,
+                let url = request.url?.absoluteString,
+                let httpBody = request.httpBody,
+                let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
+                body = stringBody
+                path = url
+            }
+            errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
         }
         return errorResponse
     }
