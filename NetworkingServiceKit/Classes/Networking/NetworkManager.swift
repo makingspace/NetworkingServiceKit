@@ -30,11 +30,13 @@ public enum MSError : Error {
     ///
     /// - tokenExpired: request received a 401 from a backend
     /// - badRequest: generic error for responses
-    /// - unknownReason: a request that could not validate a status code
+    /// - internalServerError: a 500 request
+    /// - badStatusCode: a request that could not validate a status code
+    /// - persistanceFailure: any issues related to our data layer
     public enum ResponseFailureReason {
         
         case tokenExpired(code: Int)
-        case badRequest(code: Int)
+        case badRequest(error: Error)
         case internalServerError
         case badStatusCode
         case persistanceFailure(code: Int)
@@ -48,19 +50,32 @@ public enum MSError : Error {
     
     case responseValidationFailed(reason: ResponseFailureReason)
     case persistanceValidationFailed(reason: PersistanceFailureReason)
+    
 }
 
 extension MSError.ResponseFailureReason {
     var responseCode: Int {
         switch self {
-        case .tokenExpired(let code),.badRequest(let code):
+        case .tokenExpired(let code):
             return code
+        case .badRequest(let error):
+            return (error as NSError).code
         case .internalServerError:
             return 500
         default:
             return 0
         }
     }
+    
+    var underlyingError: Error? {
+        switch self {
+        case .badRequest(let error):
+            return error
+        default:
+            return nil
+        }
+    }
+    
     var hasTokenExpired: Bool {
         switch self {
         case .tokenExpired( _):
@@ -69,7 +84,7 @@ extension MSError.ResponseFailureReason {
             return false
         }
     }
-    init(code:Int) {
+    init(code:Int, error:Error) {
         switch code {
         case 401:
             self = .tokenExpired(code: code)
@@ -77,7 +92,7 @@ extension MSError.ResponseFailureReason {
             self = .internalServerError
             
         default:
-            self = .badRequest(code: code)
+            self = .badRequest(error: error)
         }
     }
 }
@@ -99,6 +114,16 @@ extension MSError {
             return reason.responseCode
         default:
             return 0
+        }
+    }
+    
+    /// The `Error` returned by a system framework associated with a `.responseValidationFailed`
+    public var underlyingError: Error? {
+        switch self {
+        case .responseValidationFailed(let reason):
+            return reason.underlyingError
+        default:
+            return nil
         }
     }
     
