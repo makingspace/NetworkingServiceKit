@@ -169,15 +169,12 @@ class AlamoNetworkManager : NetworkManager
         if rawResponse.error != nil,
             let statusCode = rawResponse.response?.statusCode,
             !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-            //AlamoFire couldn't validate our HTTP Code
-            var reason = MSError.ResponseFailureReason.badStatusCode
+            
             let errorDetails = self.errorResponse(fromData: rawResponse.data, request: rawResponse.request)
-            if let errorDetails = errorDetails
-            {
-                //If we have a status code and a server error let,s build the reason with that instead
-                reason = MSError.ResponseFailureReason(code: statusCode,
+            //If we have a status code and a server error let,s build the reason with that instead
+            let reason = MSError.ResponseFailureReason(code: statusCode,
                                                        error: NSError.make(from: statusCode, errorDetails: errorDetails))
-            }
+
             return (reason, errorDetails)
         }
         return nil
