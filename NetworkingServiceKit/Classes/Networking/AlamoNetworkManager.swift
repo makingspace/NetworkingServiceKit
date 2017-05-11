@@ -11,6 +11,7 @@ import Alamofire
 
 class AlamoNetworkManager : NetworkManager
 {
+    private static let validStatusCodes = (200...299)
     var configuration: APIConfiguration
     
     required init(with configuration: APIConfiguration) {
@@ -59,7 +60,7 @@ class AlamoNetworkManager : NetworkManager
                           method: httpMethod,
                           parameters: parameters,
                           encoding: encoding,
-                          headers: headers).validate(statusCode: 200...299).responseJSON { rawResponse in
+                          headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
                             //print response in DEBUG mode
                             #if DEBUG
                                 debugPrint(rawResponse)
@@ -86,22 +87,16 @@ class AlamoNetworkManager : NetworkManager
                                     //return inmediatly
                                     success(response)
                                 }
-                            } else if let error = rawResponse.error as NSError? {
-                                var reason = MSError.ResponseFailureReason.badRequest(code: error.code)
-                                
-                                if let statusCode = rawResponse.response?.statusCode
-                                {
-                                    //if the response has a 401 that means we have an authentication issue
-                                    reason = MSError.ResponseFailureReason(code: statusCode)
-                                }
-                                failure(MSError.responseValidationFailed(reason: reason),
-                                        self.errorResponse(fromData: rawResponse.data, request: rawResponse.request))
+                            } else if let (reason, errorDetails) = self.buildError(fromResponse: rawResponse) {
+                                //Figure out if we have an error and an error response
+                                failure(MSError.responseValidationFailed(reason: reason), errorDetails)
                             } else {
                                 //if the request is succesful but has no response (validation for http code has passed also)
                                 success([String:Any]())
                             }
         }
     }
+
     
     //MARK: - Pagination
     
@@ -129,7 +124,7 @@ class AlamoNetworkManager : NetworkManager
                                method: method,
                                parameters: parameters,
                                encoding: encoding,
-                               headers: headers).validate().responseJSON { rawResponse in
+                               headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
                                 
                                 if let response = rawResponse.value as? [String:Any],
                                     rawResponse.error == nil {
@@ -155,21 +150,35 @@ class AlamoNetworkManager : NetworkManager
                                     } else {
                                         success(currentResponse)
                                     }
-                                } else if let error = rawResponse.error as NSError? {
-                                    var reason = MSError.ResponseFailureReason.badRequest(code: error.code)
-                                    
-                                    if let statusCode = rawResponse.response?.statusCode
-                                    {
-                                        //if the response has a 401 that means we have an authentication issue
-                                        reason = MSError.ResponseFailureReason(code: statusCode)
-                                    }
-
-                                    failure(MSError.responseValidationFailed(reason: reason),
-                                            self.errorResponse(fromData: rawResponse.data, request: rawResponse.request))
+                                } else if let (reason, errorDetails) = self.buildError(fromResponse: rawResponse) {
+                                    //Figure out if we have an error and an error response
+                                    failure(MSError.responseValidationFailed(reason: reason), errorDetails)
+                                } else {
+                                    //if the request is succesful but has no response (validation for http code has passed also)
+                                    success([String:Any]())
                                 }
         }
     }
     
+    /// Returns an ResponseFailureReason and MSErrorDetails if the rawResponse is a valid error and has an error response
+    ///
+    /// - Parameter rawResponse: response from the request
+    /// - Returns: a valid error reason and details if they were returned in the correct format
+    func buildError(fromResponse rawResponse:DataResponse<Any>) -> (MSError.ResponseFailureReason,MSErrorDetails?)?
+    {
+        if rawResponse.error != nil,
+            let statusCode = rawResponse.response?.statusCode,
+            !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
+            
+            let errorDetails = self.errorResponse(fromData: rawResponse.data, request: rawResponse.request)
+            //If we have a status code and a server error let,s build the reason with that instead
+            let reason = MSError.ResponseFailureReason(code: statusCode,
+                                                       error: NSError.make(from: statusCode, errorDetails: errorDetails))
+
+            return (reason, errorDetails)
+        }
+        return nil
+    }
     
     /// Returns an error response from a data stream
     ///
