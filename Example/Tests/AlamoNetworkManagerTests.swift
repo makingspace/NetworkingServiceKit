@@ -134,8 +134,8 @@ class AlamoNetworkManagerTests: QuickSpec
                             switch error {
                             case .responseValidationFailed(let reason):
                                 switch reason {
-                                case .badRequest(let code):
-                                    expect(code).to(equal(404))
+                                case .badRequest(let error):
+                                    expect((error as NSError).code).to(equal(404))
                                     done()
                                 default:break
                                 }
