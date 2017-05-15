@@ -19,4 +19,14 @@ extension NSError
                        code: msError.responseCode,
                        userInfo: ["errorType" : errorDetails?.errorType ?? "", "message" : errorMessage])
     }
+    
+    public static func make(from code:Int, errorDetails:MSErrorDetails?) -> NSError
+    {
+        var errorMessage = errorDetails?.message ?? ""
+        errorMessage = errorMessage.replacingOccurrences(of: "[u\'", with: "")
+        errorMessage = errorMessage.replacingOccurrences(of: "\']", with: "")
+        return NSError(domain: Bundle.main.appBundleIdentifier,
+                       code: code,
+                       userInfo: ["errorType" : errorDetails?.errorType ?? "", "message" : errorMessage])
+    }
 }
