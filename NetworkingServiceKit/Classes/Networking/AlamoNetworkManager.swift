@@ -190,30 +190,32 @@ class AlamoNetworkManager : NetworkManager
         var errorResponse:MSErrorDetails? = nil
         var body:String? = nil
         var path:String? = nil
+        //parse body out of the response
         if let request = request,
             let url = request.url?.absoluteString,
             let httpBody = request.httpBody,
             let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
             body = stringBody
             path = url
-        }      
+        }
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
-            let responseDictionary = self.convertToDictionary(text: responseDataString),
-            let responseError = responseDictionary["error"] as? [String: Any],
-            let errorType = responseError["type"] as? String,
-            let message = responseError["message"] as? String
-        {
-            errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
-        } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
+            let responseDictionary = self.convertToDictionary(text: responseDataString) {
+            
+            if let responseError = responseDictionary["error"] as? [String: Any],
+                let errorType = responseError["type"] as? String,
+                let message = responseError["message"] as? String
+            {
+                errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
+            } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
                 let responseFirstError = responseError.first,
                 let errorType = responseFirstError["label"] as? String,
-                let message = responseFirstError["message"] as? String,
-                let code = responseFirstError["code"] as? Int
+                let message = responseFirstError["message"] as? String
             {
                 //multiple error
                 errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
             }
+        }
         return errorResponse
     }
     
