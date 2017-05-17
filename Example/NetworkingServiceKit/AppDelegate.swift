@@ -15,12 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Attach our services
         ServiceLocator.set(services: [TwitterAuthenticationService.self,LocationService.self,TwitterSearchService.self],
                            api: TwitterAPIConfigurationType.self,
                            auth: TwitterApp.self,
                            token: TwitterAPIToken.self)
-        //if we are not authenticated
+        //if we are not authenticated, launch out auth service
         if APITokenManager.currentToken ==  nil {
             let authService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
             authService?.authenticateTwitterClient(completion: { authenticated in

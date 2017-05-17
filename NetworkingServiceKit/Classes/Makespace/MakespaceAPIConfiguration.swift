@@ -8,6 +8,12 @@
 
 import Foundation
 
+/// Implements a APIConfiguration for Makespace Apps
+///
+/// - clouder: clouder auth handling
+/// - rocket: rocker auth handling
+/// - photoSpace: photospace auth handling
+/// - photoKit: photoKit auth handling
 public enum MakeSpaceApp: Int, APIConfigurationAuth {
     case clouder = 0
     case rocket = 1
