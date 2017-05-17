@@ -28,6 +28,11 @@ open class TwitterSearchService: AbstractBaseService
         return "1.1"
     }
     
+    /// Search Recent Tweets by hashtag
+    ///
+    /// - Parameters:
+    ///   - hashtag: the hashtag to use when searching
+    ///   - completion: a list of TwitterSearchResult based on the term/hashtag sent
     public func searchRecents(by hashtag:String,
                               completion:@escaping (_ results:[TwitterSearchResult])-> Void) {
         guard !hashtag.isEmpty else {
@@ -66,6 +71,9 @@ open class TwitterSearchService: AbstractBaseService
         })
     }
     
+    /// Continue the search for the last valid hashtag that was searched for
+    ///
+    /// - Parameter completion: a list of TwitterSearchResult based on the term/hashtag sent
     public func searchNextRecentsPage(completion:@escaping (_ results:[TwitterSearchResult])-> Void) {
         guard let nextPage = self.nextResultsPage else {
             completion([TwitterSearchResult]())

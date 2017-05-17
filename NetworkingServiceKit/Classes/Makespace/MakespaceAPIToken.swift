@@ -33,6 +33,7 @@ public enum MakespaceAPITokenKey: String
     }
 }
 
+/// Implements Makespace token handling
 @objc
 public class MakespaceAPIToken : NSObject, APIToken
 {
