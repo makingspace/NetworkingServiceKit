@@ -9,12 +9,17 @@
 import Foundation
 
 let APIConfigurationKey = "Server"
+
+/// Protocol for describing the necessary authentication key/secret to use when authenticating a client
 public protocol APIConfigurationAuth
 {
     var secret:String { get }
     var key:String { get }
     init(bundleId:String?)
 }
+
+
+/// Protocol for describing a server connection
 public protocol APIConfigurationType
 {
     var URL:String { get }
@@ -24,6 +29,7 @@ public protocol APIConfigurationType
     init(stringKey:String)
 }
 
+/// Handles the current server connection and authentication for a valid APIConfigurationType and APIConfigurationAuth
 public class APIConfiguration: NSObject
 {
     public static var apiConfigurationType:APIConfigurationType.Type?
@@ -46,6 +52,7 @@ public class APIConfiguration: NSObject
         self.APISecret = ""
     }
     
+    /// Returns the current APIConfiguration, either staging or production
     public static var current:APIConfiguration {
         guard let configurationType = APIConfiguration.apiConfigurationType,
             let authType = APIConfiguration.authConfigurationType else {

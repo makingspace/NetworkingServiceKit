@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Protocol for describing token handling for our service locator
 public protocol APIToken {
     var authorization:String { get }
     static func makePersistedToken()  -> APIToken?
@@ -15,6 +16,8 @@ public protocol APIToken {
     static func clearToken()
 }
 
+
+/// Handles storing and clearing an existing APIToken implementation
 @objc
 open class APITokenManager : NSObject
 {

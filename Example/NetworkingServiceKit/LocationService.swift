@@ -24,6 +24,13 @@ open class LocationAnnotation: NSObject,MKAnnotation {
 
 open class LocationService : AbstractBaseService
 {
+    
+    /// Maps a set of IndexPaths and TwitterSearchResult into LocationAnnotation by matching the ones with location data against Apple CLGeocoder
+    ///
+    /// - Parameters:
+    ///   - visibleIndexes: a list of table indexes
+    ///   - results: current list of search results
+    ///   - completion: A list of location annotation for the search results that had valid locations
     public func geocodeTweets(on visibleIndexes:[IndexPath]?,
                               with results:[TwitterSearchResult],
                               completion: @escaping (_ annotations:[LocationAnnotation])->Void) {
