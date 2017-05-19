@@ -16,18 +16,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Attach our services
-        ServiceLocator.set(services: [TwitterAuthenticationService.self,LocationService.self,TwitterSearchService.self],
+        ServiceLocator.set(services: [TwitterAuthenticationService.self, LocationService.self, TwitterSearchService.self],
                            api: TwitterAPIConfigurationType.self,
                            auth: TwitterApp.self,
                            token: TwitterAPIToken.self)
         //if we are not authenticated, launch out auth service
         if APITokenManager.currentToken ==  nil {
             let authService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-            authService?.authenticateTwitterClient(completion: { authenticated in
+            authService?.authenticateTwitterClient(completion: { _ in
                 print("Authenticated with Twitter")
             })
         }
         return true
     }
 }
-

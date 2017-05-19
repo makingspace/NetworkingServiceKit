@@ -9,7 +9,7 @@
 import Foundation
 
 extension Dictionary where Key: ExpressibleByStringLiteral, Key.StringLiteralType == String, Value: Any {
-    
+
     /// Validates if this dictionary is a masked array with key arrayParametersKey
     ///
     /// - Returns: true if the dictionary includes an array for the expected key
@@ -20,7 +20,7 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Key.StringLiteralTyp
         }
         return false
     }
-    
+
     /// Validates if this dictionary is a masked string with key stringParametersKey
     ///
     /// - Returns: true if the dictionary includes a string with the expected key

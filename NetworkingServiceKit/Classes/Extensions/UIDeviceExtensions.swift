@@ -8,8 +8,7 @@
 
 import Foundation
 
-extension UIDevice
-{
+extension UIDevice {
     /// Returns the current device name, if we are running tests it returns a default name
     internal var deviceName: String {
         let runningStackDuringUnitTest = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil

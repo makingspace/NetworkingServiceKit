@@ -11,11 +11,11 @@ import NetworkingServiceKit
 
 class TweetCell: UITableViewCell {
 
-    @IBOutlet weak var userLabel: UILabel!
-    @IBOutlet weak var tweetLabel: UILabel!
-    @IBOutlet weak var tweetImageView: UIImageView!
-    
-    func load(with result:TwitterSearchResult) {
+    @IBOutlet private weak var userLabel: UILabel!
+    @IBOutlet private weak var tweetLabel: UILabel!
+    @IBOutlet private weak var tweetImageView: UIImageView!
+
+    func load(with result: TwitterSearchResult) {
         tweetLabel.text = result.tweet
         userLabel.text = result.user.handle
         tweetImageView.setImageWith(url: URL(string: result.user.imagePath)!, placeholderImage: nil)

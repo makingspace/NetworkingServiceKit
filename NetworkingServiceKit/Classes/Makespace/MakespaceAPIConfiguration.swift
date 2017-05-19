@@ -19,14 +19,13 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
     case rocket = 1
     case photoSpace = 2
     case photoKit = 3
-    
-    public init(bundleId:String?)
-    {
+
+    public init(bundleId: String?) {
         guard let bundleId = bundleId else {
             self.init(rawValue: 0)!
             return
         }
-        
+
         var n = 0
         while let app = MakeSpaceApp(rawValue: n) {
             if app.bundleID.hasPrefix(bundleId) {
@@ -35,11 +34,11 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
             }
             n += 1
         }
-        
-        //if we dont find a proper APP, we are defaulting into clouder key/secret
+
+        /// If we dont find a proper APP, we are defaulting into clouder key/secret
         self.init(rawValue: 0)!
     }
-    
+
     public var bundleID: String {
         switch self {
         case .clouder:
@@ -52,7 +51,7 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
             return "com.makespace.PhotoKit"
         }
     }
-    
+
     public var key: String {
         switch self {
         case .clouder:
@@ -79,13 +78,12 @@ public enum MakeSpaceApp: Int, APIConfigurationAuth {
     }
 }
 
-public enum MakespaceAPIConfigurationType: String, APIConfigurationType
-{
+public enum MakespaceAPIConfigurationType: String, APIConfigurationType {
     case staging = "STAGING"
     case production = "PRODUCTION"
     case custom = "CUSTOM"
-    
-    //Custom init for a key (makes it non failable as oppose to (rawValue:)
+
+    /// Custom init for a key (makes it non failable as oppose to (rawValue:)
     public init(stringKey: String) {
         switch stringKey {
         case "STAGING":
@@ -100,8 +98,8 @@ public enum MakespaceAPIConfigurationType: String, APIConfigurationType
     }
     /// URL for given server
     public var URL: String {
-        //return a custom URL if anything has been set
-        if let customURL = UserDefaults.standard.object(forKey: MakespaceAPITokenKey.customURLKey.rawValue) as? String{
+        /// Return a custom URL if anything has been set
+        if let customURL = UserDefaults.standard.object(forKey: MakespaceAPITokenKey.customURLKey.rawValue) as? String {
             return customURL
         }
         switch self {
@@ -113,7 +111,7 @@ public enum MakespaceAPIConfigurationType: String, APIConfigurationType
             return "https://api.makespace.com"
         }
     }
-    
+
     /// Web URL for given server
     public var webURL: String {
         switch self {
@@ -125,21 +123,19 @@ public enum MakespaceAPIConfigurationType: String, APIConfigurationType
             return "https://makespace.com"
         }
     }
-    
+
     /// Display name for given server
     public var displayName: String {
         return self.rawValue.capitalized
     }
-    
-    //Explicitly tells our protocol which is our staging configuration
-    public static var stagingConfiguration: APIConfigurationType
-    {
+
+    /// Explicitly tells our protocol which is our staging configuration
+    public static var stagingConfiguration: APIConfigurationType {
         return MakespaceAPIConfigurationType.staging
     }
-    
-    //Explicitly tells our protocol which is our production configuration
-    public static var productionConfiguration: APIConfigurationType
-    {
+
+    /// Explicitly tells our protocol which is our production configuration
+    public static var productionConfiguration: APIConfigurationType {
         return MakespaceAPIConfigurationType.production
     }
 }
