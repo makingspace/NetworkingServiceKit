@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-MakespaceServiceKit is the rencarnation of the standard iOS monolith api client, using a modular approach to services, the framework enables the user to select which services will need to have running, also MakespaceServiceKit takes a different approach when it comes to using Network Clients like AFNetworking/Alamofire, instead all requests are routed through a protocol, this makes the library loosely couple from the networking implementation.
+MakespaceServiceKit is the reincarnation of the standard iOS monolith api client. Using a modular approach to services, the framework enables the user to select which services they will need to have running. Also, MakespaceServiceKit takes a different approach when it comes to using Network Clients like AFNetworking/Alamofire. All requests are routed through a protocol, which makes the library loosely coupled from the networking implementation.
                          DESC
 
   s.homepage         = 'https://github.com/makingspace/NetworkingServiceKit'
