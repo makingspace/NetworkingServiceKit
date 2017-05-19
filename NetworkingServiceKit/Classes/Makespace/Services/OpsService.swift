@@ -8,8 +8,7 @@
 
 import Foundation
 
-public enum MakespacePath : String
-{
+public enum MakespacePath: String {
     case places = "places"
     case containers = "containers"
     case containerSet = "container-sets"
@@ -25,26 +24,24 @@ public enum MakespacePath : String
     case pricing = "pricing"
 }
 
-public enum JobStatusType: String
-{
+public enum JobStatusType: String {
     case created = "CREATED"
     case started = "STARTED"
     case completed = "COMPLETED"
     case canceled = "CANCELED"
 }
 
-public enum CustomerExpandOptions : String
-{
+public enum CustomerExpandOptions: String {
     case containerCycles = "container_cycles"
     case tickets = "open_tickets"
 }
 
 open class OpsService: AbstractBaseService {
-    
+
     open override var serviceVersion: String {
         return "v3"
     }
-    
+
     // MARK: - Sets
     public func getContainerSet(withLocator locator: String,
                                 success successBlock: @escaping SuccessResponseBlock,
@@ -56,7 +53,7 @@ open class OpsService: AbstractBaseService {
             success: successBlock,
             failure: errorBlock)
     }
-    
+
     public func updateContainerSet(withLocator locator: String,
                                    length: Double,
                                    width: Double,
@@ -81,7 +78,7 @@ open class OpsService: AbstractBaseService {
             failure: errorBlock)
     }
     // MARK: - Places
-    
+
     public func getPlacesWithParameters(_ parameters: [String: Any],
                                         paginated: Bool = true,
                                         success successBlock: @escaping SuccessResponseBlock,
@@ -93,7 +90,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getPlacesWithLatitude(_ lat: Double,
                                       longitude lon: Double,
                                       parentXid: String?,
@@ -104,7 +101,7 @@ open class OpsService: AbstractBaseService {
         var params = [String: Any]()
         params["lat"] = lat
         params["lon"] = lon
-        
+
         if let parentXid = parentXid, !parentXid.isEmpty {
             params["parent"] = parentXid
         }
@@ -113,7 +110,7 @@ open class OpsService: AbstractBaseService {
         }
         self.getPlacesWithParameters(params, paginated: paginated, success: successBlock, error: errorBlock)
     }
-    
+
     public func getPlacesWithLocator(_ locator: String,
                                      paginated: Bool = true,
                                      success successBlock: @escaping SuccessResponseBlock,
@@ -129,7 +126,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func updatePlace(withPlaceXid placeXid: String,
                             locator updatedLocator: String,
                             success successBlock: @escaping SuccessResponseBlock,
@@ -143,7 +140,7 @@ open class OpsService: AbstractBaseService {
             failure: errorBlock)
     }
     // MARK: - Jobs
-    
+
     public func getJobsWithFacilityXid(_ facilityXid: String,
                                        status: JobStatusType,
                                        success successBlock: @escaping SuccessResponseBlock,
@@ -163,7 +160,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getJobWithXid(_ jobXid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
@@ -175,13 +172,13 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func updateJob(withXid jobXid: String,
                           status: JobStatusType,
                           additionalValues: [String: Any],
                           success successBlock: @escaping SuccessResponseBlock,
                           error errorBlock: @escaping ErrorResponseBlock) {
-        
+
         var params = additionalValues
         params["status"] = status.rawValue
         let path: String = "\(MakespacePath.jobs.rawValue)/\(jobXid)"
@@ -192,7 +189,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getDeliverySummaries(withFacilityXid facilityXid: String,
                                      numberOfDays: Int,
                                      success successBlock: @escaping SuccessResponseBlock,
@@ -206,7 +203,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getDeliverySections(withFacilityXid facilityXid: String,
                                     date: Date,
                                     equipmentSlug slug: String,
@@ -224,7 +221,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getDeliveryItems(withJobXid jobXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
@@ -236,7 +233,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func createDeliveryJob(with date: Date,
                                   facilityXid: String,
                                   placeXids: [Any],
@@ -249,7 +246,7 @@ open class OpsService: AbstractBaseService {
         params["from_place"] = facilityXid
         params["type"] = "DELIVERY"
         params["status"] = "STARTED"
-        
+
         let dateString: String = DateFormatter.makespaceYearMonthDay().string(from: date)
         params["scheduled_date"] = dateString
         request(path: MakespacePath.jobs.rawValue,
@@ -259,7 +256,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func createTransitJob(with date: Date,
                                  fromPlaceXid: String,
                                  toPlaceXid: String,
@@ -282,7 +279,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getTransitItems(withJobXid jobXid: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
@@ -294,7 +291,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func addPalletToJob(withXid jobXid: String,
                                palletXid: String,
                                scanTime: Date,
@@ -313,7 +310,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func removePalletFromJob(withXid jobXid: String,
                                     palletXid: String,
                                     success successBlock: @escaping SuccessResponseBlock,
@@ -328,7 +325,7 @@ open class OpsService: AbstractBaseService {
     }
 
     // MARK: - Container Info
-    
+
     public func updateContainer(withLocator containerLocator: String,
                                 length: Double,
                                 width: Double,
@@ -355,7 +352,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func updateContainer(withLocator containerLocator: String,
                                 standardSizeName: String,
                                 handlingClass: String,
@@ -374,7 +371,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getContainerWithLocator(_ containerLocator: String,
                                         success successBlock: @escaping SuccessResponseBlock,
                                         error errorBlock: @escaping ErrorResponseBlock) {
@@ -386,7 +383,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getStandardSizes(success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
         request(path: "standard-sizes",
@@ -397,7 +394,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     // MARK: - Timed Containers
-    
+
     public func getTimedContainers(withPlaceXid placeXid: String,
                                    success successBlock: @escaping SuccessResponseBlock,
                                    error errorBlock: @escaping ErrorResponseBlock) {
@@ -409,7 +406,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func seeTimedContainers(_ timedContainers: [[String: Any]],
                                    withPlaceXid xid: String,
                                    success successBlock: @escaping SuccessResponseBlock,
@@ -426,7 +423,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func unseeTimedContainers(_ timedContainers: [[String: Any]],
                                      withPlaceXid xid: String,
                                      success successBlock: @escaping SuccessResponseBlock,
@@ -443,11 +440,11 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     // MARK: - Images
     public func createFile(withSuccess successBlock: @escaping SuccessResponseBlock, error errorBlock: @escaping ErrorResponseBlock) {
         let params: [String: Any] = ["mime_type": "image/jpeg", "description": "Uploaded Image"]
-        
+
         request(path: MakespacePath.files.rawValue,
                 method: .post,
                 with: params,
@@ -455,19 +452,19 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getS3UploadParametersForFile(withXid xid: String,
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
         let path = "\(MakespacePath.files.rawValue)/\(xid)/s3-upload-params"
         request(path: path,
                 method: .post,
-                with: [String:Any](),
+                with: [String: Any](),
                 paginated: false,
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func addImageToRemoteCache(withURL imageUrl: String,
                                locator: String,
                                success successBlock: @escaping SuccessResponseBlock,
@@ -484,9 +481,9 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     // MARK: - Tasks
-    
+
     public func getTasksWithSuccessBlock(_ successBlock: @escaping SuccessResponseBlock,
                                          error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.tasks.rawValue)/me"
@@ -497,7 +494,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getTaskWithXid(_ xid: String,
                                success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
@@ -509,7 +506,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func updateTask(withTaskXid xid: String,
                            taskStatus: String,
                            success successBlock: @escaping SuccessResponseBlock,
@@ -523,7 +520,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func addNotes(with note: String,
                          forTaskXid taskXid: String,
                          success successBlock: @escaping SuccessResponseBlock,
@@ -537,7 +534,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getTaskEvents(withTaskXid xid: String,
                               success successBlock: @escaping SuccessResponseBlock,
                               error errorBlock: @escaping ErrorResponseBlock) {
@@ -549,7 +546,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func createEvent(withParams requestParams: [[String:Any]],
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
@@ -560,7 +557,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func deleteEvent(withXid xid: String,
                             success successBlock: @escaping SuccessResponseBlock,
                             error errorBlock: @escaping ErrorResponseBlock) {
@@ -572,7 +569,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func submitSignature(with image: UIImage,
                                 withFullName fullName: String?,
                                 withRefId refId: String,
@@ -580,16 +577,16 @@ open class OpsService: AbstractBaseService {
                                 withEventXidArray eventXids: [String],
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
-        var eventsXids = [[String:String]]()
+        var eventsXids = [[String: String]]()
         for xid: String in eventXids {
             eventsXids.append(["xid": xid])
         }
         var params: [String: Any] = ["_reference": refId,
-                                     
+
                                      "events": eventsXids,
-                                     
+
                                      "image": image.base64DataUri(),
-                                     
+
                                      "performed_on": DateFormatter.makespace().string(from: Date())]
         // only add full name if it is set
         if fullName != nil {
@@ -603,7 +600,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     // MARK: - Bookings
-    
+
     public func getBookingsWithUserXid(_ userXid: String,
                                        success successBlock: @escaping SuccessResponseBlock,
                                        error errorBlock: @escaping ErrorResponseBlock) {
@@ -615,9 +612,9 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     // MARK: - Staff
-    
+
     public func getStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.staff.rawValue)/me"
@@ -628,8 +625,8 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
-    public func getStaffInfo(forAccessToken token:String,
+
+    public func getStaffInfo(forAccessToken token: String,
                              success successBlock: @escaping SuccessResponseBlock,
                              error errorBlock: @escaping ErrorResponseBlock) {
         //set a specific token on the api call
@@ -638,24 +635,23 @@ open class OpsService: AbstractBaseService {
                 method: .get,
                 with: [String: Any](),
                 paginated: true,
-                headers: ["Authorization" : "Bearer " + token],
+                headers: ["Authorization": "Bearer " + token],
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getMyStaffInfo(success successBlock: @escaping SuccessResponseBlock,
                                error errorBlock: @escaping ErrorResponseBlock) {
         self.getMyStaffInfoExpanded(false, success: successBlock, error: errorBlock)
     }
-    
+
     public func getMyStaffInfoExpanded(_ expanded: Bool,
                                        success successBlock: @escaping SuccessResponseBlock,
                                        error errorBlock: @escaping ErrorResponseBlock) {
         var path: String
         if expanded {
             path = "\(MakespacePath.staff.rawValue)/me?expand=profile"
-        }
-        else {
+        } else {
             path = "\(MakespacePath.staff.rawValue)/me"
         }
         request(path: path,
@@ -665,7 +661,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func updateMyStaffLocation(withLatitude lat: Double,
                                       longitude lon: Double,
                                       success successBlock: @escaping SuccessResponseBlock,
@@ -677,7 +673,7 @@ open class OpsService: AbstractBaseService {
                                    success: successBlock,
                                    error: errorBlock)
     }
-    
+
     public func updateMyStaffLocation(withLatitude lat: Double,
                                       longitude lon: Double,
                                       eta: Date?,
@@ -697,14 +693,14 @@ open class OpsService: AbstractBaseService {
         }
         request(path: path,
                 method: .patch,
-                with: ["location" : params],
+                with: ["location": params],
                 paginated: true,
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getCustomerInfo(withXid userXid: String,
-                                expand options:[CustomerExpandOptions] = [CustomerExpandOptions](),
+                                expand options: [CustomerExpandOptions] = [CustomerExpandOptions](),
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
         let path: String = "\(MakespacePath.accounts.rawValue)/\(userXid)"
@@ -718,7 +714,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func searchCustomers(withText searchText: String,
                                 success successBlock: @escaping SuccessResponseBlock,
                                 error errorBlock: @escaping ErrorResponseBlock) {
@@ -732,7 +728,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     // MARK: - Places V3
-    
+
     public func scanContainerAtPlace(withXid placeXid: String,
                                      withScanDataArray scanData: [Any],
                                      success successBlock: @escaping SuccessResponseBlock,
@@ -746,7 +742,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func setPlaceMarkerWithPlaceXid(_ placeXid: String,
                                            markerLocator: String,
                                            success successBlock: @escaping SuccessResponseBlock,
@@ -760,7 +756,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func setPlaceParentWithPlaceXid(_ subplaceXid: String,
                                            parentXid: String,
                                            success successBlock: @escaping SuccessResponseBlock,
@@ -776,7 +772,7 @@ open class OpsService: AbstractBaseService {
     }
 
     // MARK: - Pickup Fees
-    
+
     public func getPickupFeesForCustomer(withXid customerXid: String,
                                          bookingXid: String,
                                          success successBlock: @escaping SuccessResponseBlock,
@@ -789,7 +785,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getProductPrices(withFulfillerXid fulfillerXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
@@ -801,7 +797,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func getProductPrices(withBookingXid bookingXid: String,
                                  success successBlock: @escaping SuccessResponseBlock,
                                  error errorBlock: @escaping ErrorResponseBlock) {
@@ -813,7 +809,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func setPickupFeesWithFees(_ pickupFees: [String],
                                       customerXid: String,
                                       bookingXid: String,
@@ -828,7 +824,7 @@ open class OpsService: AbstractBaseService {
                 failure: errorBlock)
     }
     // MARK: - Questionnaire
-    
+
     public func getQuestionsWithBookingXid(_ bookingXid: String,
                                            count: Int,
                                            success successBlock: @escaping SuccessResponseBlock,
@@ -842,7 +838,7 @@ open class OpsService: AbstractBaseService {
                 success: successBlock,
                 failure: errorBlock)
     }
-    
+
     public func submitQuestionAnswers(withParams params: [[String: Any]],
                                       success successBlock: @escaping SuccessResponseBlock,
                                       error errorBlock: @escaping ErrorResponseBlock) {
