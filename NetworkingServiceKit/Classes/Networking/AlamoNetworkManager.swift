@@ -166,16 +166,27 @@ class AlamoNetworkManager : NetworkManager
     /// - Returns: a valid error reason and details if they were returned in the correct format
     func buildError(fromResponse rawResponse:DataResponse<Any>) -> (MSError.ResponseFailureReason,MSErrorDetails?)?
     {
-        if rawResponse.error != nil,
-            let statusCode = rawResponse.response?.statusCode,
-            !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-            
-            let errorDetails = self.errorResponse(fromData: rawResponse.data, request: rawResponse.request)
-            //If we have a status code and a server error let,s build the reason with that instead
-            let reason = MSError.ResponseFailureReason(code: statusCode,
-                                                       error: NSError.make(from: statusCode, errorDetails: errorDetails))
-
-            return (reason, errorDetails)
+        if let error = rawResponse.error {
+            if let statusCode = rawResponse.response?.statusCode,
+                !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
+                
+                let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
+                //If we have a status code and a server error let,s build the reason with that instead
+                let reason = MSError.ResponseFailureReason(code: statusCode,
+                                                           error: NSError.make(from: statusCode, errorDetails: errorDetails))
+                
+                return (reason, errorDetails)
+            }
+            else {
+                switch (error as NSError).code {
+                case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
+                    let components = requestComponents(rawResponse.request)
+                    let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
+                    return (MSError.ResponseFailureReason.notConnected, details)
+                default:
+                    break
+                }
+            }
         }
         return nil
     }
@@ -194,18 +205,25 @@ class AlamoNetworkManager : NetworkManager
             let errorType = responseError["type"] as? String,
             let message = responseError["message"] as? String
         {
-            var body:String? = nil
-            var path:String? = nil
-            if let request = request,
-                let url = request.url?.absoluteString,
-                let httpBody = request.httpBody,
-                let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
-                body = stringBody
-                path = url
-            }
+            let components = requestComponents(request)
+            let body = components?.body
+            let path = components?.path
+            
             errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
         }
         return errorResponse
+    }
+    
+    private func requestComponents(_ request: URLRequest?) -> (path: String?, body: String?)? {
+        guard let request = request else { return nil }
+        let path = request.url?.absoluteString
+        var body:String? = nil
+        
+        if let httpBody = request.httpBody {
+            body = String(data: httpBody, encoding: String.Encoding.utf8)
+        }
+        
+        return (path: path, body: body)
     }
     
     

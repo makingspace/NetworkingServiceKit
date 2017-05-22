@@ -33,6 +33,7 @@ public enum MSError : Error {
     /// - internalServerError: a 500 request
     /// - badStatusCode: a request that could not validate a status code
     /// - persistanceFailure: any issues related to our data layer
+    /// - notConnected: user not connected to the internet
     public enum ResponseFailureReason {
         
         case tokenExpired(code: Int)
@@ -40,6 +41,7 @@ public enum MSError : Error {
         case internalServerError
         case badStatusCode
         case persistanceFailure(code: Int)
+        case notConnected
     }
     
     public enum PersistanceFailureReason {
