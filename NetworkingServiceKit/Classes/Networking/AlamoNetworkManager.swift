@@ -167,24 +167,21 @@ class AlamoNetworkManager : NetworkManager
     func buildError(fromResponse rawResponse:DataResponse<Any>) -> (MSError.ResponseFailureReason,MSErrorDetails?)?
     {
         if let error = rawResponse.error {
-            if let statusCode = rawResponse.response?.statusCode,
-                !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-                
-                let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
-                //If we have a status code and a server error let,s build the reason with that instead
-                let reason = MSError.ResponseFailureReason(code: statusCode,
-                                                           error: NSError.make(from: statusCode, errorDetails: errorDetails))
-                
-                return (reason, errorDetails)
-            }
-            else {
-                switch (error as NSError).code {
-                case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
-                    let components = requestComponents(rawResponse.request)
-                    let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
-                    return (MSError.ResponseFailureReason.notConnected, details)
-                default:
-                    break
+            switch (error as NSError).code {
+            case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
+                let components = requestComponents(rawResponse.request)
+                let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
+                return (MSError.ResponseFailureReason.notConnected, details)
+            default:
+                if let statusCode = rawResponse.response?.statusCode,
+                    !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
+                    
+                    let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
+                    //If we have a status code and a server error let,s build the reason with that instead
+                    let reason = MSError.ResponseFailureReason(code: statusCode,
+                                                               error: NSError.make(from: statusCode, errorDetails: errorDetails))
+                    
+                    return (reason, errorDetails)
                 }
             }
         }
