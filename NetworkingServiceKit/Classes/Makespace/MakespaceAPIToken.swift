@@ -83,8 +83,8 @@ public class MakespaceAPIToken: NSObject, APIToken {
             self.set(object: scope, for: .scopeKey)
 
             //save tokens for specific email key (helps differntiate between multiple signed accounts)
-            UserDefaults.standard.set(accessToken, forKey: MakespaceAPIToken.accessTokenKey(for: email))
-            UserDefaults.standard.set(refreshToken, forKey: MakespaceAPIToken.refreshTokenKey(for: email))
+            UserDefaults.serviceLocator?.set(accessToken, forKey: MakespaceAPIToken.accessTokenKey(for: email))
+            UserDefaults.serviceLocator?.set(refreshToken, forKey: MakespaceAPIToken.refreshTokenKey(for: email))
 
             return token
         }
@@ -112,8 +112,8 @@ public class MakespaceAPIToken: NSObject, APIToken {
     public static func clearToken() {
         if let email = self.object(for: .emailKey) as? String {
             //clear specific tokens for current email
-            UserDefaults.standard.set(nil, forKey: MakespaceAPIToken.accessTokenKey(for: email))
-            UserDefaults.standard.set(nil, forKey: MakespaceAPIToken.refreshTokenKey(for: email))
+            UserDefaults.serviceLocator?.set(nil, forKey: MakespaceAPIToken.accessTokenKey(for: email))
+            UserDefaults.serviceLocator?.set(nil, forKey: MakespaceAPIToken.refreshTokenKey(for: email))
         }
 
         self.set(object: nil, for: .emailKey)
@@ -126,25 +126,25 @@ public class MakespaceAPIToken: NSObject, APIToken {
     }
 
     public static func object(for key: MakespaceAPITokenKey) -> Any? {
-        return UserDefaults.standard.object(forKey: key.rawValue)
+        return UserDefaults.serviceLocator?.object(forKey: key.rawValue)
     }
 
     public static func set(object obj:Any?, for key: MakespaceAPITokenKey) {
-        UserDefaults.standard.set(obj, forKey: key.rawValue)
+        UserDefaults.serviceLocator?.set(obj, forKey: key.rawValue)
     }
 
     public static func setCurrentToken(for email: String) {
         if let currentToken = self.object(for: .accessTokenKey) as? String {
-            UserDefaults.standard.set(currentToken, forKey: MakespaceAPIToken.accessTokenKey(for: email))
+            UserDefaults.serviceLocator?.set(currentToken, forKey: MakespaceAPIToken.accessTokenKey(for: email))
         }
     }
 
     public static func accessToken(for email: String) -> String? {
-        return UserDefaults.standard.object(forKey: self.accessTokenKey(for: email)) as? String
+        return UserDefaults.serviceLocator?.object(forKey: self.accessTokenKey(for: email)) as? String
     }
 
     public static func refreshToken(for email: String) -> String? {
-        return UserDefaults.standard.object(forKey: self.refreshTokenKey(for: email)) as? String
+        return UserDefaults.serviceLocator?.object(forKey: self.refreshTokenKey(for: email)) as? String
     }
 
     private static func accessTokenKey(for email: String) -> String {
