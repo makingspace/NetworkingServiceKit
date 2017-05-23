@@ -41,7 +41,7 @@ public enum MSError : Error {
         case internalServerError
         case badStatusCode
         case persistanceFailure(code: Int)
-        case notConnected
+        case connectivity(code: Int)
     }
     
     public enum PersistanceFailureReason {
@@ -58,7 +58,7 @@ public enum MSError : Error {
 extension MSError.ResponseFailureReason {
     var responseCode: Int {
         switch self {
-        case .tokenExpired(let code):
+        case .tokenExpired(let code), .connectivity(let code):
             return code
         case .badRequest(let error):
             return (error as NSError).code
