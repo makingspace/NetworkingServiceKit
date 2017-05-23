@@ -1,5 +1,5 @@
 //
-//  AbstractService.swift
+//  Service.swift
 //  Makespace Inc.
 //
 //  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
@@ -8,7 +8,8 @@
 
 import Foundation
 
-public protocol AbstractService {
+/// Defines the necessary methods that a service should implement
+public protocol Service {
     init(token: APIToken?, networkManager: NetworkManager)
     var token: APIToken? { get set }
     var networkManager: NetworkManager { get set }
@@ -27,7 +28,8 @@ public protocol AbstractService {
                  failure: @escaping ErrorResponseBlock)
 }
 
-open class AbstractBaseService: NSObject, AbstractService {
+/// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
+open class AbstractBaseService: NSObject, Service {
 
     public var networkManager: NetworkManager
 
@@ -37,7 +39,7 @@ open class AbstractBaseService: NSObject, AbstractService {
         return self.networkManager.configuration
     }
 
-    /// Init method for an AbstractService, each service must have the current token auth and access to the networkManager to execute requests
+    /// Init method for an Service, each service must have the current token auth and access to the networkManager to execute requests
     ///
     /// - Parameters:
     ///   - token: an existing APIToken

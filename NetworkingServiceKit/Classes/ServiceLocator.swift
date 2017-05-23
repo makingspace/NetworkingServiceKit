@@ -19,16 +19,16 @@ open class ServiceLocator: NSObject {
     internal static var shared: ServiceLocator = ServiceLocator()
     internal var delegate: ServiceLocatorDelegate?
 
-    private var currentServices: [String:AbstractService]
-    private var loadedServiceTypes: [AbstractService.Type]
+    private var currentServices: [String:Service]
+    private var loadedServiceTypes: [Service.Type]
     private var configuration: APIConfiguration!
     private var networkManager: NetworkManager!
     private var token: APIToken?
 
     /// Inits default configuration and network manager
     private override init() {
-        self.currentServices = [String: AbstractService]()
-        self.loadedServiceTypes = [AbstractService.Type]()
+        self.currentServices = [String: Service]()
+        self.loadedServiceTypes = [Service.Type]()
         self.token = APITokenManager.currentToken
     }
 
@@ -62,7 +62,7 @@ open class ServiceLocator: NSObject {
     ///   - apiConfigurationType: the type of APIConfigurationType this services will access
     ///   - authConfigurationType: the type of APIConfigurationAuth this services will include in their requests
     ///   - tokenType: the type of APIToken that will guarantee auth for our service requests
-    open class func set(services serviceTypes: [AbstractService.Type],
+    open class func set(services serviceTypes: [Service.Type],
                          api apiConfigurationType: APIConfigurationType.Type,
                          auth authConfigurationType: APIConfigurationAuth.Type,
                          token tokenType: APIToken.Type) {
@@ -81,7 +81,7 @@ open class ServiceLocator: NSObject {
 
         //Allocate services
         ServiceLocator.shared.currentServices = ServiceLocator.shared.loadedServiceTypes.reduce(
-        [String: AbstractService]()) { (dict, entry) in
+        [String: Service]()) { (dict, entry) in
             var dict = dict
             dict[String(describing: entry.self)] = entry.init(token: ServiceLocator.shared.token,
                                                               networkManager: ServiceLocator.shared.networkManager)
@@ -93,7 +93,7 @@ open class ServiceLocator: NSObject {
     ///
     /// - Parameter type: type of service
     /// - Returns: service object
-    open class func service<T: AbstractService>(forType type: T.Type) -> T? {
+    open class func service<T: Service>(forType type: T.Type) -> T? {
         if let service = ServiceLocator.shared.currentServices[String(describing: type.self)] as? T {
             return service
         }
