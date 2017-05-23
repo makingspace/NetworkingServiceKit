@@ -11,8 +11,8 @@ import Foundation
 extension UserDefaults {
 
     /// Defines a custom UserDefaults to be used by the serviceLocator
-    open class var serviceLocator: UserDefaults {
-        return UserDefaults(suiteName: "\(Bundle.main.appBundleIdentifier).serviceLocator)")!
+    open class var serviceLocator: UserDefaults? {
+        return UserDefaults(suiteName: "\(Bundle.main.appBundleIdentifier).serviceLocator)")
     }
 
     /// Clears our service locator's user defaults
