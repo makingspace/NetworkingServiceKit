@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet fileprivate weak var mapView: MKMapView!
     @IBOutlet fileprivate weak var searchBar: UISearchBar!
     @IBOutlet fileprivate weak var tweetsTableView: UITableView!
-    fileprivate var currentResults: [TwitterSearchResult] = [TwitterSearchResult]()
+    fileprivate var currentResults = [TwitterSearchResult]()
 
     override func viewDidLoad() {
         super.viewDidLoad()

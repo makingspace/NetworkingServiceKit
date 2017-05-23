@@ -83,7 +83,7 @@ public enum MakespaceAPIConfigurationType: String, APIConfigurationType {
     case production = "PRODUCTION"
     case custom = "CUSTOM"
 
-    /// Custom init for a key (makes it non failable as oppose to (rawValue:)
+    /// Custom init for a key (makes it non failable as opposed to (rawValue:)
     public init(stringKey: String) {
         switch stringKey {
         case "STAGING":
@@ -99,7 +99,7 @@ public enum MakespaceAPIConfigurationType: String, APIConfigurationType {
     /// URL for given server
     public var URL: String {
         /// Return a custom URL if anything has been set
-        if let customURL = UserDefaults.standard.object(forKey: MakespaceAPITokenKey.customURLKey.rawValue) as? String {
+        if let customURL = UserDefaults.serviceLocator?.object(forKey: MakespaceAPITokenKey.customURLKey.rawValue) as? String {
             return customURL
         }
         switch self {

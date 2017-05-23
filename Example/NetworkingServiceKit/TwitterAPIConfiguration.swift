@@ -32,13 +32,13 @@ public enum TwitterApp: Int, APIConfigurationAuth {
     }
 }
 
-/// Server information for out twtter servers, in this case we dont have a staging URL for twitter API
+/// Server information for our twtter servers, in this case we dont have a staging URL for twitter API
 public enum TwitterAPIConfigurationType: String, APIConfigurationType {
     case staging = "STAGING"
     case production = "PRODUCTION"
     case custom = "CUSTOM"
 
-    /// Custom init for a key (makes it non failable as oppose to (rawValue:)
+    /// Custom init for a key (makes it non failable as opposed to (rawValue:)
     public init(stringKey: String) {
         switch stringKey {
         case "STAGING":
