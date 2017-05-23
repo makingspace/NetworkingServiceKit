@@ -24,7 +24,7 @@ ServiceLocator.set(services: [TwitterAuthenticationService.self,LocationService.
 ```
 For this example we have created a simple Twitter client and implemented Twitter token handling, authentication and defined their server details. Our [TwitterAPIConfigurationType](https://github.com/makingspace/NetworkingServiceKit/blob/feature/OpenSourceExample2/Example/NetworkingServiceKit/TwitterAPIConfiguration.swift#L57) tells the service layer information about our server base URL. [TwitterApp](https://github.com/makingspace/NetworkingServiceKit/blob/feature/OpenSourceExample2/Example/NetworkingServiceKit/TwitterAPIConfiguration.swift#L12) gives the details needed for signing a request with a key and a secret. [TwitterAPIToken](https://github.com/makingspace/NetworkingServiceKit/blob/feature/OpenSourceExample2/Example/NetworkingServiceKit/TwitterAPIToken.swift#L13) implements how we are going to parse and store token information once we have been authenticated.
 
-Once our client has been authenticated, all requests going through one of our implemented AbstractServices will get automatically signed by our implementation of an APIToken.
+Once our client has been authenticated, all requests going through one of our implemented Service will get automatically signed by our implementation of an APIToken.
 
 For requesting one of the loaded services you simply ask the service locator, for example:
 
