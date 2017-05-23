@@ -166,26 +166,24 @@ class AlamoNetworkManager : NetworkManager
     /// - Returns: a valid error reason and details if they were returned in the correct format
     func buildError(fromResponse rawResponse:DataResponse<Any>) -> (MSError.ResponseFailureReason, MSErrorDetails?)?
     {
-        if let error = rawResponse.error {
-            let errorCode = (error as NSError).code
-            switch errorCode {
-            case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
-                let components = requestComponents(rawResponse.request)
-                let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
-                return (MSError.ResponseFailureReason.connectivity(code: errorCode), details)
-            default:
-                if let statusCode = rawResponse.response?.statusCode,
-                    !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-                    
-                    let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
-                    //If we have a status code and a server error let,s build the reason with that instead
-                    let reason = MSError.ResponseFailureReason(code: statusCode,
-                                                               error: NSError.make(from: statusCode, errorDetails: errorDetails))
-                    
-                    return (reason, errorDetails)
-                }
-            }
+        if rawResponse.error != nil,
+            let statusCode = rawResponse.response?.statusCode,
+            !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
+            
+            let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
+            //If we have a status code and a server error let,s build the reason with that instead
+            let reason = MSError.ResponseFailureReason(code: statusCode,
+                                                       error: NSError.make(from: statusCode, errorDetails: errorDetails))
+            
+            return (reason, errorDetails)
         }
+        else if let error = rawResponse.error as NSError?, error.code.isNetworkErrorCode {
+            
+            let components = requestComponents(rawResponse.request)
+            let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
+            return (MSError.ResponseFailureReason.connectivity(code: error.code), details)
+        }
+        
         return nil
     }
     
