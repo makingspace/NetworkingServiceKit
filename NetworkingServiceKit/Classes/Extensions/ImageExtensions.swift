@@ -11,6 +11,10 @@ import UIKit
 import AlamofireImage
 
 extension UIImage {
+    
+    /// Indicates if an image has transparency
+    ///
+    /// - Returns: true if the image has transparency
     func hasAlpha() -> Bool {
         if let alphaInfo = self.cgImage?.alphaInfo {
             return (alphaInfo == .first ||
@@ -21,6 +25,9 @@ extension UIImage {
         return false
     }
 
+    /// Returns a HTTP Post Body with the image binary attached as a base64 string
+    ///
+    /// - Returns: the http body with the image attached as data
     func base64DataUri() -> String {
         var imageData: Data = Data()
         var mimeType: String = "image/png"
