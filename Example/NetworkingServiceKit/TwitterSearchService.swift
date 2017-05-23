@@ -13,10 +13,27 @@ public struct TwitterUser {
     public let handle: String
     public let imagePath: String
     public let location: String
+    
+    public init?(dictionary:[String:Any]) {
+        guard let userHandle = dictionary["screen_name"] as? String,
+            let userImagePath = dictionary["profile_image_url_https"] as? String,
+            let location = dictionary["location"] as? String else { return nil }
+        self.handle = userHandle
+        self.imagePath = userImagePath
+        self.location = location
+    }
 }
 public struct TwitterSearchResult {
     public let tweet: String
     public let user: TwitterUser
+    
+    public init?(dictionary:[String:Any]) {
+        guard let tweet = dictionary["text"] as? String,
+            let userDictionary = dictionary["user"] as? [String:Any],
+            let user = TwitterUser(dictionary:userDictionary) else { return nil }
+        self.tweet = tweet
+        self.user = user
+    }
 }
 open class TwitterSearchService: AbstractBaseService {
     private var nextResultsPage: String?
@@ -43,15 +60,8 @@ open class TwitterSearchService: AbstractBaseService {
                     var searchResults = [TwitterSearchResult]()
                     if let results = response["statuses"] as? [[String:Any]] {
                         for result in results {
-                            if let tweet = result["text"] as? String,
-                                let user = result["user"] as? [String:Any],
-                                let userHandle = user["screen_name"] as? String,
-                                let userImagePath = user["profile_image_url_https"] as? String,
-                                let location = user["location"] as? String {
-                                searchResults.append(TwitterSearchResult(tweet: tweet,
-                                                                         user: TwitterUser(handle: userHandle,
-                                                                                           imagePath:userImagePath,
-                                                                                           location: location)))
+                            if let twitterResult = TwitterSearchResult(dictionary: result) {
+                                searchResults.append(twitterResult)
                             }
                         }
                     }
@@ -81,15 +91,8 @@ open class TwitterSearchService: AbstractBaseService {
                     var searchResults = [TwitterSearchResult]()
                     if let results = response["statuses"] as? [[String:Any]] {
                         for result in results {
-                            if let tweet = result["text"] as? String,
-                                let user = result["user"] as? [String:Any],
-                                let userHandle = user["screen_name"] as? String,
-                                let userImagePath = user["profile_image_url_https"] as? String,
-                                let location = user["location"] as? String {
-                                searchResults.append(TwitterSearchResult(tweet: tweet,
-                                                                         user: TwitterUser(handle: userHandle,
-                                                                                           imagePath:userImagePath,
-                                                                                           location: location)))
+                            if let twitterResult = TwitterSearchResult(dictionary: result) {
+                                searchResults.append(twitterResult)
                             }
                         }
                     }
