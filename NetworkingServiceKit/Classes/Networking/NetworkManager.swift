@@ -133,7 +133,13 @@ extension MSError {
     ///
     /// - returns: returns true if the error is a connectivity issue and false if not
     public var isNetworkError: Bool {
-        switch self.responseCode {
+        return responseCode.isNetworkErrorCode
+    }
+}
+
+internal extension Int {
+    var isNetworkErrorCode: Bool {
+        switch self {
         case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
             return true
         default:
