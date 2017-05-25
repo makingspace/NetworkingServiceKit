@@ -191,14 +191,7 @@ class AlamoNetworkManager: NetworkManager {
         let components = requestComponents(request)
         let body = components?.body
         let path = components?.path
-        //parse body out of the response
-        if let request = request,
-            let url = request.url?.absoluteString,
-            let httpBody = request.httpBody,
-            let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
-            body = stringBody
-            path = url
-        }
+        
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
             let responseDictionary = self.convertToDictionary(text: responseDataString) {
