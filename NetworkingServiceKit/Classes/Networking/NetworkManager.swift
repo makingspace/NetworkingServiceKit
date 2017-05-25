@@ -1,8 +1,8 @@
 //
 //  NetworkManagerProtocol.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
@@ -11,13 +11,12 @@ import Foundation
 //Custom Makespace Error Response Object
 @objc
 public class MSErrorDetails: NSObject {
-    public let errorType:String
-    public let message:String
-    public let body:String?
-    public let path:String?
-    
-    public init(errorType: String, message: String, body:String?, path:String?)
-    {
+    public let errorType: String
+    public let message: String
+    public let body: String?
+    public let path: String?
+
+    public init(errorType: String, message: String, body: String?, path: String?) {
         self.errorType = errorType
         self.message = message
         self.body = body
@@ -25,7 +24,7 @@ public class MSErrorDetails: NSObject {
     }
 }
 //Custom Makespace Error
-public enum MSError : Error {
+public enum MSError: Error {
     /// The underlying reason the request failed
     ///
     /// - tokenExpired: request received a 401 from a backend
@@ -35,7 +34,7 @@ public enum MSError : Error {
     /// - persistanceFailure: any issues related to our data layer
     /// - notConnected: user not connected to the internet
     public enum ResponseFailureReason {
-        
+
         case tokenExpired(code: Int)
         case badRequest(error: Error)
         case internalServerError
@@ -43,18 +42,19 @@ public enum MSError : Error {
         case persistanceFailure(code: Int)
         case connectivity(code: Int)
     }
-    
+
     public enum PersistanceFailureReason {
-        
+
         case invalidData
         case persistanceFailure(code: Int)
     }
-    
+
     case responseValidationFailed(reason: ResponseFailureReason)
     case persistanceValidationFailed(reason: PersistanceFailureReason)
-    
+
 }
 
+// Mapped Error response failures
 extension MSError.ResponseFailureReason {
     var responseCode: Int {
         switch self {
@@ -68,7 +68,7 @@ extension MSError.ResponseFailureReason {
             return 0
         }
     }
-    
+
     var underlyingError: Error? {
         switch self {
         case .badRequest(let error):
@@ -77,7 +77,7 @@ extension MSError.ResponseFailureReason {
             return nil
         }
     }
-    
+
     var hasTokenExpired: Bool {
         switch self {
         case .tokenExpired( _):
@@ -86,13 +86,13 @@ extension MSError.ResponseFailureReason {
             return false
         }
     }
-    init(code:Int, error:Error) {
+    init(code: Int, error: Error) {
         switch code {
         case 401:
             self = .tokenExpired(code: code)
         case 500:
             self = .internalServerError
-            
+
         default:
             self = .badRequest(error: error)
         }
@@ -108,7 +108,7 @@ extension MSError {
         default: return false
         }
     }
-    
+
     //Returns the response code for an error
     public var responseCode: Int {
         switch self {
@@ -118,7 +118,7 @@ extension MSError {
             return 0
         }
     }
-    
+
     /// The `Error` returned by a system framework associated with a `.responseValidationFailed`
     public var underlyingError: Error? {
         switch self {
@@ -128,7 +128,7 @@ extension MSError {
             return nil
         }
     }
-    
+
     /// Helper method for determining whether an error is a connectivity issue
     ///
     /// - returns: returns true if the error is a connectivity issue and false if not
@@ -148,8 +148,7 @@ internal extension Int {
     }
 }
 
-
-/// Custom HTTP enum types for Makespace
+/// Custom HTTP enum types for our network protocol
 @objc
 public enum HTTPMethod: Int32 {
     case options
@@ -161,8 +160,8 @@ public enum HTTPMethod: Int32 {
     case delete
     case trace
     case connect
-    
-    var string:String {
+
+    var string: String {
         switch self {
         case .options: return "OPTIONS"
         case .get: return "GET"
@@ -185,16 +184,15 @@ public typealias CustomHTTPHeaders = [String: String]
 public typealias RequestParameters = [String: Any]
 
 /// Protocol for defining a Network Manager
-public protocol NetworkManager
-{
-    var configuration:APIConfiguration {get set}
+public protocol NetworkManager {
+    var configuration: APIConfiguration {get set}
     func request(path: String,
                  method: HTTPMethod,
                  with parameters: RequestParameters,
-                 paginated:Bool,
-                 headers:CustomHTTPHeaders,
+                 paginated: Bool,
+                 headers: CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
-    
-    init(with configuration:APIConfiguration)
+
+    init(with configuration: APIConfiguration)
 }
