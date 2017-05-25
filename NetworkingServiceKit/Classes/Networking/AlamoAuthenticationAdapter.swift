@@ -20,7 +20,6 @@ class AlamoAuthenticationAdapter: RequestAdapter {
         }
         //specify our custom user agent
         urlRequest.setValue(AlamoAuthenticationAdapter.agent, forHTTPHeaderField: "User-Agent")
-        urlRequest.setValue("application/x-www-form-urlencoded;charset=UTF-8", forHTTPHeaderField: "Content-Type")
 
         return urlRequest
     }
