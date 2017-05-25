@@ -3,7 +3,7 @@
 //  NetworkingServiceKit
 //
 //  Created by Phillipe Casorla Sagot on 4/5/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
+//  Copyright © 2017 Makespace Inc. All rights reserved.
 //
 
 import Quick
@@ -11,7 +11,7 @@ import Nimble
 import NetworkingServiceKit
 import Mockingjay
 
-class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
+class AuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
     
     var delegateGot401 = false
     override func spec() {
@@ -25,8 +25,11 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
         beforeEach {
             self.delegateGot401 = false
             APITokenManager.clearAuthentication()
-            NetworkingServiceLocator.reset()
-            NetworkingServiceLocator.loadDefaultServices()
+            ServiceLocator.reset()
+            ServiceLocator.set(services: [AuthenticationService.self],
+                               api: MakespaceAPIConfigurationType.self,
+                               auth: MakeSpaceApp.self,
+                               token: MakespaceAPIToken.self)
         }
         
         describe("when a user is authenticating through our Authenticate service") {
@@ -36,7 +39,7 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/authenticate"), builder: json(dataResponse))
                     
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.authenticate(email: "email@email.com", password: "password", completion: { authenticated in
                             expect(authenticated).to(beTrue())
                             done()
@@ -53,7 +56,7 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/authenticate"), builder: http(404))
                     
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.authenticate(email: "email@email.com", password: "password", completion: { authenticated in
                             expect(authenticated).to(beFalse())
                             done()
@@ -69,12 +72,12 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     let token = APITokenManager.store(tokenInfo: dataResponse, for: "email@email.com")
                     expect(token).toNot(beNil())
                     //add token info to each service
-                    NetworkingServiceLocator.reloadExistingServices()
+                    ServiceLocator.reloadExistingServices()
                     
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/logout"), builder: json([:]))
                     
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.logoutUser(withEmail: "email@email.com", completion: { loggedOut in
                             expect(loggedOut).to(beTrue())
                             done()
@@ -90,12 +93,12 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     let token = APITokenManager.store(tokenInfo: dataResponse, for: "email@email.com")
                     expect(token).toNot(beNil())
                     //add token info to each service
-                    NetworkingServiceLocator.reloadExistingServices()
+                    ServiceLocator.reloadExistingServices()
                     
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/logout"), builder: json([:]))
                     
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.logoutExistingUser(completion: { loggedOut in
                             expect(loggedOut).to(beTrue())
                             done()
@@ -113,7 +116,7 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     expect(token).to(beNil())
                     
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.logoutExistingUser(completion: { loggedOut in
                             expect(loggedOut).to(beFalse())
                             done()
@@ -129,13 +132,13 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
                     let token = APITokenManager.store(tokenInfo: dataResponse, for: "email@email.com")
                     expect(token).toNot(beNil())
                     //add token info to each service
-                    NetworkingServiceLocator.reloadExistingServices()
+                    ServiceLocator.reloadExistingServices()
                     MockingjayProtocol.addStub(matcher: http(.post, uri: "/api/v3/logout"), builder: http(401))
                     
                     //set ourselves as delegate
-                    NetworkingServiceLocator.setDelegate(delegate: self)
+                    ServiceLocator.setDelegate(delegate: self)
                     waitUntil { done in
-                        let authenticationService = NetworkingServiceLocator.service(forType: AuthenticationService.self)
+                        let authenticationService = ServiceLocator.service(forType: AuthenticationService.self)
                         authenticationService?.logoutUser(withEmail: "email@email.com", completion: { loggedOut in
                             expect(loggedOut).to(beFalse())
                             expect(self.delegateGot401).to(beTrue())
@@ -147,7 +150,7 @@ class AuthenticationServiceTests: QuickSpec, NetworkingServiceLocatorDelegate {
         }
     }
     
-    func networkLocatorTokenDidExpired() {
+    func authenticationTokenDidExpired() {
         self.delegateGot401 = true
     }
 }
