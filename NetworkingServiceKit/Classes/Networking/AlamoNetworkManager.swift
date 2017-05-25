@@ -1,23 +1,22 @@
 //
 //  AlamoNetworkManager.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 2/27/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 2/27/17.
 //
 //
 
 import Foundation
 import Alamofire
 
-class AlamoNetworkManager : NetworkManager
-{
+class AlamoNetworkManager: NetworkManager {
     private static let validStatusCodes = (200...299)
     var configuration: APIConfiguration
-    
+
     required init(with configuration: APIConfiguration) {
         self.configuration = configuration
     }
-        
+
     /// default session manager to be use with Alamofire
     private let sessionManager: SessionManager = {
         let sessionConfiguration = URLSessionConfiguration.default
@@ -28,9 +27,9 @@ class AlamoNetworkManager : NetworkManager
         session.adapter = AlamoAuthenticationAdapter()
         return session
     }()
-    
-    //MARK: - Request handling
-    
+
+    // MARK: - Request handling
+
     /// Creates and executes a request using Alamofire
     ///
     /// - Parameters:
@@ -44,17 +43,17 @@ class AlamoNetworkManager : NetworkManager
     func request(path: String,
                  method: HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
-                 paginated:Bool = false,
-                 headers:CustomHTTPHeaders = CustomHTTPHeaders(),
+                 paginated: Bool = false,
+                 headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                  success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorResponseBlock)
-    {
-        
+                 failure: @escaping ErrorResponseBlock) {
+
         guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.string) else { return }
-        
+
         //lets use URL encoding only for GETs / DELETEs OR use a specific encoding for arrays
         var encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
         encoding = parameters.validArrayRequest() ? ArrayEncoding() : encoding
+        encoding = parameters.validStringRequest() ? StringEncoding() : encoding
 
         sessionManager.request(path,
                           method: httpMethod,
@@ -65,15 +64,14 @@ class AlamoNetworkManager : NetworkManager
                             #if DEBUG
                                 debugPrint(rawResponse)
                             #endif
-                            
+
                             if let response = rawResponse.value as? [Any] {
-                                let responseDic = ["results" : response]
+                                let responseDic = ["results": response]
                                 success(responseDic)
                             } else if let response = rawResponse.value as? [String:Any],
                                 rawResponse.error == nil {
                                 if let nextPage = response["next"] as? String,
-                                    paginated
-                                {
+                                    paginated {
                                     //call a request with the next page
                                     self.getNextPage(forURL: nextPage,
                                                      method: httpMethod,
@@ -92,14 +90,13 @@ class AlamoNetworkManager : NetworkManager
                                 failure(MSError.responseValidationFailed(reason: reason), errorDetails)
                             } else {
                                 //if the request is succesful but has no response (validation for http code has passed also)
-                                success([String:Any]())
+                                success([String: Any]())
                             }
         }
     }
 
-    
-    //MARK: - Pagination
-    
+    // MARK: - Pagination
+
     /// Request the next page, indicated in the response from the first request
     ///
     /// - Parameters:
@@ -111,36 +108,34 @@ class AlamoNetworkManager : NetworkManager
     ///   - headers:  headers for the request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
-    func getNextPage(forURL urlString:String,
+    func getNextPage(forURL urlString: String,
                      method: Alamofire.HTTPMethod,
                      with parameters: RequestParameters,
-                     onExistingResponse aggregateResponse:[String: Any],
+                     onExistingResponse aggregateResponse: [String: Any],
                      encoding: ParameterEncoding = URLEncoding.default,
                      headers: CustomHTTPHeaders? = nil,
                      success: @escaping SuccessResponseBlock,
-                     failure: @escaping ErrorResponseBlock)
-    {
+                     failure: @escaping ErrorResponseBlock) {
         sessionManager.request(urlString,
                                method: method,
                                parameters: parameters,
                                encoding: encoding,
                                headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
-                                
+
                                 if let response = rawResponse.value as? [String:Any],
                                     rawResponse.error == nil {
                                     var currentResponse = aggregateResponse
-                                    
+
                                     //attach new response into existing response
                                     if var currentResults = currentResponse["results"] as? [[String: Any]],
                                         let newResults = response["results"] as? [[String : Any]] {
                                         currentResults.append(contentsOf: newResults)
                                         currentResponse["results"] = currentResults
                                     }
-                                    
+
                                     //iterate on the next page if any
                                     if let nextPage = response["next"] as? String,
-                                        !nextPage.isEmpty
-                                    {
+                                        !nextPage.isEmpty {
                                         self.getNextPage(forURL: nextPage,
                                                          method: method,
                                                          with: parameters,
@@ -155,21 +150,20 @@ class AlamoNetworkManager : NetworkManager
                                     failure(MSError.responseValidationFailed(reason: reason), errorDetails)
                                 } else {
                                     //if the request is succesful but has no response (validation for http code has passed also)
-                                    success([String:Any]())
+                                    success([String: Any]())
                                 }
         }
     }
-    
+
     /// Returns an ResponseFailureReason and MSErrorDetails if the rawResponse is a valid error and has an error response
     ///
     /// - Parameter rawResponse: response from the request
     /// - Returns: a valid error reason and details if they were returned in the correct format
-    func buildError(fromResponse rawResponse:DataResponse<Any>) -> (MSError.ResponseFailureReason,MSErrorDetails?)?
-    {
+    func buildError(fromResponse rawResponse: DataResponse<Any>) -> (MSError.ResponseFailureReason, MSErrorDetails?)? {
         if rawResponse.error != nil,
             let statusCode = rawResponse.response?.statusCode,
             !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-            
+
             let errorDetails = self.errorResponse(fromData: rawResponse.data, request: rawResponse.request)
             //If we have a status code and a server error let,s build the reason with that instead
             let reason = MSError.ResponseFailureReason(code: statusCode,
@@ -179,36 +173,42 @@ class AlamoNetworkManager : NetworkManager
         }
         return nil
     }
-    
+
     /// Returns an error response from a data stream
     ///
     /// - Parameter data: data stream
     /// - Returns: a response, empty dictionary if there were issues parsing the data
-    private func errorResponse(fromData data:Data?, request:URLRequest?) -> MSErrorDetails?
-    {
-        var errorResponse:MSErrorDetails? = nil
+    private func errorResponse(fromData data: Data?, request: URLRequest?) -> MSErrorDetails? {
+        var errorResponse: MSErrorDetails? = nil
+        var body: String? = nil
+        var path: String? = nil
+        //parse body out of the response
+        if let request = request,
+            let url = request.url?.absoluteString,
+            let httpBody = request.httpBody,
+            let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
+            body = stringBody
+            path = url
+        }
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
-            let responseDictionary = self.convertToDictionary(text: responseDataString),
-            let responseError = responseDictionary["error"] as? [String: Any],
-            let errorType = responseError["type"] as? String,
-            let message = responseError["message"] as? String
-        {
-            var body:String? = nil
-            var path:String? = nil
-            if let request = request,
-                let url = request.url?.absoluteString,
-                let httpBody = request.httpBody,
-                let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
-                body = stringBody
-                path = url
+            let responseDictionary = self.convertToDictionary(text: responseDataString) {
+
+            if let responseError = responseDictionary["error"] as? [String: Any],
+                let errorType = responseError["type"] as? String,
+                let message = responseError["message"] as? String {
+                errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
+            } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
+                let responseFirstError = responseError.first,
+                let errorType = responseFirstError["label"] as? String,
+                let message = responseFirstError["message"] as? String {
+                //multiple error
+                errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
             }
-            errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
         }
         return errorResponse
     }
-    
-    
+
     /// Serializes a String JSON Response into a dictionary
     ///
     /// - Parameter text: string response
