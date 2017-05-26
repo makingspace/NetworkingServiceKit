@@ -31,7 +31,7 @@ public enum MSError: Error {
     /// - badRequest: generic error for responses
     /// - internalServerError: a 500 request
     /// - badStatusCode: a request that could not validate a status code
-    /// - persistanceFailure: any issues related to our data layer
+    /// - persistenceFailure: any issues related to our data layer
     /// - notConnected: user not connected to the internet
     public enum ResponseFailureReason {
 
@@ -39,18 +39,18 @@ public enum MSError: Error {
         case badRequest(error: Error)
         case internalServerError
         case badStatusCode
-        case persistanceFailure(code: Int)
+        case persistenceFailure(code: Int)
         case connectivity(code: Int)
     }
 
-    public enum PersistanceFailureReason {
+    public enum PersistenceFailureReason {
 
         case invalidData
-        case persistanceFailure(code: Int)
+        case persistenceFailure(code: Int)
     }
 
     case responseValidationFailed(reason: ResponseFailureReason)
-    case persistanceValidationFailed(reason: PersistanceFailureReason)
+    case persistenceValidationFailed(reason: PersistenceFailureReason)
 
 }
 
