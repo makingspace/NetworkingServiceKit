@@ -31,24 +31,26 @@ public enum MSError: Error {
     /// - badRequest: generic error for responses
     /// - internalServerError: a 500 request
     /// - badStatusCode: a request that could not validate a status code
-    /// - persistanceFailure: any issues related to our data layer
+    /// - persistenceFailure: any issues related to our data layer
+    /// - notConnected: user not connected to the internet
     public enum ResponseFailureReason {
 
         case tokenExpired(code: Int)
         case badRequest(error: Error)
         case internalServerError
         case badStatusCode
-        case persistanceFailure(code: Int)
+        case persistenceFailure(code: Int)
+        case connectivity(code: Int)
     }
 
-    public enum PersistanceFailureReason {
+    public enum PersistenceFailureReason {
 
         case invalidData
-        case persistanceFailure(code: Int)
+        case persistenceFailure(code: Int)
     }
 
     case responseValidationFailed(reason: ResponseFailureReason)
-    case persistanceValidationFailed(reason: PersistanceFailureReason)
+    case persistenceValidationFailed(reason: PersistenceFailureReason)
 
 }
 
@@ -56,7 +58,7 @@ public enum MSError: Error {
 extension MSError.ResponseFailureReason {
     var responseCode: Int {
         switch self {
-        case .tokenExpired(let code):
+        case .tokenExpired(let code), .connectivity(let code):
             return code
         case .badRequest(let error):
             return (error as NSError).code
@@ -131,7 +133,13 @@ extension MSError {
     ///
     /// - returns: returns true if the error is a connectivity issue and false if not
     public var isNetworkError: Bool {
-        switch self.responseCode {
+        return responseCode.isNetworkErrorCode
+    }
+}
+
+internal extension Int {
+    var isNetworkErrorCode: Bool {
+        switch self {
         case NSURLErrorTimedOut, NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost:
             return true
         default:
