@@ -159,18 +159,26 @@ class AlamoNetworkManager: NetworkManager {
     ///
     /// - Parameter rawResponse: response from the request
     /// - Returns: a valid error reason and details if they were returned in the correct format
-    func buildError(fromResponse rawResponse: DataResponse<Any>) -> (MSError.ResponseFailureReason, MSErrorDetails?)? {
+    func buildError(fromResponse rawResponse: DataResponse<Any>) -> (MSError.ResponseFailureReason, MSErrorDetails?)?
+    {
         if rawResponse.error != nil,
             let statusCode = rawResponse.response?.statusCode,
             !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-
-            let errorDetails = self.errorResponse(fromData: rawResponse.data, request: rawResponse.request)
+            
+            let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
             //If we have a status code and a server error let,s build the reason with that instead
             let reason = MSError.ResponseFailureReason(code: statusCode,
                                                        error: NSError.make(from: statusCode, errorDetails: errorDetails))
-
+            
             return (reason, errorDetails)
         }
+        else if let error = rawResponse.error as NSError?, error.code.isNetworkErrorCode {
+            
+            let components = requestComponents(rawResponse.request)
+            let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
+            return (MSError.ResponseFailureReason.connectivity(code: error.code), details)
+        }
+        
         return nil
     }
 
@@ -180,16 +188,10 @@ class AlamoNetworkManager: NetworkManager {
     /// - Returns: a response, empty dictionary if there were issues parsing the data
     private func errorResponse(fromData data: Data?, request: URLRequest?) -> MSErrorDetails? {
         var errorResponse: MSErrorDetails? = nil
-        var body: String? = nil
-        var path: String? = nil
-        //parse body out of the response
-        if let request = request,
-            let url = request.url?.absoluteString,
-            let httpBody = request.httpBody,
-            let stringBody = String(data: httpBody, encoding: String.Encoding.utf8) {
-            body = stringBody
-            path = url
-        }
+        let components = requestComponents(request)
+        let body = components?.body
+        let path = components?.path
+        
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
             let responseDictionary = self.convertToDictionary(text: responseDataString) {
@@ -208,7 +210,19 @@ class AlamoNetworkManager: NetworkManager {
         }
         return errorResponse
     }
-
+    
+    private func requestComponents(_ request: URLRequest?) -> (path: String?, body: String?)? {
+        guard let request = request else { return nil }
+        let path = request.url?.absoluteString
+        var body:String? = nil
+        
+        if let httpBody = request.httpBody {
+            body = String(data: httpBody, encoding: String.Encoding.utf8)
+        }
+        
+        return (path: path, body: body)
+    }
+    
     /// Serializes a String JSON Response into a dictionary
     ///
     /// - Parameter text: string response
