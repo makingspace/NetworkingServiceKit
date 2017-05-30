@@ -1,5 +1,5 @@
 //
-//  ImageExtensions.swift
+//  UImageViewExtensions.swift
 //  Makespace Inc.
 //
 //  Created by Phillipe Casorla Sagot (@darkzlave) on 3/13/17.
