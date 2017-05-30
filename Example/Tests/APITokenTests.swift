@@ -27,15 +27,15 @@ class APITokenTests: QuickSpec {
                                "access_token" : "KWALI",
                                "expires_in" : 100,
                                "scope" : "mobile"] as [String : Any]
-                    APITokenManager.tokenType = MakespaceAPIToken.self
+                    APITokenManager.tokenType = TwitterAPIToken.self
                     let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
                     expect(apiToken).toNot(beNil())
                     
-                    let accessToken = MakespaceAPIToken.accessToken(for: userEmail)
+                    let accessToken = TwitterAPIToken.object(for: TwitterAPITokenKey.accessTokenKey) as! String
                     expect(accessToken).to(equal("KWALI"))
                     
-                    let refreshToken = MakespaceAPIToken.refreshToken(for: userEmail)
-                    expect(refreshToken).to(equal("DWALI"))
+                    let tokenType = TwitterAPIToken.object(for: TwitterAPITokenKey.tokenTypeKey) as! String
+                    expect(tokenType).to(equal("access"))
                 }
             }
             
@@ -45,16 +45,16 @@ class APITokenTests: QuickSpec {
                                     "access_token" : "KWALI",
                                     "expires_in" : 100,
                                     "scope" : "mobile"] as [String : Any]
-                APITokenManager.tokenType = MakespaceAPIToken.self
+                APITokenManager.tokenType = TwitterAPIToken.self
                 let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
                 expect(apiToken).toNot(beNil())
                 APITokenManager.clearAuthentication()
                 
-                let accessToken = MakespaceAPIToken.accessToken(for: userEmail)
+                let accessToken = TwitterAPIToken.object(for: TwitterAPITokenKey.accessTokenKey)
                 expect(accessToken).to(beNil())
                 
-                let refreshToken = MakespaceAPIToken.refreshToken(for: userEmail)
-                expect(refreshToken).to(beNil())
+                let tokenType = TwitterAPIToken.object(for: TwitterAPITokenKey.tokenTypeKey)
+                expect(tokenType).to(beNil())
             }
         }
     }
