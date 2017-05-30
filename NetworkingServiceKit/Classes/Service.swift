@@ -20,7 +20,7 @@ public protocol Service {
     func servicePath(for query: String) -> String
     var isAuthenticated: Bool { get }
     func request(path: String,
-                 method: HTTPMethod,
+                 method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
                  headers: CustomHTTPHeaders,
@@ -31,11 +31,11 @@ public protocol Service {
 /// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
 open class AbstractBaseService: NSObject, Service {
 
-    public var networkManager: NetworkManager
+    open var networkManager: NetworkManager
 
-    public var token: APIToken?
+    open var token: APIToken?
 
-    public var currentConfiguration: APIConfiguration {
+    open var currentConfiguration: APIConfiguration {
         return self.networkManager.configuration
     }
 
@@ -68,7 +68,7 @@ open class AbstractBaseService: NSObject, Service {
     ///
     /// - Parameter query: api local path
     /// - Returns: local path to the api for the given query
-    public func servicePath(for query: String) -> String {
+    open func servicePath(for query: String) -> String {
         var fullPath = self.baseURL
         if (!self.servicePath.isEmpty) {
             fullPath += "/" + self.servicePath
@@ -81,7 +81,7 @@ open class AbstractBaseService: NSObject, Service {
     }
 
     /// Returns if this service has a valid token for authentication with our systems
-    public var isAuthenticated: Bool {
+    open var isAuthenticated: Bool {
         return (self.token != nil)
     }
 
@@ -95,8 +95,8 @@ open class AbstractBaseService: NSObject, Service {
     ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
-    public func request(path: String,
-                 method: HTTPMethod = .get,
+    open func request(path: String,
+                 method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
