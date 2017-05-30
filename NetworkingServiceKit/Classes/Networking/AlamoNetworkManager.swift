@@ -41,7 +41,7 @@ class AlamoNetworkManager: NetworkManager {
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     func request(path: String,
-                 method: HTTPMethod = .get,
+                 method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
