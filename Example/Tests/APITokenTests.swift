@@ -11,22 +11,24 @@ import Nimble
 import NetworkingServiceKit
 
 class APITokenTests: QuickSpec {
-
+    
     
     override func spec() {
         beforeEach {
             UserDefaults.clearServiceLocatorUserDefaults()
+            ServiceLocator.reset()
         }
         
         describe("when setting up access token information") {
             let userEmail = "email1@email.com"
             context("if we have an access token") {
+                
                 it("should return the appropiate information for the given email") {
                     let dataResponse = ["refresh_token" : "DWALI",
-                               "token_type" : "access",
-                               "access_token" : "KWALI",
-                               "expires_in" : 100,
-                               "scope" : "mobile"] as [String : Any]
+                                        "token_type" : "access",
+                                        "access_token" : "KWALI",
+                                        "expires_in" : 100,
+                                        "scope" : "mobile"] as [String : Any]
                     APITokenManager.tokenType = TwitterAPIToken.self
                     let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
                     expect(apiToken).toNot(beNil())
@@ -36,6 +38,25 @@ class APITokenTests: QuickSpec {
                     
                     let tokenType = TwitterAPIToken.object(for: TwitterAPITokenKey.tokenTypeKey) as! String
                     expect(tokenType).to(equal("access"))
+                }
+                it("should be valid token on a loaded service") {
+                    
+                    let dataResponse = ["refresh_token" : "DWALI",
+                                        "token_type" : "access",
+                                        "access_token" : "KWALI",
+                                        "expires_in" : 100,
+                                        "scope" : "mobile"] as [String : Any]
+                    APITokenManager.tokenType = TwitterAPIToken.self
+                    let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
+                    expect(apiToken).toNot(beNil())
+                    
+                    ServiceLocator.set(services: [TwitterSearchService.self],
+                                       api: TwitterAPIConfigurationType.self,
+                                       auth: TwitterApp.self,
+                                       token: TwitterAPIToken.self)
+                    let searchService = ServiceLocator.service(forType: TwitterSearchService.self)
+                    expect(searchService).toNot(beNil())
+                    expect(searchService!.isAuthenticated).to(beTrue())
                 }
             }
             
