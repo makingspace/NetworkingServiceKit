@@ -29,7 +29,6 @@ open class ServiceLocator: NSObject {
     private override init() {
         self.currentServices = [String: Service]()
         self.loadedServiceTypes = [Service.Type]()
-        self.token = APITokenManager.currentToken
     }
 
     /// Resets the ServiceLocator singleton instance
@@ -74,6 +73,9 @@ open class ServiceLocator: NSObject {
         APIConfiguration.authConfigurationType = authConfigurationType
         APITokenManager.tokenType = tokenType
 
+        //Build Auth tokenType
+        ServiceLocator.shared.token = APITokenManager.currentToken
+        
         //Init our Default Network Client
         let configuration = APIConfiguration.current
         ServiceLocator.shared.configuration = configuration
