@@ -40,16 +40,6 @@ open class StubNetworkManager: NetworkManager {
         let matchingRequests = stubbed.filter { path.contains($0.request.path) && ($0.request.parameters == nil ||
             NSDictionary(dictionary: parameters).isEqual(to: NSDictionary(dictionary: $0.request.parameters ?? [:]) as! [AnyHashable : Any])) }
         
-        let isAuthenticated = APITokenManager.currentToken != nil
-        let matchingRequestByCase = matchingRequests.filter { stub -> Bool in
-            switch(stub.stubCase) {
-            case .authenticated:
-                return isAuthenticated == true
-            case .unauthenticated:
-                return isAuthenticated == false
-            }
-        }
-        
         if let matchingRequest = matchingRequests.first {
             //lets take the first stubbed that works with this request
             switch (matchingRequest.stubCase,matchingRequest.stubType) {
