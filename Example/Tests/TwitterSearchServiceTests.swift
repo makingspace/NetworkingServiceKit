@@ -15,6 +15,7 @@ class TwitterSearchServiceTests: QuickSpec {
     
     override func spec() {
         beforeEach {
+            ServiceLocator.defaultNetworkClientType = AlamoNetworkManager.self
             ServiceLocator.reset()
             ServiceLocator.set(services: [TwitterSearchService.self],
                                api: TwitterAPIConfigurationType.self,

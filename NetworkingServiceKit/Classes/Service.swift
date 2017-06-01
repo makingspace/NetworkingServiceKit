@@ -10,15 +10,48 @@ import Foundation
 
 /// Defines the necessary methods that a service should implement
 public protocol Service {
+    
+    /// Builds a service with an auth token and a networkManager implementation
+    ///
+    /// - Parameters:
+    ///   - token: an auth token (if we are authenticated)
+    ///   - networkManager: the networkManager we are currently using
     init(token: APIToken?, networkManager: NetworkManager)
+    
+    /// Current auth token this service has
     var token: APIToken? { get set }
+    
+    /// Current network manger this service is using
     var networkManager: NetworkManager { get set }
+    
+    /// Current API configuration
     var currentConfiguration: APIConfiguration { get }
+    
+    /// Default service version
     var serviceVersion: String { get }
+    
+    /// Default service path
     var servicePath: String { get }
 
+    /// Builds a service query path with our version and default root path
+    ///
+    /// - Parameter query: the query to build
+    /// - Returns: a compose query with the baseURL, service version and service path included
     func servicePath(for query: String) -> String
+    
+    /// True if our auth token is valid
     var isAuthenticated: Bool { get }
+    
+    /// Executes a request with out current network Manager
+    ///
+    /// - Parameters:
+    ///   - path: a full URL
+    ///   - method: HTTP method
+    ///   - parameters: parameters for the request
+    ///   - paginated: if we have to merge this request pagination
+    ///   - headers: optional headers to include in the request
+    ///   - success: success block
+    ///   - failure: failure block
     func request(path: String,
                  method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
@@ -26,6 +59,71 @@ public protocol Service {
                  headers: CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
+    
+    
+    /// Returns a list of Service Stubs (api paths with a stub type)
+    var stubbed:[ServiceStub] { get set }
+}
+
+/// Defines the Behavior of a stub response
+///
+/// - immediate: the sub returns inmediatly
+/// - delayed: the stub returns after a defined number of seconds
+public enum ServiceStubBehavior {
+    /// Return a response immediately.
+    case immediate
+    
+    /// Return a response after a delay.
+    case delayed(seconds: TimeInterval)
+}
+
+/// Used for stubbing responses.
+public enum ServiceStubType {
+    
+    /// The network returned a response, including status code and response.
+    case success(code:Int, response:[String:Any]?)
+    
+    /// The network request failed with an error
+    case failure(code:Int, response:[String:Any]?)
+}
+
+/// Defines the scenario case that this request expects
+///
+/// - authenticated: service is authenticated
+/// - unauthenticated: service is unauthenticated
+public enum ServiceStubCase {
+    case authenticated
+    case unauthenticated
+}
+
+/// Defines a stub request case
+public struct ServiceStubRequest {
+    public let path:String
+    public let parameters:[String:Any]?
+    
+    public init(path:String, parameters:[String:Any]? = nil) {
+        self.path = path
+        self.parameters = parameters
+    }
+}
+
+/// Defines stub response for a matching API path
+public struct ServiceStub {
+    public let request:ServiceStubRequest
+    public let stubType:ServiceStubType
+    public let stubBehavior:ServiceStubBehavior
+    public let stubCase:ServiceStubCase
+    
+    public init(execute request:ServiceStubRequest,
+                with type:ServiceStubType,
+                when stubCase:ServiceStubCase = .authenticated,
+                react behavior:ServiceStubBehavior = .immediate)
+    {
+        self.request = request
+        self.stubType = type
+        self.stubBehavior = behavior
+        self.stubCase = stubCase
+    }
 }
 
 /// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
@@ -34,6 +132,8 @@ open class AbstractBaseService: NSObject, Service {
     open var networkManager: NetworkManager
 
     open var token: APIToken?
+    
+    open var stubbed:[ServiceStub] = [ServiceStub]()
 
     open var currentConfiguration: APIConfiguration {
         return self.networkManager.configuration
@@ -85,7 +185,7 @@ open class AbstractBaseService: NSObject, Service {
         return (self.token != nil)
     }
 
-    /// Creates and executes a request using Alamofire
+    /// Creates and executes a request using our default Network Manager
     ///
     /// - Parameters:
     ///   - path: full path to the URL
@@ -107,6 +207,7 @@ open class AbstractBaseService: NSObject, Service {
                                     with: parameters,
                                     paginated: paginated,
                                     headers: headers,
+                                    stubbed: self.stubbed,
                                     success: success,
                                     failure: { error, errorResponse in
                                         if error.hasTokenExpired && self.isAuthenticated {
