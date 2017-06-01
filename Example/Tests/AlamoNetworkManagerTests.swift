@@ -27,6 +27,7 @@ class AlamoNetworkManagerTests: QuickSpec
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
         beforeEach {
+            ServiceLocator.defaultNetworkClientType = AlamoNetworkManager.self
             ServiceLocator.set(services: [RandomService.self],
                                api: TwitterAPIConfigurationType.self,
                                auth: TwitterApp.self,
