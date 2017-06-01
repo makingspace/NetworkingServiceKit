@@ -9,11 +9,11 @@
 import Foundation
 import Alamofire
 
-class AlamoNetworkManager: NetworkManager {
+open class AlamoNetworkManager: NetworkManager {
     private static let validStatusCodes = (200...299)
-    var configuration: APIConfiguration
+    public var configuration: APIConfiguration
 
-    required init(with configuration: APIConfiguration) {
+    required public init(with configuration: APIConfiguration) {
         self.configuration = configuration
     }
 
@@ -40,11 +40,12 @@ class AlamoNetworkManager: NetworkManager {
     ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
-    func request(path: String,
+    public func request(path: String,
                  method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
+                 stubbed: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
 
