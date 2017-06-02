@@ -22,7 +22,8 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         let logoutStubUnauthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
                                                     with: .failure(code:401, response:[:]), when: .unauthenticated)
         let logoutStubAuthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
-                                                  with: .failure(code:401, response:[:]), when: .authenticated)
+                                                  with: .failure(code:401, response:[:]),
+                                                  when: .authenticated(tokenInfo: ["token_type" : "access", "access_token" : "KWALI"]))
         
         beforeEach {
             ServiceLocator.defaultNetworkClientType = StubNetworkManager.self            
@@ -41,8 +42,7 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
                 
                 it("should be authenticated") {
                     
-                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                    authenticationService?.stubbed = [authStub]
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [authStub])
                     authenticationService?.authenticateTwitterClient(completion: { authenticated in
                         expect(authenticated).to(beTrue())
                     })
@@ -53,8 +53,7 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         describe("when the current user is already authenticated") {
             context("and is trying to logout") {
                 it("should clear token data") {
-                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                    authenticationService?.stubbed = [logoutStub]
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStub])
                     authenticationService?.logoutTwitterClient(completion: { loggedOut in
                         expect(loggedOut).to(beTrue())
                     })
@@ -65,8 +64,7 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         describe("when the current user is NOT authenticated") {
             context("and is trying to logout") {
                 it("should not return succesfully") {
-                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                    authenticationService?.stubbed = [logoutStubUnauthenticated]
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStubUnauthenticated])
                     authenticationService?.logoutTwitterClient(completion: { loggedOut in
                         expect(loggedOut).to(beFalse())
                     })
@@ -80,8 +78,7 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
                     
                     //set ourselves as delegate
                     ServiceLocator.setDelegate(delegate: self)
-                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                    authenticationService?.stubbed = [logoutStubAuthenticated]
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStubAuthenticated])
                     authenticationService?.logoutTwitterClient(completion: { loggedOut in
                         expect(loggedOut).to(beFalse())
                         expect(self.delegateGot401).to(beTrue())
