@@ -45,7 +45,7 @@ open class AlamoNetworkManager: NetworkManager {
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                 stubbed: [ServiceStub],
+                 stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
 

@@ -62,68 +62,7 @@ public protocol Service {
     
     
     /// Returns a list of Service Stubs (api paths with a stub type)
-    var stubbed:[ServiceStub] { get set }
-}
-
-/// Defines the Behavior of a stub response
-///
-/// - immediate: the sub returns inmediatly
-/// - delayed: the stub returns after a defined number of seconds
-public enum ServiceStubBehavior {
-    /// Return a response immediately.
-    case immediate
-    
-    /// Return a response after a delay.
-    case delayed(seconds: TimeInterval)
-}
-
-/// Used for stubbing responses.
-public enum ServiceStubType {
-    
-    /// The network returned a response, including status code and response.
-    case success(code:Int, response:[String:Any]?)
-    
-    /// The network request failed with an error
-    case failure(code:Int, response:[String:Any]?)
-}
-
-/// Defines the scenario case that this request expects
-///
-/// - authenticated: service is authenticated
-/// - unauthenticated: service is unauthenticated
-public enum ServiceStubCase {
-    case authenticated
-    case unauthenticated
-}
-
-/// Defines a stub request case
-public struct ServiceStubRequest {
-    public let path:String
-    public let parameters:[String:Any]?
-    
-    public init(path:String, parameters:[String:Any]? = nil) {
-        self.path = path
-        self.parameters = parameters
-    }
-}
-
-/// Defines stub response for a matching API path
-public struct ServiceStub {
-    public let request:ServiceStubRequest
-    public let stubType:ServiceStubType
-    public let stubBehavior:ServiceStubBehavior
-    public let stubCase:ServiceStubCase
-    
-    public init(execute request:ServiceStubRequest,
-                with type:ServiceStubType,
-                when stubCase:ServiceStubCase = .authenticated,
-                react behavior:ServiceStubBehavior = .immediate)
-    {
-        self.request = request
-        self.stubType = type
-        self.stubBehavior = behavior
-        self.stubCase = stubCase
-    }
+    var stubs:[ServiceStub] { get set }
 }
 
 /// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
@@ -133,7 +72,7 @@ open class AbstractBaseService: NSObject, Service {
 
     open var token: APIToken?
     
-    open var stubbed:[ServiceStub] = [ServiceStub]()
+    open var stubs:[ServiceStub] = [ServiceStub]()
 
     open var currentConfiguration: APIConfiguration {
         return self.networkManager.configuration
@@ -207,7 +146,7 @@ open class AbstractBaseService: NSObject, Service {
                                     with: parameters,
                                     paginated: paginated,
                                     headers: headers,
-                                    stubbed: self.stubbed,
+                                    stubs: self.stubs,
                                     success: success,
                                     failure: { error, errorResponse in
                                         if error.hasTokenExpired && self.isAuthenticated {
