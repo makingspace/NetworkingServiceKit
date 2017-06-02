@@ -19,7 +19,7 @@ open class ServiceLocator: NSObject {
     internal static var shared: ServiceLocator = ServiceLocator()
     internal var delegate: ServiceLocatorDelegate?
 
-    private var currentServices: [String:Service]
+    internal var currentServices: [String:Service]
     private var loadedServiceTypes: [Service.Type]
     private var configuration: APIConfiguration!
     private var networkManager: NetworkManager!

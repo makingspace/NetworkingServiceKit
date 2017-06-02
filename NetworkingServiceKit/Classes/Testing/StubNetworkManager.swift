@@ -2,7 +2,7 @@
 //  StubNetworkManager.swift
 //  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 6/1/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 6/1/17.
 //
 //
 
@@ -26,7 +26,7 @@ open class StubNetworkManager: NetworkManager {
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
     ///   - headers: custom headers that should be attached with this request
-    ///   - stubbed: a list of stubbed cases for this request to get compare against
+    ///   - stubs: a list of stubbed cases for this request to get compare against
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     open func request(path: String,
@@ -34,34 +34,33 @@ open class StubNetworkManager: NetworkManager {
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                 stubbed: [ServiceStub],
+                 stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
-        let matchingRequests = stubbed.filter { path.contains($0.request.path) && ($0.request.parameters == nil ||
+        let matchingRequests = stubs.filter { path.contains($0.request.path) && ($0.request.parameters == nil ||
             NSDictionary(dictionary: parameters).isEqual(to: NSDictionary(dictionary: $0.request.parameters ?? [:]) as! [AnyHashable : Any])) }
         
         if let matchingRequest = matchingRequests.first {
+            
+            switch matchingRequest.stubCase {
+            case .authenticated(let tokenInfo):
+                APITokenManager.store(tokenInfo: tokenInfo)
+            case .unauthenticated:
+                APITokenManager.clearAuthentication()
+            }
+            // Make sure all services are up to date with the auth state
+            ServiceLocator.reloadTokenForServices()
+            
             //lets take the first stubbed that works with this request
-            switch (matchingRequest.stubCase,matchingRequest.stubType) {
-            case (.authenticated,.success(_, let response)):
+            switch matchingRequest.stubType {
+            case .success(_, let response):
                 executeBlock(with: matchingRequest.stubBehavior) {
                     success(response ?? [:])
                 }
                 
-            case (.unauthenticated,.success(_, _)):
-                executeBlock(with: matchingRequest.stubBehavior) {
-                    failure(MSError.responseValidationFailed(reason: MSError.ResponseFailureReason.tokenExpired(code: 401)), nil)
-                }
-                
-            case (.authenticated,.failure(let code, let response)):
+            case .failure(let code, let response):
                 executeBlock(with: matchingRequest.stubBehavior) {
                     failure(MSError.responseValidationFailed(reason: MSError.ResponseFailureReason(code: code, error: NSError(domain: Bundle.main.appBundleIdentifier, code: code, userInfo: response))), self.buildErrorDetails(from: response, path: path))
-                }
-                
-            case (.unauthenticated,.failure(let code, let response)):
-                executeBlock(with: matchingRequest.stubBehavior) {
-                    failure(MSError.responseValidationFailed(reason: MSError.ResponseFailureReason.tokenExpired(code: code)),
-                            self.buildErrorDetails(from: response, path: path))
                 }
             }
         } else {
