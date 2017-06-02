@@ -158,8 +158,8 @@
 				D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */,
 				D957D2231E944BA8001FAB87 /* APITokenTests.swift */,
 				D97DB9641EBB6DFF001BE4DC /* TwitterAuthenticationServiceTests.swift */,
-				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				D97DB9661EBB6E5A001BE4DC /* TwitterSearchServiceTests.swift */,
+				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
