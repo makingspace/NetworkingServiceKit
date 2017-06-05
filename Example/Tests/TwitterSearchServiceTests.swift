@@ -13,6 +13,7 @@ import Mockingjay
 
 class TwitterSearchServiceTestsStubbed: QuickSpec {
     
+    var searchService:TwitterSearchService?
     override func spec() {
         
         let searchStub = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : "#makespace"]),
@@ -25,13 +26,21 @@ class TwitterSearchServiceTestsStubbed: QuickSpec {
                                                                                                    "profile_image_url_https" : "https://lol2.png",
                                                                                                    "location" : "New York"]]],
                                                                           "search_metadata" : ["next_results" : "https://search.com/next?pageId=2"]
-                                        ]))
+                                        ]), when: .unauthenticated,
+                                            react:.delayed(seconds: 0.5))
+        let searchStubFromJSON = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : "#makespaceFromJSON"]),
+                                             with: ServiceStubType(buildWith: "twitterSearch",http:200),
+                                             when: .unauthenticated,
+                                             react:.delayed(seconds: 0.5))
         let searchEmptyStub = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : ""]),
-                                          with: .success(code: 200, response: [:]))
-        let searchFail = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : "random"]),
-                                                    with: .failure(code:500, response:[:]))
-        let searchService = ServiceLocator.service(forType: TwitterSearchService.self, stubs: [searchStub,searchEmptyStub,searchFail])
-        
+                                          with: .success(code: 200, response: [:]),
+                                          when: .unauthenticated,
+                                          react:.immediate)
+        let searchFail = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : "#random"]),
+                                                    with: .failure(code:500, response:[:]),
+                                                    when: .unauthenticated,
+                                                    react:.immediate)
+
         beforeEach {
             ServiceLocator.defaultNetworkClientType = StubNetworkManager.self
             ServiceLocator.reset()
@@ -39,25 +48,29 @@ class TwitterSearchServiceTestsStubbed: QuickSpec {
                                api: TwitterAPIConfigurationType.self,
                                auth: TwitterApp.self,
                                token: TwitterAPIToken.self)
+            self.searchService = ServiceLocator.service(forType: TwitterSearchService.self, stubs: [searchStub,searchEmptyStub,searchFail,searchStubFromJSON])
         }
         describe("when doing a search request") {
             context("with a proper query") {
                 it("should correctly parse and return the search results as objects") {
-                    
-                    searchService?.searchRecents(by: "#makespace", completion: { results in
-                        expect(results.count).to(equal(2))
-                        let resultFirst = results.first
-                        expect(resultFirst).toNot(beNil())
-                        expect(resultFirst?.tweet).to(equal("tweet1"))
-                        expect(resultFirst?.user.handle).to(equal("darkzlave"))
-                        expect(resultFirst?.user.imagePath).to(equal("https://lol.png"))
-                    })
+                    waitUntil { done in
+                        self.searchService?.searchRecents(by: "#makespace", completion: { results in
+                            expect(results.count).to(equal(2))
+                            let resultFirst = results.first
+                            expect(resultFirst).toNot(beNil())
+                            expect(resultFirst?.tweet).to(equal("tweet1"))
+                            expect(resultFirst?.user.handle).to(equal("darkzlave"))
+                            expect(resultFirst?.user.imagePath).to(equal("https://lol.png"))
+                            done()
+                        })
+                    }
                 }
             }
             
+            
             context("with an empty query") {
                 it("should return immediatly with no results") {
-                    searchService?.searchRecents(by: "", completion: { results in
+                    self.searchService?.searchRecents(by: "", completion: { results in
                         expect(results.count).to(equal(0))
                     })
                 }
@@ -67,11 +80,30 @@ class TwitterSearchServiceTestsStubbed: QuickSpec {
         describe("when doing a failed search request") {
             context("with a proper query") {
                 it("should return no results") {
-                    searchService?.searchRecents(by: "#makespace", completion: { results in
+                    self.searchService?.searchRecents(by: "#random", completion: { results in
                         expect(results.count).to(equal(0))
                     })
                 }
             }
+        }
+        
+        describe("when doing a search request through a JSON response") {
+            context("with a proper query") {
+                it("should correctly parse and return the search results as objects") {
+                    waitUntil { done in
+                        self.searchService?.searchRecents(by: "#makespaceFromJSON", completion: { results in
+                            expect(results.count).to(equal(3))
+                            let resultFirst = results.first
+                            expect(resultFirst).toNot(beNil())
+                            expect(resultFirst?.tweet).to(equal("tweet1"))
+                            expect(resultFirst?.user.handle).to(equal("darkzlave"))
+                            expect(resultFirst?.user.imagePath).to(equal("https://lol.png"))
+                            done()
+                        })
+                    }
+                }
+            }
+
         }
     }
 }

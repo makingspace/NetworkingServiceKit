@@ -13,17 +13,25 @@ import NetworkingServiceKit
 class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
     
     var delegateGot401 = false
+    
     override func spec() {
         
         let authStub = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/token"),
-                                   with: .success(code: 200, response: ["token_type" : "access", "access_token" : "KWALI"]))
+                                   with: .success(code: 200, response: ["token_type" : "access", "access_token" : "KWALI"]),
+                                   when: .unauthenticated,
+                                   react:.immediate)
         let logoutStub = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
-                                     with: .success(code: 200, response: [:]))
+                                     with: .success(code: 200, response: [:]),
+                                     when: .unauthenticated,
+                                     react:.immediate)
         let logoutStubUnauthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
-                                                    with: .failure(code:401, response:[:]), when: .unauthenticated)
+                                                    with: .failure(code:401, response:[:]),
+                                                    when: .unauthenticated,
+                                                    react:.immediate)
         let logoutStubAuthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
                                                   with: .failure(code:401, response:[:]),
-                                                  when: .authenticated(tokenInfo: ["token_type" : "access", "access_token" : "KWALI"]))
+                                                  when: .authenticated(tokenInfo: ["token_type" : "access", "access_token" : "KWALI"]),
+                                                  react:.immediate)
         
         beforeEach {
             ServiceLocator.defaultNetworkClientType = StubNetworkManager.self            
