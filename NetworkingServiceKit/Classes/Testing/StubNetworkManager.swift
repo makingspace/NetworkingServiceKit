@@ -64,8 +64,7 @@ open class StubNetworkManager: NetworkManager {
                 }
             }
         } else {
-            //there doesn't seem to be any stubbed cases matching this request
-            success([String: Any]())
+            fatalError("A request for \(path) got executed through StubNetworkManager but there was no valid stubs for it, make sure you have a valid path and parameters.")
         }
     }
     
