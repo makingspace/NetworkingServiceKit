@@ -1,0 +1,30 @@
+{
+    "statuses": [{
+                 "text": "tweet1",
+                 "user": {
+                 "screen_name": "darkzlave",
+                 "profile_image_url_https": "https://lol.png",
+                 "location": "Stockholm, Sweden"
+                 }
+                 },
+                 {
+                 "text": "tweet2",
+                 "user": {
+                 "screen_name": "makespace",
+                 "profile_image_url_https": "https://lol2.png",
+                 "location": "New York"
+                 }
+                 },
+                 {
+                 "text": "tweet3",
+                 "user": {
+                 "screen_name": "makespace3",
+                 "profile_image_url_https": "https://lol3.png",
+                 "location": "San Francisco, CA"
+                 }
+                 }
+                 ],
+    "search_metadata": {
+        "next_results": "https://search.com/next?pageId=2"
+    }
+}
