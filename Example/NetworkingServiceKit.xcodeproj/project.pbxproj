@@ -12,9 +12,8 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		63F2BFF48A7245272B0A91C7 /* Pods_NetworkingServiceKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DACF77BC8B8DD07308792B3 /* Pods_NetworkingServiceKit_Example.framework */; };
 		BAEE03D2E21B6D7A803FDA55 /* Pods_NetworkingServiceKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACA3C77E36EDA7EF4CF6572C /* Pods_NetworkingServiceKit_Tests.framework */; };
-		D90CD1191E96ABF80096ABFF /* simplemdm_apps.json in Resources */ = {isa = PBXBuildFile; fileRef = D99D91711E969B5800BCCD35 /* simplemdm_apps.json */; };
-		D90CD11A1E96ABFB0096ABFF /* simplemdm_device.json in Resources */ = {isa = PBXBuildFile; fileRef = D99D91731E969C1D00BCCD35 /* simplemdm_device.json */; };
 		D957D2241E944BA8001FAB87 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957D2231E944BA8001FAB87 /* APITokenTests.swift */; };
+		D9792C751EE560F000F977AD /* twitterSearch.json in Resources */ = {isa = PBXBuildFile; fileRef = D93919191EE55E3B00953570 /* twitterSearch.json */; };
 		D97DB9581EBB6863001BE4DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9551EBB6863001BE4DC /* AppDelegate.swift */; };
 		D97DB9591EBB6863001BE4DC /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9561EBB6863001BE4DC /* TweetCell.swift */; };
 		D97DB95A1EBB6863001BE4DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9571EBB6863001BE4DC /* ViewController.swift */; };
@@ -31,13 +30,7 @@
 		D97DB9741EBCC291001BE4DC /* TwitterAPIToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9731EBCC291001BE4DC /* TwitterAPIToken.swift */; };
 		D97DB9751EBCC99F001BE4DC /* TwitterAPIToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9731EBCC291001BE4DC /* TwitterAPIToken.swift */; };
 		D97E2AA51E94340600D32301 /* NetworkingServiceLocatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */; };
-		D98EF4791E958038004D6F71 /* AuthenticationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */; };
 		D98EF47B1E959131004D6F71 /* AlamoNetworkManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */; };
-		D98EF47D1E9680D5004D6F71 /* AccountServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF47C1E9680D5004D6F71 /* AccountServiceTests.swift */; };
-		D98EF47F1E96861C004D6F71 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF47E1E96861C004D6F71 /* NotificationServiceTests.swift */; };
-		D98EF4811E96918F004D6F71 /* SimpleMDMServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98EF4801E96918F004D6F71 /* SimpleMDMServiceTests.swift */; };
-		D99D91721E969B5800BCCD35 /* simplemdm_apps.json in Resources */ = {isa = PBXBuildFile; fileRef = D99D91711E969B5800BCCD35 /* simplemdm_apps.json */; };
-		D99D91741E969C1D00BCCD35 /* simplemdm_device.json in Resources */ = {isa = PBXBuildFile; fileRef = D99D91731E969C1D00BCCD35 /* simplemdm_device.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +60,7 @@
 		627257BE515F129CE2612E7E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		ACA3C77E36EDA7EF4CF6572C /* Pods_NetworkingServiceKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NetworkingServiceKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2F3AC0D5CB32C0536B52CB4 /* Pods-NetworkingServiceKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NetworkingServiceKit_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NetworkingServiceKit_Tests/Pods-NetworkingServiceKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		D93919191EE55E3B00953570 /* twitterSearch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = twitterSearch.json; sourceTree = "<group>"; };
 		D957D2231E944BA8001FAB87 /* APITokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APITokenTests.swift; sourceTree = "<group>"; };
 		D97DB9541EBB6862001BE4DC /* NetworkingServiceKit_Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NetworkingServiceKit_Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		D97DB9551EBB6863001BE4DC /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -80,13 +74,7 @@
 		D97DB9681EBB6F67001BE4DC /* TwitterAPIConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterAPIConfiguration.swift; sourceTree = "<group>"; };
 		D97DB9731EBCC291001BE4DC /* TwitterAPIToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterAPIToken.swift; sourceTree = "<group>"; };
 		D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingServiceLocatorTests.swift; sourceTree = "<group>"; };
-		D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationServiceTests.swift; sourceTree = "<group>"; };
 		D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamoNetworkManagerTests.swift; sourceTree = "<group>"; };
-		D98EF47C1E9680D5004D6F71 /* AccountServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountServiceTests.swift; sourceTree = "<group>"; };
-		D98EF47E1E96861C004D6F71 /* NotificationServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationServiceTests.swift; sourceTree = "<group>"; };
-		D98EF4801E96918F004D6F71 /* SimpleMDMServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleMDMServiceTests.swift; sourceTree = "<group>"; };
-		D99D91711E969B5800BCCD35 /* simplemdm_apps.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simplemdm_apps.json; sourceTree = "<group>"; };
-		D99D91731E969C1D00BCCD35 /* simplemdm_device.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simplemdm_device.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,13 +159,9 @@
 			children = (
 				D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */,
 				D957D2231E944BA8001FAB87 /* APITokenTests.swift */,
-				D98EF4781E958038004D6F71 /* AuthenticationServiceTests.swift */,
 				D97DB9641EBB6DFF001BE4DC /* TwitterAuthenticationServiceTests.swift */,
-				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
-				D98EF47C1E9680D5004D6F71 /* AccountServiceTests.swift */,
-				D98EF47E1E96861C004D6F71 /* NotificationServiceTests.swift */,
 				D97DB9661EBB6E5A001BE4DC /* TwitterSearchServiceTests.swift */,
-				D98EF4801E96918F004D6F71 /* SimpleMDMServiceTests.swift */,
+				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -187,8 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACEA1AFB9204008FA782 /* Info.plist */,
-				D99D91711E969B5800BCCD35 /* simplemdm_apps.json */,
-				D99D91731E969C1D00BCCD35 /* simplemdm_device.json */,
+				D93919191EE55E3B00953570 /* twitterSearch.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -315,10 +298,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D99D91741E969C1D00BCCD35 /* simplemdm_device.json in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
-				D99D91721E969B5800BCCD35 /* simplemdm_apps.json in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,8 +308,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D90CD11A1E96ABFB0096ABFF /* simplemdm_device.json in Resources */,
-				D90CD1191E96ABF80096ABFF /* simplemdm_apps.json in Resources */,
+				D9792C751EE560F000F977AD /* twitterSearch.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,12 +427,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D98EF47F1E96861C004D6F71 /* NotificationServiceTests.swift in Sources */,
 				D97DB9671EBB6E5A001BE4DC /* TwitterSearchServiceTests.swift in Sources */,
 				D97DB9651EBB6DFF001BE4DC /* TwitterAuthenticationServiceTests.swift in Sources */,
 				D97DB96A1EBB75A8001BE4DC /* TwitterAuthenticationService.swift in Sources */,
-				D98EF47D1E9680D5004D6F71 /* AccountServiceTests.swift in Sources */,
-				D98EF4791E958038004D6F71 /* AuthenticationServiceTests.swift in Sources */,
 				D97DB9751EBCC99F001BE4DC /* TwitterAPIToken.swift in Sources */,
 				D97DB96B1EBB75A8001BE4DC /* LocationService.swift in Sources */,
 				D97DB96C1EBB75A8001BE4DC /* TwitterSearchService.swift in Sources */,
@@ -460,7 +437,6 @@
 				D97E2AA51E94340600D32301 /* NetworkingServiceLocatorTests.swift in Sources */,
 				D97DB9701EBCAC86001BE4DC /* TwitterAPIConfiguration.swift in Sources */,
 				D98EF47B1E959131004D6F71 /* AlamoNetworkManagerTests.swift in Sources */,
-				D98EF4811E96918F004D6F71 /* SimpleMDMServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
