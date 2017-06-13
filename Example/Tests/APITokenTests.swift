@@ -15,6 +15,7 @@ class APITokenTests: QuickSpec {
     
     override func spec() {
         beforeEach {
+            ServiceLocator.defaultNetworkClientType = StubNetworkManager.self
             UserDefaults.clearServiceLocatorUserDefaults()
             ServiceLocator.reset()
         }
@@ -61,21 +62,23 @@ class APITokenTests: QuickSpec {
             }
             
             context("if we have clear the token info") {
-                let dataResponse = ["refresh_token" : "DWALI",
-                                    "token_type" : "access",
-                                    "access_token" : "KWALI",
-                                    "expires_in" : 100,
-                                    "scope" : "mobile"] as [String : Any]
-                APITokenManager.tokenType = TwitterAPIToken.self
-                let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
-                expect(apiToken).toNot(beNil())
-                APITokenManager.clearAuthentication()
-                
-                let accessToken = TwitterAPIToken.object(for: TwitterAPITokenKey.accessTokenKey)
-                expect(accessToken).to(beNil())
-                
-                let tokenType = TwitterAPIToken.object(for: TwitterAPITokenKey.tokenTypeKey)
-                expect(tokenType).to(beNil())
+                it("should not be authenticated") {
+                    let dataResponse = ["refresh_token" : "DWALI",
+                                        "token_type" : "access",
+                                        "access_token" : "KWALI",
+                                        "expires_in" : 100,
+                                        "scope" : "mobile"] as [String : Any]
+                    APITokenManager.tokenType = TwitterAPIToken.self
+                    let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
+                    expect(apiToken).toNot(beNil())
+                    APITokenManager.clearAuthentication()
+                    
+                    let accessToken = TwitterAPIToken.object(for: TwitterAPITokenKey.accessTokenKey)
+                    expect(accessToken).to(beNil())
+                    
+                    let tokenType = TwitterAPIToken.object(for: TwitterAPITokenKey.tokenTypeKey)
+                    expect(tokenType).to(beNil())
+                }
             }
         }
     }
