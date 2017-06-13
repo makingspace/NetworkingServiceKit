@@ -13,6 +13,7 @@
 		63F2BFF48A7245272B0A91C7 /* Pods_NetworkingServiceKit_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DACF77BC8B8DD07308792B3 /* Pods_NetworkingServiceKit_Example.framework */; };
 		BAEE03D2E21B6D7A803FDA55 /* Pods_NetworkingServiceKit_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACA3C77E36EDA7EF4CF6572C /* Pods_NetworkingServiceKit_Tests.framework */; };
 		D957D2241E944BA8001FAB87 /* APITokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957D2231E944BA8001FAB87 /* APITokenTests.swift */; };
+		D9792C751EE560F000F977AD /* twitterSearch.json in Resources */ = {isa = PBXBuildFile; fileRef = D93919191EE55E3B00953570 /* twitterSearch.json */; };
 		D97DB9581EBB6863001BE4DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9551EBB6863001BE4DC /* AppDelegate.swift */; };
 		D97DB9591EBB6863001BE4DC /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9561EBB6863001BE4DC /* TweetCell.swift */; };
 		D97DB95A1EBB6863001BE4DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97DB9571EBB6863001BE4DC /* ViewController.swift */; };
@@ -59,6 +60,7 @@
 		627257BE515F129CE2612E7E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		ACA3C77E36EDA7EF4CF6572C /* Pods_NetworkingServiceKit_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NetworkingServiceKit_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2F3AC0D5CB32C0536B52CB4 /* Pods-NetworkingServiceKit_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NetworkingServiceKit_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NetworkingServiceKit_Tests/Pods-NetworkingServiceKit_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		D93919191EE55E3B00953570 /* twitterSearch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = twitterSearch.json; sourceTree = "<group>"; };
 		D957D2231E944BA8001FAB87 /* APITokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APITokenTests.swift; sourceTree = "<group>"; };
 		D97DB9541EBB6862001BE4DC /* NetworkingServiceKit_Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NetworkingServiceKit_Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		D97DB9551EBB6863001BE4DC /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -158,8 +160,8 @@
 				D97E2AA41E94340600D32301 /* NetworkingServiceLocatorTests.swift */,
 				D957D2231E944BA8001FAB87 /* APITokenTests.swift */,
 				D97DB9641EBB6DFF001BE4DC /* TwitterAuthenticationServiceTests.swift */,
-				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				D97DB9661EBB6E5A001BE4DC /* TwitterSearchServiceTests.swift */,
+				D98EF47A1E959131004D6F71 /* AlamoNetworkManagerTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -169,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACEA1AFB9204008FA782 /* Info.plist */,
+				D93919191EE55E3B00953570 /* twitterSearch.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9792C751EE560F000F977AD /* twitterSearch.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

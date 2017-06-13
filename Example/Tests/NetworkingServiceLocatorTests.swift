@@ -15,6 +15,7 @@ class ServiceLocatorSpec: QuickSpec {
     override func spec() {
         
         beforeEach {
+            ServiceLocator.defaultNetworkClientType = StubNetworkManager.self
             ServiceLocator.reset()
         }
         describe("Requesting for a service should be not nil if the service has been loaded") {

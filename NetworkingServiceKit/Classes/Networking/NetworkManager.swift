@@ -191,6 +191,7 @@ public protocol NetworkManager {
                  with parameters: RequestParameters,
                  paginated: Bool,
                  headers: CustomHTTPHeaders,
+                 stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
 
