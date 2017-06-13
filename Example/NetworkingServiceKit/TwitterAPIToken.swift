@@ -63,10 +63,10 @@ public class TwitterAPIToken: NSObject, APIToken {
     }
 
     public static func object(for key: TwitterAPITokenKey) -> Any? {
-        return UserDefaults.standard.object(forKey: key.rawValue)
+        return UserDefaults.serviceLocator?.object(forKey: key.rawValue)
     }
 
     public static func set(object obj:Any?, for key: TwitterAPITokenKey) {
-        UserDefaults.standard.set(obj, forKey: key.rawValue)
+        UserDefaults.serviceLocator?.set(obj, forKey: key.rawValue)
     }
 }

@@ -1,8 +1,8 @@
 //
 //  LocationService.swift
-//  Pods
+//  Makespace Inc.
 //
-//  Created by Phillipe Casorla Sagot on 4/25/17.
+//  Created by Phillipe Casorla Sagot (@darkzlave) on 4/25/17.
 //
 //
 

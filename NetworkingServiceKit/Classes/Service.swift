@@ -10,32 +10,71 @@ import Foundation
 
 /// Defines the necessary methods that a service should implement
 public protocol Service {
+    
+    /// Builds a service with an auth token and a networkManager implementation
+    ///
+    /// - Parameters:
+    ///   - token: an auth token (if we are authenticated)
+    ///   - networkManager: the networkManager we are currently using
     init(token: APIToken?, networkManager: NetworkManager)
+    
+    /// Current auth token this service has
     var token: APIToken? { get set }
+    
+    /// Current network manger this service is using
     var networkManager: NetworkManager { get set }
+    
+    /// Current API configuration
     var currentConfiguration: APIConfiguration { get }
+    
+    /// Default service version
     var serviceVersion: String { get }
+    
+    /// Default service path
     var servicePath: String { get }
 
+    /// Builds a service query path with our version and default root path
+    ///
+    /// - Parameter query: the query to build
+    /// - Returns: a compose query with the baseURL, service version and service path included
     func servicePath(for query: String) -> String
+    
+    /// True if our auth token is valid
     var isAuthenticated: Bool { get }
+    
+    /// Executes a request with out current network Manager
+    ///
+    /// - Parameters:
+    ///   - path: a full URL
+    ///   - method: HTTP method
+    ///   - parameters: parameters for the request
+    ///   - paginated: if we have to merge this request pagination
+    ///   - headers: optional headers to include in the request
+    ///   - success: success block
+    ///   - failure: failure block
     func request(path: String,
-                 method: HTTPMethod,
+                 method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
                  headers: CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
+    
+    
+    /// Returns a list of Service Stubs (api paths with a stub type)
+    var stubs:[ServiceStub] { get set }
 }
 
 /// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
 open class AbstractBaseService: NSObject, Service {
 
-    public var networkManager: NetworkManager
+    open var networkManager: NetworkManager
 
-    public var token: APIToken?
+    open var token: APIToken?
+    
+    open var stubs:[ServiceStub] = [ServiceStub]()
 
-    public var currentConfiguration: APIConfiguration {
+    open var currentConfiguration: APIConfiguration {
         return self.networkManager.configuration
     }
 
@@ -68,7 +107,7 @@ open class AbstractBaseService: NSObject, Service {
     ///
     /// - Parameter query: api local path
     /// - Returns: local path to the api for the given query
-    public func servicePath(for query: String) -> String {
+    open func servicePath(for query: String) -> String {
         var fullPath = self.baseURL
         if (!self.servicePath.isEmpty) {
             fullPath += "/" + self.servicePath
@@ -81,11 +120,11 @@ open class AbstractBaseService: NSObject, Service {
     }
 
     /// Returns if this service has a valid token for authentication with our systems
-    public var isAuthenticated: Bool {
+    open var isAuthenticated: Bool {
         return (self.token != nil)
     }
 
-    /// Creates and executes a request using Alamofire
+    /// Creates and executes a request using our default Network Manager
     ///
     /// - Parameters:
     ///   - path: full path to the URL
@@ -95,8 +134,8 @@ open class AbstractBaseService: NSObject, Service {
     ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
-    public func request(path: String,
-                 method: HTTPMethod = .get,
+    open func request(path: String,
+                 method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
@@ -107,6 +146,7 @@ open class AbstractBaseService: NSObject, Service {
                                     with: parameters,
                                     paginated: paginated,
                                     headers: headers,
+                                    stubs: self.stubs,
                                     success: success,
                                     failure: { error, errorResponse in
                                         if error.hasTokenExpired && self.isAuthenticated {
