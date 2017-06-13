@@ -9,6 +9,7 @@
 import Foundation
 
 /// Protocol for describing token handling for our service locator
+@objc
 public protocol APIToken {
     var authorization: String { get }
     static func makePersistedToken() -> APIToken?
@@ -20,13 +21,19 @@ public protocol APIToken {
 @objc
 open class APITokenManager: NSObject {
     public static var tokenType: APIToken.Type?
+    
     public static var currentToken: APIToken? {
         if let tokenType = APITokenManager.tokenType {
             return tokenType.makePersistedToken()
         }
         return nil
     }
+    
+    public static var isAuthenticated:Bool {
+        return APITokenManager.currentToken != nil
+    }
 
+    @discardableResult
     public static func store(tokenInfo: [String:Any], for email: String? = nil) -> APIToken? {
         if let type = APITokenManager.tokenType {
             return type.make(from: tokenInfo, email: email)
