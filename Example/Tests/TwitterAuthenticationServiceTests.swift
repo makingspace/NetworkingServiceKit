@@ -9,17 +9,32 @@
 import Quick
 import Nimble
 import NetworkingServiceKit
-import Mockingjay
 
 class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
     
     var delegateGot401 = false
+    
     override func spec() {
         
-        let dataResponse = ["token_type" : "access",
-                            "access_token" : "KWALI",] as [String : Any]
+        let authStub = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/token"),
+                                   with: .success(code: 200, response: ["token_type" : "access", "access_token" : "KWALI"]),
+                                   when: .unauthenticated,
+                                   react:.immediate)
+        let logoutStub = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
+                                     with: .success(code: 200, response: [:]),
+                                     when: .unauthenticated,
+                                     react:.immediate)
+        let logoutStubUnauthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
+                                                    with: .failure(code:401, response:[:]),
+                                                    when: .unauthenticated,
+                                                    react:.immediate)
+        let logoutStubAuthenticated = ServiceStub(execute: ServiceStubRequest(path: "/oauth2/invalidate_token"),
+                                                  with: .failure(code:401, response:[:]),
+                                                  when: .authenticated(tokenInfo: ["token_type" : "access", "access_token" : "KWALI"]),
+                                                  react:.immediate)
         
         beforeEach {
+            ServiceLocator.defaultNetworkClientType = StubNetworkManager.self            
             self.delegateGot401 = false
             UserDefaults.clearServiceLocatorUserDefaults()
             APITokenManager.clearAuthentication()
@@ -34,15 +49,11 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
             context("and the credentials are correct") {
                 
                 it("should be authenticated") {
-                    MockingjayProtocol.addStub(matcher: http(.post, uri: "/oauth2/token"), builder: json(dataResponse))
                     
-                    waitUntil { done in
-                        let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                        authenticationService?.authenticateTwitterClient(completion: { authenticated in
-                            expect(authenticated).to(beTrue())
-                            done()
-                        })
-                    }
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [authStub])
+                    authenticationService?.authenticateTwitterClient(completion: { authenticated in
+                        expect(authenticated).to(beTrue())
+                    })
                 }
             }
         }
@@ -50,20 +61,10 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         describe("when the current user is already authenticated") {
             context("and is trying to logout") {
                 it("should clear token data") {
-                    let token = APITokenManager.store(tokenInfo: dataResponse)
-                    expect(token).toNot(beNil())
-                    //add token info to each service
-                    ServiceLocator.reloadExistingServices()
-                    
-                    MockingjayProtocol.addStub(matcher: http(.post, uri: "/oauth2/invalidate_token"), builder: json([:]))
-                    
-                    waitUntil { done in
-                        let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                        authenticationService?.logoutTwitterClient(completion: { loggedOut in
-                            expect(loggedOut).to(beTrue())
-                            done()
-                        })
-                    }
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStub])
+                    authenticationService?.logoutTwitterClient(completion: { loggedOut in
+                        expect(loggedOut).to(beTrue())
+                    })
                 }
             }
         }
@@ -71,17 +72,10 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         describe("when the current user is NOT authenticated") {
             context("and is trying to logout") {
                 it("should not return succesfully") {
-                    APITokenManager.clearAuthentication()
-                    let token = APITokenManager.currentToken
-                    expect(token).to(beNil())
-                    
-                    waitUntil { done in
-                        let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                        authenticationService?.logoutTwitterClient(completion: { loggedOut in
-                            expect(loggedOut).to(beFalse())
-                            done()
-                        })
-                    }
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStubUnauthenticated])
+                    authenticationService?.logoutTwitterClient(completion: { loggedOut in
+                        expect(loggedOut).to(beFalse())
+                    })
                 }
             }
         }
@@ -89,22 +83,14 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         describe("when we are authenticated but the token has expired") {
             context("and is trying to logout") {
                 it("should report to the delegate there is a token expired") {
-                    let token = APITokenManager.store(tokenInfo: dataResponse)
-                    expect(token).toNot(beNil())
-                    //add token info to each service
-                    ServiceLocator.reloadExistingServices()
-                    MockingjayProtocol.addStub(matcher: http(.post, uri: "/oauth2/invalidate_token"), builder: http(401))
                     
                     //set ourselves as delegate
                     ServiceLocator.setDelegate(delegate: self)
-                    waitUntil { done in
-                        let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self)
-                        authenticationService?.logoutTwitterClient(completion: { loggedOut in
-                            expect(loggedOut).to(beFalse())
-                            expect(self.delegateGot401).to(beTrue())
-                            done()
-                        })
-                    }
+                    let authenticationService = ServiceLocator.service(forType: TwitterAuthenticationService.self, stubs: [logoutStubAuthenticated])
+                    authenticationService?.logoutTwitterClient(completion: { loggedOut in
+                        expect(loggedOut).to(beFalse())
+                        expect(self.delegateGot401).to(beTrue())
+                    })
                 }
             }
         }
