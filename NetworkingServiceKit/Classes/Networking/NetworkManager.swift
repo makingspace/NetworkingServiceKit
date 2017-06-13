@@ -187,10 +187,11 @@ public typealias RequestParameters = [String: Any]
 public protocol NetworkManager {
     var configuration: APIConfiguration {get set}
     func request(path: String,
-                 method: HTTPMethod,
+                 method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
                  headers: CustomHTTPHeaders,
+                 stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
 
