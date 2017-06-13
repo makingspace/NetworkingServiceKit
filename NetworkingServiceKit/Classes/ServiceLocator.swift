@@ -12,14 +12,14 @@ public protocol ServiceLocatorDelegate {
 }
 
 open class ServiceLocator: NSObject {
-    /// Our Default Networking Client
+    /// Our Default Networking Client for Alamofire, replace to override our network request implementation
     public static var defaultNetworkClientType: NetworkManager.Type = AlamoNetworkManager.self
 
     /// Defines a private singleton, all interactions should be done through static methods
     internal static var shared: ServiceLocator = ServiceLocator()
     internal var delegate: ServiceLocatorDelegate?
 
-    private var currentServices: [String:Service]
+    internal var currentServices: [String:Service]
     private var loadedServiceTypes: [Service.Type]
     private var configuration: APIConfiguration!
     private var networkManager: NetworkManager!
@@ -29,7 +29,6 @@ open class ServiceLocator: NSObject {
     private override init() {
         self.currentServices = [String: Service]()
         self.loadedServiceTypes = [Service.Type]()
-        self.token = APITokenManager.currentToken
     }
 
     /// Resets the ServiceLocator singleton instance
@@ -74,6 +73,9 @@ open class ServiceLocator: NSObject {
         APIConfiguration.authConfigurationType = authConfigurationType
         APITokenManager.tokenType = tokenType
 
+        //Build Auth tokenType
+        ServiceLocator.shared.token = APITokenManager.currentToken
+        
         //Init our Default Network Client
         let configuration = APIConfiguration.current
         ServiceLocator.shared.configuration = configuration
