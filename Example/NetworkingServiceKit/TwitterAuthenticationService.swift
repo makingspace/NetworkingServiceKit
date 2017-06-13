@@ -46,10 +46,6 @@ open class TwitterAuthenticationService: AbstractBaseService {
     ///
     /// - Parameter completion: a completion block indicating if the logout was successful
     public func logoutTwitterClient(completion:@escaping (_ authenticated: Bool) -> Void) {
-        guard self.isAuthenticated else {
-            completion(false)
-            return
-        }
 
         request(path: "oauth2/invalidate_token",
                 method: .post,

@@ -27,6 +27,7 @@ open class APITokenManager: NSObject {
         return nil
     }
 
+    @discardableResult
     public static func store(tokenInfo: [String:Any], for email: String? = nil) -> APIToken? {
         if let type = APITokenManager.tokenType {
             return type.make(from: tokenInfo, email: email)
