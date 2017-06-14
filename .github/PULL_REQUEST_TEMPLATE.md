@@ -1,12 +1,12 @@
 <!--
-Thank you very much for your pull request fellow Mobile SpaceMaker!
+Thank you very much for your pull request fellow developer!
 Here is a template of what we expect from you when submitting a Pull Request.
 Think about this PR as a product that you are selling, give as much information as possible to make your product succesful.
 -->
 
 **Description:**
 <!--
-Describe what your feature is doing first in a TL:DR and also in a longer description. We encourage you to use emoticons. If possible link to your users stories from Clubhouse.
+Describe what your feature is doing first in a TL:DR and also in a longer description. We encourage you to use emoticons. If possible link to more information that could relate to the PR.
 -->
 
 **Important files to review:**
