@@ -45,8 +45,7 @@ Each defined service can be linked to a specific microservice path and version b
 ```swift
 open class TwitterSearchService: AbstractBaseService {
 
-    public override var serviceVersion: String
-    {
+    public override var serviceVersion: String {
         return "1.1"
     }
 
@@ -71,17 +70,21 @@ ServiceLocator.defaultNetworkClientType = StubNetworkManager.self
 Once you have set up our Stub client, all you need is to request a service with a set of stubs, this stubs will get automatically link to a request if they matches the same criteria the stub it's defining. For Example:
 
 ```swift
-let searchStub = ServiceStub(execute: ServiceStubRequest(path: "/1.1/search/tweets.json", parameters: ["q" : "#makespace"]),
-                                     with: .success(code: 200, response: ["statuses" : [["text" : "tweet1" ,
-                                                                                         "user" : ["screen_name" : "darkzlave",
-                                                                                                   "profile_image_url_https" : "https://lol.png",
-                                                                                                   "location" : "Stockholm, Sweden"]],
-                                                                                        ["text" : "tweet2" ,
-                                                                                         "user" : ["screen_name" : "makespace",
-                                                                                                   "profile_image_url_https" : "https://lol2.png",
-                                                                                                   "location" : "New York"]]],
-                                                                          "search_metadata" : ["next_results" : "https://search.com/next?pageId=2"]
-                                        ]), when: .authenticated(tokenInfo: ["token_type" : "access", "access_token" : "KWALI"]),
+let searchStub = ServiceStub(execute:
+            ServiceStubRequest(path: "/1.1/search/tweets.json",
+                               parameters: ["q" : "#makespace"]),
+                                     with: .success(code: 200,
+                                                    response: ["statuses" : [["text" : "tweet1" ,
+                                                                              "user" : ["screen_name" : "darkzlave",
+                                                                                        "profile_image_url_https" : "https://lol.png",
+                                                                                        "location" : "Stockholm, Sweden"]],
+                                                                             ["text" : "tweet2" ,
+                                                                              "user" : ["screen_name" : "makespace",
+                                                                                        "profile_image_url_https" : "https://lol2.png",
+                                                                                        "location" : "New York"]]],
+                                                               "search_metadata" : ["next_results" : "https://search.com/next?pageId=2"]
+                                        ]), when: .authenticated(tokenInfo: ["token_type" : "access",
+                                                                             "access_token" : "KWALI"]),
                                             react:.delayed(seconds: 0.5))
 let searchService = ServiceLocator.service(forType: TwitterSearchService.self, stubs: [searchStub])                         
 ```
