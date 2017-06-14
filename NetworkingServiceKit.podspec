@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.8.1'
+  s.version          = '0.8.2'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -18,11 +18,10 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-MakespaceServiceKit is the reincarnation of the standard iOS monolith api client. Using a modular approach to services, the framework enables the user to select which services they will need to have running. Also, MakespaceServiceKit takes a different approach when it comes to using Network Clients like AFNetworking/Alamofire. All requests are routed through a protocol, which makes the library loosely coupled from the networking implementation.
+NetworkingServiceKit is the reincarnation of the standard iOS monolith api client. Using a modular approach to services, the framework enables the user to select which services they will need to have running. Also, NetworkingServiceKit takes a different approach when it comes to using Network Clients like AFNetworking/Alamofire. All requests are routed through a protocol, which makes the library loosely coupled from the networking implementation.
                          DESC
 
   s.homepage         = 'https://github.com/makingspace/NetworkingServiceKit'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'darkzlave' => 'phillipe@makespace.com' }
   s.source           = { :git => 'https://github.com/makingspace/NetworkingServiceKit.git', :tag => s.version.to_s }
@@ -35,11 +34,6 @@ MakespaceServiceKit is the reincarnation of the standard iOS monolith api client
 
   s.source_files = 'NetworkingServiceKit/Classes/**/*'
 
-  # s.resource_bundles = {
-  #   'NetworkingServiceKit' => ['NetworkingServiceKit/Assets/*.png']
-  # }
-
-#    s.public_header_files = 'Pod/Classes/**/*.h'
     s.dependency 'Alamofire'
     s.dependency 'AlamofireImage'
     s.dependency 'CryptoSwift'
