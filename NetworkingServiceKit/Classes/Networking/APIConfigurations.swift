@@ -34,7 +34,7 @@ public class APIConfiguration: NSObject {
     public let webURL: String
     public let APIKey: String
     public let APISecret: String
-
+    
     internal init(type: APIConfigurationType, auth: APIConfigurationAuth) {
         self.baseURL = type.URL
         self.webURL = type.webURL
@@ -47,13 +47,13 @@ public class APIConfiguration: NSObject {
         self.APIKey = ""
         self.APISecret = ""
     }
-
+    
     /// Returns the current APIConfiguration, either staging or production
     public static var current: APIConfiguration {
         guard let configurationType = APIConfiguration.apiConfigurationType,
             let authType = APIConfiguration.authConfigurationType else {
                 print("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
-            return APIConfiguration()
+                return APIConfiguration()
         }
         return APIConfiguration(type: self.currentConfigurationType(with: configurationType),
                                 auth: authType.init(bundleId: Bundle.main.appBundleIdentifier))
@@ -63,7 +63,7 @@ public class APIConfiguration: NSObject {
         if let environmentConfiguration = environmentDictionary[APIConfigurationKey] {
             return configuration.init(stringKey: environmentConfiguration)
         }
-
+        
         #if DEBUG || STAGING
             return configuration.stagingConfiguration
         #else
