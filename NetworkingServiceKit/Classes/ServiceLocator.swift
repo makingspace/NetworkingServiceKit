@@ -11,9 +11,20 @@ public protocol ServiceLocatorDelegate {
     func authenticationTokenDidExpired()
 }
 
+/// Defines the level of loggin we want for our network manager
+@objc
+public enum SLLogLevel: Int {
+    case none //no printing
+    case short //print only requests
+    case verbose //print request and response bodies
+}
+
 open class ServiceLocator: NSObject {
     /// Our Default Networking Client for Alamofire, replace to override our network request implementation
     public static var defaultNetworkClientType: NetworkManager.Type = AlamoNetworkManager.self
+    
+    /// Our Default behavior for printing network logs
+    public static var logLevel:SLLogLevel = .short
 
     /// Defines a private singleton, all interactions should be done through static methods
     internal static var shared: ServiceLocator = ServiceLocator()
