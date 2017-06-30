@@ -55,16 +55,17 @@ open class AlamoNetworkManager: NetworkManager {
         var encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
         encoding = parameters.validArrayRequest() ? ArrayEncoding() : encoding
         encoding = parameters.validStringRequest() ? StringEncoding() : encoding
-
-        sessionManager.request(path,
+        
+        let request = sessionManager.request(path,
                           method: httpMethod,
                           parameters: parameters,
                           encoding: encoding,
                           headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
-                            //print response in DEBUG mode
-                            #if DEBUG
+                            //Print response if we have a verbose log mode
+                            if ServiceLocator.logLevel == .verbose {
+                                print("🔵 ServiceLocator: ")
                                 debugPrint(rawResponse)
-                            #endif
+                            }
 
                             if let response = rawResponse.value as? [Any] {
                                 let responseDic = ["results": response]
@@ -93,6 +94,11 @@ open class AlamoNetworkManager: NetworkManager {
                                 //if the request is succesful but has no response (validation for http code has passed also)
                                 success([String: Any]())
                             }
+        }
+        
+        //Print request if we have log mode enabled
+        if ServiceLocator.logLevel != .none {
+            print("🔵 ServiceLocator: " + request.description)
         }
     }
 
