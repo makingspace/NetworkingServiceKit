@@ -58,6 +58,16 @@ public class APIConfiguration: NSObject {
         return APIConfiguration(type: self.currentConfigurationType(with: configurationType),
                                 auth: authType.init(bundleId: Bundle.main.appBundleIdentifier))
     }
+    
+    /// Returns the current APIConfigurationType description
+    public static var currentAPIConfigurationDescription : String {
+        #if DEBUG || STAGING
+            return "STAGING"
+        #else
+            return "PRODUCTION"
+        #endif
+    }
+    
     public static func currentConfigurationType(with configuration: APIConfigurationType.Type) -> APIConfigurationType {
         let environmentDictionary = ProcessInfo.processInfo.environment
         if let environmentConfiguration = environmentDictionary[APIConfigurationKey] {
