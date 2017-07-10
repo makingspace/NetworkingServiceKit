@@ -60,7 +60,9 @@ open class StubNetworkManager: NetworkManager {
                 
             case .failure(let code, let response):
                 executeBlock(with: matchingRequest.stubBehavior) {
-                    failure(MSError.responseValidationFailed(reason: MSError.ResponseFailureReason(code: code, error: NSError(domain: Bundle.main.appBundleIdentifier, code: code, userInfo: response))), self.buildErrorDetails(from: response, path: path))
+                    let reason = MSErrorType.ResponseFailureReason(code: code)
+                    let details = self.buildErrorDetails(from: response, path: path, code: code)
+                    failure(MSError(type: .responseValidation(reason: reason), details: details))
                 }
             }
         } else {
@@ -75,16 +77,19 @@ open class StubNetworkManager: NetworkManager {
     ///   - response: an error response
     ///   - path: current api path
     /// - Returns: a MSErrorDetails if the response had valid data
-    private func buildErrorDetails(from response:[String:Any]?, path:String) -> MSErrorDetails? {
+    private func buildErrorDetails(from response:[String:Any]?, path:String, code: Int) -> MSErrorDetails {
+        var message: String? = nil
+        var body: String? = nil
+        
         if let response = response,
-            let responseError = response["error"] as? [String: Any],
-            let errorType = responseError["type"] as? String,
-            let message = responseError["message"] as? String {
+            let responseError = response["error"] as? [String: Any] {
+            message = responseError["message"] as? String
             let jsonData = try! JSONSerialization.data(withJSONObject: response, options: .prettyPrinted)
             
-            return MSErrorDetails(errorType: errorType, message: message, body: String(data: jsonData, encoding: String.Encoding.utf8), path: path)
+            body = String(data: jsonData, encoding: String.Encoding.utf8)
         }
-        return nil
+        
+        return MSErrorDetails(message: message ?? "", body: body, path: path, code: code, underlyingError: nil)
     }
     
     /// Executes a block based on a stubbed behavior

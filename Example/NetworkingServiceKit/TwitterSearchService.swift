@@ -71,7 +71,7 @@ open class TwitterSearchService: AbstractBaseService {
                         self.nextResultsPage = nextPage
                     }
                     completion(searchResults)
-        }, failure: { _, _ in
+        }, failure: { _ in
             completion([TwitterSearchResult]())
         })
     }
@@ -102,7 +102,7 @@ open class TwitterSearchService: AbstractBaseService {
                         self.nextResultsPage = nextPage
                     }
                     completion(searchResults)
-        }, failure: { _, _ in
+        }, failure: { _ in
             completion([TwitterSearchResult]())
         })
     }

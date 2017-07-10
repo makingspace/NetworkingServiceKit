@@ -87,9 +87,9 @@ open class AlamoNetworkManager: NetworkManager {
                                     //return inmediatly
                                     success(response)
                                 }
-                            } else if let (reason, errorDetails) = self.buildError(fromResponse: rawResponse) {
+                            } else if let error = self.buildError(fromResponse: rawResponse) {
                                 //Figure out if we have an error and an error response
-                                failure(MSError.responseValidationFailed(reason: reason), errorDetails)
+                                failure(error)
                             } else {
                                 //if the request is succesful but has no response (validation for http code has passed also)
                                 success([String: Any]())
@@ -152,9 +152,9 @@ open class AlamoNetworkManager: NetworkManager {
                                     } else {
                                         success(currentResponse)
                                     }
-                                } else if let (reason, errorDetails) = self.buildError(fromResponse: rawResponse) {
+                                } else if let error = self.buildError(fromResponse: rawResponse) {
                                     //Figure out if we have an error and an error response
-                                    failure(MSError.responseValidationFailed(reason: reason), errorDetails)
+                                    failure(error)
                                 } else {
                                     //if the request is succesful but has no response (validation for http code has passed also)
                                     success([String: Any]())
@@ -166,24 +166,22 @@ open class AlamoNetworkManager: NetworkManager {
     ///
     /// - Parameter rawResponse: response from the request
     /// - Returns: a valid error reason and details if they were returned in the correct format
-    func buildError(fromResponse rawResponse: DataResponse<Any>) -> (MSError.ResponseFailureReason, MSErrorDetails?)?
+    func buildError(fromResponse rawResponse: DataResponse<Any>) -> MSError?
     {
-        if rawResponse.error != nil,
+        if let error = rawResponse.error,
             let statusCode = rawResponse.response?.statusCode,
             !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
             
-            let errorDetails = errorResponse(fromData: rawResponse.data, request: rawResponse.request)
-            //If we have a status code and a server error let,s build the reason with that instead
-            let reason = MSError.ResponseFailureReason(code: statusCode,
-                                                       error: NSError.make(from: statusCode, errorDetails: errorDetails))
+            let details = errorDetails(fromData: rawResponse.data, request: rawResponse.request, code: statusCode, error: error)
+            let reason = MSErrorType.ResponseFailureReason(code: statusCode)
             
-            return (reason, errorDetails)
+            return MSError(type: .responseValidation(reason: reason), details: details)
         }
         else if let error = rawResponse.error as NSError?, error.code.isNetworkErrorCode {
             
             let components = requestComponents(rawResponse.request)
-            let details = MSErrorDetails(errorType: "offline", message: error.localizedDescription, body: components?.body, path: components?.path)
-            return (MSError.ResponseFailureReason.connectivity(code: error.code), details)
+            let details = MSErrorDetails(message: error.localizedDescription, body: components?.body, path: components?.path, code: error.code, underlyingError: error)
+            return MSError(type: .responseValidation(reason: .connectivity), details: details)
         }
         
         return nil
@@ -193,29 +191,29 @@ open class AlamoNetworkManager: NetworkManager {
     ///
     /// - Parameter data: data stream
     /// - Returns: a response, empty dictionary if there were issues parsing the data
-    private func errorResponse(fromData data: Data?, request: URLRequest?) -> MSErrorDetails? {
-        var errorResponse: MSErrorDetails? = nil
+    private func errorDetails(fromData data: Data?, request: URLRequest?, code: Int, error: Error?) -> MSErrorDetails {
         let components = requestComponents(request)
         let body = components?.body
         let path = components?.path
+        
+        var errorMessage: String?
         
         if let responseData = data,
             let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
             let responseDictionary = self.convertToDictionary(text: responseDataString) {
 
             if let responseError = responseDictionary["error"] as? [String: Any],
-                let errorType = responseError["type"] as? String,
                 let message = responseError["message"] as? String {
-                errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
+                errorMessage = message
             } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
                 let responseFirstError = responseError.first,
-                let errorType = responseFirstError["label"] as? String,
                 let message = responseFirstError["message"] as? String {
                 //multiple error
-                errorResponse = MSErrorDetails(errorType: errorType, message: message, body: body, path: path)
+                errorMessage = message
             }
         }
-        return errorResponse
+        
+        return MSErrorDetails(message: errorMessage ?? (error?.localizedDescription ?? ""), body: body, path: path, code: code, underlyingError: error)
     }
     
     private func requestComponents(_ request: URLRequest?) -> (path: String?, body: String?)? {

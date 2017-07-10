@@ -9,131 +9,167 @@
 import Foundation
 
 //Custom Makespace Error Response Object
-@objc
-public class MSErrorDetails: NSObject {
-    public let errorType: String
+public struct MSErrorDetails {
     public let message: String
     public let body: String?
     public let path: String?
+    public let code: Int
+    public let underlyingError: Error?
 
-    public init(errorType: String, message: String, body: String?, path: String?) {
-        self.errorType = errorType
+    public init(message: String, body: String?, path: String?, code: Int, underlyingError: Error?) {
         self.message = message
         self.body = body
         self.path = path
+        self.code = code
+        self.underlyingError = underlyingError
+    }
+    
+    public init(error: NSError) {
+        self.init(message: error.localizedDescription, body: nil, path: nil, code: error.code, underlyingError: error)
     }
 }
-//Custom Makespace Error
-public enum MSError: Error {
+
+public enum MSErrorType {
     /// The underlying reason the request failed
     ///
     /// - tokenExpired: request received a 401 from a backend
     /// - badRequest: generic error for responses
     /// - internalServerError: a 500 request
     /// - badStatusCode: a request that could not validate a status code
-    /// - persistenceFailure: any issues related to our data layer
     /// - notConnected: user not connected to the internet
+    /// - forbidden: received a 403
+    /// - notFound: 404, path not found
+    /// - invalidResponse: server returns a response, but not in the expected format
     public enum ResponseFailureReason {
-
-        case tokenExpired(code: Int)
-        case badRequest(error: Error)
+        case tokenExpired
+        case badRequest
         case internalServerError
         case badStatusCode
-        case persistenceFailure(code: Int)
-        case connectivity(code: Int)
+        case connectivity
+        case forbidden
+        case notFound
+        case invalidResponse
+        
+        public var description: String {
+            switch self {
+            case .tokenExpired:
+                return "Expired Auth Token"
+            case .badRequest:
+                return "Invalid Network Request"
+            case .forbidden:
+                return "Invalid Credentials"
+            case .notFound:
+                return "Invalid Request Path"
+            case .internalServerError:
+                return "Internal Server Error"
+            case .badStatusCode:
+                return "Invalid Status Code"
+            case .connectivity:
+                return "Network Connectivity Issues"
+            case .invalidResponse:
+                return "Unable to Parse Server Response"
+            }
+        }
     }
-
+    
     public enum PersistenceFailureReason {
-
         case invalidData
-        case persistenceFailure(code: Int)
+        case persistenceFailure
+        
+        public var description: String {
+            switch self {
+            case .invalidData:
+                return "Invalid Data"
+            case .persistenceFailure:
+                return "Core Data Failure"
+            }
+        }
     }
+    
+    case responseValidation(reason: ResponseFailureReason)
+    case persistenceValidation(reason: PersistenceFailureReason)
+}
 
-    case responseValidationFailed(reason: ResponseFailureReason)
-    case persistenceValidationFailed(reason: PersistenceFailureReason)
-
+//Custom Makespace Error
+public struct MSError: Error {
+    public let type: MSErrorType
+    public let details: MSErrorDetails
+    
+    public init(type: MSErrorType, details: MSErrorDetails) {
+        self.type = type
+        self.details = details
+    }
+    
+    public init(type: MSErrorType, error: NSError?) {
+        self.type = type
+        
+        if let error = error {
+            self.details = MSErrorDetails(error: error)
+        }
+        else {
+            let description: String
+            switch type {
+            case .persistenceValidation(let reason):
+                description = reason.description
+            case .responseValidation(let reason):
+                description = reason.description
+            }
+            self.details = MSErrorDetails(message: description, body: nil, path: nil, code: 0, underlyingError: nil)
+        }
+    }
 }
 
 // Mapped Error response failures
-extension MSError.ResponseFailureReason {
-    var responseCode: Int {
-        switch self {
-        case .tokenExpired(let code), .connectivity(let code):
-            return code
-        case .badRequest(let error):
-            return (error as NSError).code
-        case .internalServerError:
-            return 500
-        default:
-            return 0
-        }
-    }
-
-    var underlyingError: Error? {
-        switch self {
-        case .badRequest(let error):
-            return error
-        default:
-            return nil
-        }
-    }
+public extension MSErrorType.ResponseFailureReason {
 
     var hasTokenExpired: Bool {
         switch self {
-        case .tokenExpired( _):
+        case .tokenExpired:
             return true
         default:
             return false
         }
+        
     }
-    init(code: Int, error: Error) {
+    public init(code: Int) {
         switch code {
         case 401:
-            self = .tokenExpired(code: code)
+            self = .tokenExpired
+        case 403:
+            self = .forbidden
+        case 404:
+            self = .notFound
         case 500:
             self = .internalServerError
 
         default:
-            self = .badRequest(error: error)
+            self = code.isNetworkErrorCode ? .connectivity : .badRequest
         }
     }
 }
 
-extension MSError {
+public extension MSError {
     /// Returns whether the MSError is because our token expired
     public var hasTokenExpired: Bool {
-        switch self {
-        case .responseValidationFailed(let reason):
+        switch type {
+        case .responseValidation(let reason):
             return reason.hasTokenExpired
-        default: return false
-        }
-    }
-
-    //Returns the response code for an error
-    public var responseCode: Int {
-        switch self {
-        case .responseValidationFailed(let reason):
-            return reason.responseCode
         default:
-            return 0
+            return false
         }
     }
-
-    /// The `Error` returned by a system framework associated with a `.responseValidationFailed`
-    public var underlyingError: Error? {
-        switch self {
-        case .responseValidationFailed(let reason):
-            return reason.underlyingError
-        default:
-            return nil
-        }
-    }
-
-    /// Helper method for determining whether an error is a connectivity issue
-    ///
-    /// - returns: returns true if the error is a connectivity issue and false if not
+    
     public var isNetworkError: Bool {
-        return responseCode.isNetworkErrorCode
+        switch type {
+        case .responseValidation(let reason):
+            return reason == .connectivity
+        default:
+            return false
+        }
+    }
+    
+    static var genericLocalDataError: MSError {
+        return MSError(type: .persistenceValidation(reason: .invalidData), error: nil)
     }
 }
 
@@ -178,7 +214,7 @@ public enum HTTPMethod: Int32 {
 
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
-public typealias ErrorResponseBlock = (MSError, MSErrorDetails?) -> Void
+public typealias ErrorResponseBlock = (MSError) -> Void
 //Custom parameter typealias
 public typealias CustomHTTPHeaders = [String: String]
 public typealias RequestParameters = [String: Any]
