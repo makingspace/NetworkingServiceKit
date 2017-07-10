@@ -18,11 +18,10 @@ extension NSError {
         return self.userInfo[NSError.errorMessageKey] as? String ?? ""
     }
 
-    /// Builds an NSError object from our MSError type and MSErrorDetails
+    /// Builds an NSError object from our MSError
     ///
     /// - Parameters:
     ///   - msError: an error type
-    ///   - errorDetails: an error details
     /// - Returns: A valid NSError with attached extra information on the userInfo
     public static func make(from msError: MSError) -> NSError {
         var errorMessage = msError.details.message

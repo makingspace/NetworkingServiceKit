@@ -162,7 +162,7 @@ open class AlamoNetworkManager: NetworkManager {
         }
     }
 
-    /// Returns an ResponseFailureReason and MSErrorDetails if the rawResponse is a valid error and has an error response
+    /// Returns an MSError if the rawResponse is a valid error and has an error response
     ///
     /// - Parameter rawResponse: response from the request
     /// - Returns: a valid error reason and details if they were returned in the correct format
