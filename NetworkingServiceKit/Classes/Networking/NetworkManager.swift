@@ -10,10 +10,15 @@ import Foundation
 
 //Custom Makespace Error Response Object
 public struct MSErrorDetails {
+    /// Message describing the error
     public let message: String
+    /// Body of network request
     public let body: String?
+    /// Path of network request
     public let path: String?
+    /// Error code
     public let code: Int
+    /// Original error object
     public let underlyingError: Error?
 
     public init(message: String, body: String?, path: String?, code: Int, underlyingError: Error?) {
@@ -30,7 +35,7 @@ public struct MSErrorDetails {
 }
 
 public enum MSErrorType {
-    /// The underlying reason the request failed
+    /// Enum describing the network failure
     ///
     /// - tokenExpired: request received a 401 from a backend
     /// - badRequest: generic error for responses
@@ -72,6 +77,10 @@ public enum MSErrorType {
         }
     }
     
+    /// Enum used for errors associated with local failures
+    ///
+    /// - invalidData: Catchall for expected data being missing
+    /// - persistenceFailure: Core Data failure
     public enum PersistenceFailureReason {
         case invalidData
         case persistenceFailure
@@ -92,14 +101,26 @@ public enum MSErrorType {
 
 //Custom Makespace Error
 public struct MSError: Error {
+    /// Enum value describing the failure
     public let type: MSErrorType
+    /// Details of the error
     public let details: MSErrorDetails
     
+    /// Designated initializer
+    ///
+    /// - Parameters:
+    ///   - type: type of failure
+    ///   - details: error details
     public init(type: MSErrorType, details: MSErrorDetails) {
         self.type = type
         self.details = details
     }
     
+    /// Convenience initializer
+    ///
+    /// - Parameters:
+    ///   - type: type of failure
+    ///   - error: NSError object associated with failure
     public init(type: MSErrorType, error: NSError?) {
         self.type = type
         
@@ -122,15 +143,9 @@ public struct MSError: Error {
 // Mapped Error response failures
 public extension MSErrorType.ResponseFailureReason {
 
-    var hasTokenExpired: Bool {
-        switch self {
-        case .tokenExpired:
-            return true
-        default:
-            return false
-        }
-        
-    }
+    /// Conveience initializer
+    ///
+    /// - Parameter code: response code of the error
     public init(code: Int) {
         switch code {
         case 401:
@@ -149,16 +164,17 @@ public extension MSErrorType.ResponseFailureReason {
 }
 
 public extension MSError {
-    /// Returns whether the MSError is because our token expired
+    /// Shortcut for identifying token expiration errors
     public var hasTokenExpired: Bool {
         switch type {
         case .responseValidation(let reason):
-            return reason.hasTokenExpired
+            return reason == .tokenExpired
         default:
             return false
         }
     }
     
+    /// Shortcut for identifying connectivity errors
     public var isNetworkError: Bool {
         switch type {
         case .responseValidation(let reason):
@@ -168,6 +184,7 @@ public extension MSError {
         }
     }
     
+    /// Returns a generic error to describe Core Data problems
     static var genericLocalDataError: MSError {
         return MSError(type: .persistenceValidation(reason: .invalidData), error: nil)
     }
