@@ -9,7 +9,7 @@
 
 NetworkingServiceKit is a library for building modular microservices. It is built 100% in swift and follows a design pattern known as the [Service Locator](https://msdn.microsoft.com/en-us/library/ff648968.aspx).
 
-NetworkingServiceKit works as a full fledge replacement for the standard iOS monolith API client. Using a modular approach to services, the framework enables the app to select which services it requires to run so thenetworks them seamlessly.
+NetworkingServiceKit works as a full fledge replacement for the standard iOS monolith API client. Using a modular approach to services, the framework enables the app to select which services it requires to run so that networking can happen seamlessly.
 
 Networking is usually one of the biggest responsibilities a service layer requires and is a standard requirement in most apps. NetworkingServiceKit includes out-of-the-box authentication for requests. It uses a decoupled AlamoFire client along with a set of protocols that define your authentication needs to seamlessly execute requests while encapsulating token authentication. This makes changes to your network architecture a breeze - updating your Alamofire version, or using a stub networking library, becomes a painless task instead of a complete rewrite.
 
