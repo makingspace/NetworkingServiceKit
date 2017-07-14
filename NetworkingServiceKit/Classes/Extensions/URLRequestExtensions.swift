@@ -13,7 +13,7 @@ extension URLRequest {
     /// Returns a cached JSON response for the the current request if we have stored it before and it hasn't expired
     ///
     /// - Returns: the cached JSON response
-    internal func cachedJSONResponse() -> Any? {
+    public func cachedJSONResponse() -> Any? {
         if let cachedResponse = URLCache.shared.cachedResponse(for: self),
             let userInfo = cachedResponse.userInfo,
             let startTime = userInfo[CachedURLResponse.CacheURLResponseTime] as? Double,
