@@ -21,8 +21,7 @@ public protocol APIConfigurationAuth {
 public protocol APIConfigurationType {
     var URL: String { get }
     var webURL: String { get }
-    static var stagingConfiguration: APIConfigurationType { get }
-    static var productionConfiguration: APIConfigurationType { get }
+    static var defaultConfiguration: APIConfigurationType { get }
     init(stringKey: String)
 }
 
@@ -64,10 +63,6 @@ public class APIConfiguration: NSObject {
             return configuration.init(stringKey: environmentConfiguration)
         }
         
-        #if DEBUG || STAGING
-            return configuration.stagingConfiguration
-        #else
-            return configuration.productionConfiguration
-        #endif
+        return configuration.defaultConfiguration
     }
 }
