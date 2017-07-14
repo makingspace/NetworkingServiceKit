@@ -17,6 +17,8 @@ extension HTTPURLResponse {
         let responseHeaders = self.allHeaderFields
         if let cacheControl = responseHeaders["Cache-Control"] as? String {
             return cacheControl.contains("no-cache") || cacheControl.contains("max-age=0")
+        } else if responseHeaders["Cache-Control"] == nil {
+            return true
         }
         return false
     }
