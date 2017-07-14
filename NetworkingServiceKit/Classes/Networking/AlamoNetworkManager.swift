@@ -426,16 +426,15 @@ open class AlamoNetworkManager: NetworkManager {
     ///   - cachePolicy: cache policy
     private static func cache(response:HTTPURLResponse?, with data:Data?, for request:URLRequest?, using cachePolicy: CacheResponsePolicy) {
         // Cached our response through URLCache if we are force caching and the response doesn't specify a Cache-Control
-        let maxAge = 120.0
         if cachePolicy.type == .forceCache,
             let response = response,
             response.isResponseCachePolicyDisabled,
             let request = request,
             let data = data,
-            maxAge > 0 {
+            cachePolicy.maxAge > 0 {
             let cachedURLResponse = CachedURLResponse(response: response,
                                                       data: data,
-                                                      maxAge: maxAge)
+                                                      maxAge: cachePolicy.maxAge)
             URLCache.shared.storeCachedResponse(cachedURLResponse, for: request)
         }
     }
