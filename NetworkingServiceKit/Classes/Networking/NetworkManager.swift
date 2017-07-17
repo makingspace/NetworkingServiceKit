@@ -45,11 +45,11 @@ import Foundation
             let responseDictionary = responseDataString.jsonDictionary {
             
             if let responseError = responseDictionary["error"] as? [String: Any],
-                let message = responseError["message"] as? String {
+                let message = responseError[NSError.messageKey] as? String {
                 errorMessage = message
             } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
                 let responseFirstError = responseError.first,
-                let message = responseFirstError["message"] as? String {
+                let message = responseFirstError[NSError.messageKey] as? String {
                 //multiple error
                 errorMessage = message
             }
