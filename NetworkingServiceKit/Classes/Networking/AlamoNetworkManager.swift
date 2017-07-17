@@ -172,68 +172,43 @@ open class AlamoNetworkManager: NetworkManager {
             let statusCode = rawResponse.response?.statusCode,
             !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
             
-            let details = errorDetails(fromData: rawResponse.data, request: rawResponse.request, code: statusCode, error: error)
+            let details = MSErrorDetails(data: rawResponse.data, request: rawResponse.request, code: statusCode, error: error)
             let reason = MSErrorType.ResponseFailureReason(code: statusCode)
             
             return MSError(type: .responseValidation(reason: reason), details: details)
         }
         else if let error = rawResponse.error as NSError?, error.code.isNetworkErrorCode {
             
-            let components = requestComponents(rawResponse.request)
+            let components = rawResponse.request?.components
             let details = MSErrorDetails(message: error.localizedDescription, body: components?.body, path: components?.path, code: error.code, underlyingError: error)
             return MSError(type: .responseValidation(reason: .connectivity), details: details)
         }
         
         return nil
     }
+}
 
-    /// Returns an error response from a data stream
-    ///
-    /// - Parameter data: data stream
-    /// - Returns: a response, empty dictionary if there were issues parsing the data
-    private func errorDetails(fromData data: Data?, request: URLRequest?, code: Int, error: Error?) -> MSErrorDetails {
-        let components = requestComponents(request)
-        let body = components?.body
-        let path = components?.path
-        
-        var errorMessage: String?
-        
-        if let responseData = data,
-            let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
-            let responseDictionary = self.convertToDictionary(text: responseDataString) {
-
-            if let responseError = responseDictionary["error"] as? [String: Any],
-                let message = responseError["message"] as? String {
-                errorMessage = message
-            } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
-                let responseFirstError = responseError.first,
-                let message = responseFirstError["message"] as? String {
-                //multiple error
-                errorMessage = message
-            }
-        }
-        
-        return MSErrorDetails(message: errorMessage ?? (error?.localizedDescription ?? ""), body: body, path: path, code: code, underlyingError: error)
-    }
+extension URLRequest {
     
-    private func requestComponents(_ request: URLRequest?) -> (path: String?, body: String?)? {
-        guard let request = request else { return nil }
-        let path = request.url?.absoluteString
+    /// Return request components
+    var components: (path: String?, body: String?) {
+        let path = url?.absoluteString
         var body:String? = nil
         
-        if let httpBody = request.httpBody {
+        if let httpBody = httpBody {
             body = String(data: httpBody, encoding: String.Encoding.utf8)
         }
         
         return (path: path, body: body)
     }
     
-    /// Serializes a String JSON Response into a dictionary
-    ///
-    /// - Parameter text: string response
-    /// - Returns: dictionary response
-    private func convertToDictionary(text: String) -> [String: Any]? {
-        if let data = text.data(using: .utf8) {
+}
+
+extension String {
+    
+    /// Returns a dictionary representing the JSON response if the string conforms to the format
+    var jsonDictionary : [String: Any]? {
+        if let data = data(using: .utf8) {
             do {
                 return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
             } catch {
@@ -241,5 +216,8 @@ open class AlamoNetworkManager: NetworkManager {
             }
         }
         return nil
+        
     }
 }
+
+
