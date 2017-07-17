@@ -14,19 +14,17 @@ extension URLRequest {
     ///
     /// - Returns: the cached JSON response
     public func cachedJSONResponse() -> Any? {
-        if let cachedResponse = URLCache.shared.cachedResponse(for: self),
+        guard let cachedResponse = URLCache.shared.cachedResponse(for: self),
             let userInfo = cachedResponse.userInfo,
             let startTime = userInfo[CachedURLResponse.CacheURLResponseTime] as? Double,
-            let maxAge = userInfo[CachedURLResponse.CacheURLResponseMaxAge] as? Double {
-            let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-            
-            guard elapsed <= maxAge else { return nil }
-            
-            let data = cachedResponse.data
-            let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-            return json
+            let maxAge = userInfo[CachedURLResponse.CacheURLResponseMaxAge] as? Double,
+            CFAbsoluteTimeGetCurrent() - startTime <= maxAge else {
+                return nil
         }
-        return nil
+        
+        let data = cachedResponse.data
+        let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+        return json
     }
 }
 

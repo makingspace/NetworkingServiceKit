@@ -50,6 +50,7 @@ class AlamoNetworkManagerTests: QuickSpec
     override func spec() {
         let arrayResponse = [["param" : "value"],["param" : "value"]] as [[String : Any]]
         let dictionaryResponse = ["param" : "value"] as [String : Any]
+        let dictionaryResponseUpdated = ["param" : "value2"] as [String : Any]
         let dictionaryNextResponse2 = ["next" : "https://random.com/v3/dictionary_next2", "results" : [["obj1" : "value"]]] as [String : Any]
         let dictionaryNextResponse3 = ["next" : "https://random.com/v3/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
@@ -206,18 +207,21 @@ class AlamoNetworkManagerTests: QuickSpec
                     
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
-                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                success: { response in
                             expect(response).toNot(beNil())
                             let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
                             let cachedResponse = originalRequest.cachedJSONResponse()
                             expect(cachedResponse).toNot(beNil())
+                            let dic = cachedResponse as! [String:Any]
+                            expect(dic["param"] as? String).to(equal("value"))
                                                 
                             //Since we are cache now, the stubs should not be needed
                             MockingjayProtocol.removeAllStubs()
-                            randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                            randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                    success: { response in
                                 expect(response).toNot(beNil())
+                                expect(response["param"] as? String).to(equal("value"))
                                 done()
                             }, failure: { error, errorDetails in
                             })
@@ -231,7 +235,7 @@ class AlamoNetworkManagerTests: QuickSpec
                     
                     waitUntil(timeout:6) { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
-                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                success: { response in
                                                 expect(response).toNot(beNil())
                                                 let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
@@ -242,7 +246,7 @@ class AlamoNetworkManagerTests: QuickSpec
                                                 MockingjayProtocol.removeAllStubs()
                                                 // Now let's wait for the cache to get invalidated
                                                 sleep(3)
-                                                randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                                                randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                                        success: { response in
                                                 }, failure: { error, errorDetails in
                                                     //the request to network fails since there is no stub and no cache
@@ -262,7 +266,7 @@ class AlamoNetworkManagerTests: QuickSpec
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary_next1",
                                                paginated:true,
-                                               cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                                               cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                success: { response in
                             expect(response["results"]).toNot(beNil())
                             let results = response["results"] as! [[String:Any]]
@@ -281,7 +285,7 @@ class AlamoNetworkManagerTests: QuickSpec
                             //paginated request should work through cache
                             randomService?.request(path: "dictionary_next1",
                                                    paginated:true,
-                                                   cachePolicy:CacheResponsePolicy(type: .forceCache, maxAge: 2),
+                                                   cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                    success: { response in
                                 expect(response["results"]).toNot(beNil())
                                 let results = response["results"] as! [[String:Any]]
@@ -293,6 +297,39 @@ class AlamoNetworkManagerTests: QuickSpec
                         })
                     }
 
+                }
+                
+                it("should correctly revalidates cache data when using cache policy: .reloadRevalidatingForceCacheData") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .reloadRevalidatingForceCacheData, maxAge: 2),
+                                               success: { response in
+                                                expect(response).toNot(beNil())
+                                                let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                let cachedResponse = originalRequest.cachedJSONResponse()
+                                                expect(cachedResponse).toNot(beNil())
+                                                let dic = cachedResponse as! [String:Any]
+                                                expect(dic["param"] as? String).to(equal("value"))
+                                                
+                                                MockingjayProtocol.removeAllStubs()
+                                                MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponseUpdated))
+                                                randomService?.request(path: "dictionary",
+                                                                       cachePolicy:CacheResponsePolicy(type: .reloadRevalidatingForceCacheData, maxAge: 2),
+                                                                       success: { response in
+                                                                        expect(response).toNot(beNil())
+                                                                        let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                                        let cachedResponse = originalRequest.cachedJSONResponse()
+                                                                        expect(cachedResponse).toNot(beNil())
+                                                                        let dic = cachedResponse as! [String:Any]
+                                                                        expect(dic["param"] as? String).to(equal("value2"))
+                                                                        done()
+                                                }, failure: { error, errorDetails in
+                                                })
+                        }, failure: { error, errorDetails in
+                        })
+                    }
                 }
             }
         }

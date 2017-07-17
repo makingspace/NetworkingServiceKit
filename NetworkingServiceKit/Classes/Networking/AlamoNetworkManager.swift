@@ -100,7 +100,7 @@ open class AlamoNetworkManager: NetworkManager {
                                                 }
         }
 
-        if cachePolicy.type == .forceCache,
+        if cachePolicy.type == .forceCacheDataElseLoad,
             let urlRequest = request.request,
             let cachedResponse = urlRequest.cachedJSONResponse() {
             //Process valid response
@@ -183,7 +183,7 @@ open class AlamoNetworkManager: NetworkManager {
                                                 }
         }
         
-        if cachePolicy.type == .forceCache,
+        if cachePolicy.type == .forceCacheDataElseLoad,
             let urlRequest = request.request,
             let cachedResponse = urlRequest.cachedJSONResponse() as? [String:Any] {
             
@@ -426,7 +426,7 @@ open class AlamoNetworkManager: NetworkManager {
     ///   - cachePolicy: cache policy
     private static func cache(response:HTTPURLResponse?, with data:Data?, for request:URLRequest?, using cachePolicy: CacheResponsePolicy) {
         // Cached our response through URLCache if we are force caching and the response doesn't specify a Cache-Control
-        if cachePolicy.type == .forceCache,
+        if cachePolicy.type.supportsForceCache,
             let response = response,
             response.isResponseCachePolicyDisabled,
             let request = request,

@@ -183,8 +183,19 @@ public enum CacheResponsePolicyType : UInt {
     /// Cache based on HTTP-Header: Cache-Control
     case cacheControlBased
     
-    /// Force Cache this response
-    case forceCache
+    /// Force Cache this response, return from the cache immediatly otherwise load network
+    case forceCacheDataElseLoad
+    
+    /// Revalidates the cache, returns from network
+    case reloadRevalidatingForceCacheData
+    
+    /// If the cache policy supports force caching
+    var supportsForceCache:Bool {
+        switch self {
+        case .forceCacheDataElseLoad, .reloadRevalidatingForceCacheData: return true
+        default: return false
+        }
+    }
 }
 
 /// Describe how the cache should behave when receiving a network response
