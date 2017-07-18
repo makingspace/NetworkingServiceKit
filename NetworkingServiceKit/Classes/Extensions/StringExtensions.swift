@@ -17,6 +17,19 @@ extension String {
     public func asParameters() -> Parameters {
         return [stringParametersKey: self]
     }
+    
+    /// Returns a dictionary representing the JSON response if the string conforms to the format
+    var jsonDictionary : [String: Any]? {
+        if let data = data(using: .utf8) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        return nil
+        
+    }
 }
 
 /// Convert the parameters into a string body, and it is added as the request body.

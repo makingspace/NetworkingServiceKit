@@ -81,13 +81,8 @@ public enum TwitterAPIConfigurationType: String, APIConfigurationType {
         return self.rawValue.capitalized
     }
 
-    /// Explicitly tells our protocol which is our staging configuration
-    public static var stagingConfiguration: APIConfigurationType {
-        return TwitterAPIConfigurationType.staging
-    }
-
-    /// Explicitly tells our protocol which is our production configuration
-    public static var productionConfiguration: APIConfigurationType {
+    /// Explicitly tells our protocol which is our default configuration
+    public static var defaultConfiguration: APIConfigurationType {
         return TwitterAPIConfigurationType.production
     }
 }
