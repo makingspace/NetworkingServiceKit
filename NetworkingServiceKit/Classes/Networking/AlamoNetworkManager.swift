@@ -330,39 +330,7 @@ open class AlamoNetworkManager: NetworkManager {
         
         return nil
     }
-}
 
-extension URLRequest {
-    
-    /// Extracts a path and a body from a URLRequest
-    var components: (path: String?, body: String?) {
-        let path = url?.absoluteString
-        var body:String? = nil
-        
-        if let httpBody = httpBody {
-            body = String(data: httpBody, encoding: String.Encoding.utf8)
-        }
-        
-        return (path: path, body: body)
-    }
-    
-}
-
-extension String {
-    
-    /// Returns a dictionary representing the JSON response if the string conforms to the format
-    var jsonDictionary : [String: Any]? {
-        if let data = data(using: .utf8) {
-            do {
-                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        return nil
-        
-    }
-    
     // MARK: - Debugging
     
     /// Prints a debug of a network response
@@ -409,5 +377,3 @@ extension String {
         }
     }
 }
-
-

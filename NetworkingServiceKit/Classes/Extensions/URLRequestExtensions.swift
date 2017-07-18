@@ -26,6 +26,18 @@ extension URLRequest {
         let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
         return json
     }
+    
+    /// Extracts a path and a body from a URLRequest
+    var components: (path: String?, body: String?) {
+        let path = url?.absoluteString
+        var body:String? = nil
+        
+        if let httpBody = httpBody {
+            body = String(data: httpBody, encoding: String.Encoding.utf8)
+        }
+        
+        return (path: path, body: body)
+    }
 }
 
 extension CachedURLResponse {
