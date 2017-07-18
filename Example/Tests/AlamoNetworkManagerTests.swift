@@ -12,6 +12,34 @@ import Nimble
 import NetworkingServiceKit
 import Mockingjay
 
+public enum RandomConfigurationType: String, APIConfigurationType {
+    case basic = "BASIC"
+
+    public init(stringKey: String) {
+        self = .basic
+    }
+    
+    /// URL for given server
+    public var URL: String {
+        return "https://random.com"
+    }
+    
+    /// Web URL for given server
+    public var webURL: String {
+        return "https://random.com"
+    }
+    
+    /// Display name for given server
+    public var displayName: String {
+        return self.rawValue.capitalized
+    }
+    
+    /// Explicitly tells our protocol which is our default configuration
+    public static var defaultConfiguration: APIConfigurationType {
+        return RandomConfigurationType.basic
+    }
+}
+
 class RandomService : AbstractBaseService {
     override var serviceVersion: String {
         return "v3"
@@ -22,14 +50,16 @@ class AlamoNetworkManagerTests: QuickSpec
     override func spec() {
         let arrayResponse = [["param" : "value"],["param" : "value"]] as [[String : Any]]
         let dictionaryResponse = ["param" : "value"] as [String : Any]
+        let dictionaryResponseUpdated = ["param" : "value2"] as [String : Any]
         let dictionaryNextResponse2 = ["next" : "https://random.com/v3/dictionary_next2", "results" : [["obj1" : "value"]]] as [String : Any]
         let dictionaryNextResponse3 = ["next" : "https://random.com/v3/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
         beforeEach {
+            MockingjayProtocol.removeAllStubs()
             ServiceLocator.defaultNetworkClientType = AlamoNetworkManager.self
             ServiceLocator.set(services: [RandomService.self],
-                               api: TwitterAPIConfigurationType.self,
+                               api: RandomConfigurationType.self,
                                auth: TwitterApp.self,
                                token: TwitterAPIToken.self)
         }
@@ -166,6 +196,138 @@ class AlamoNetworkManagerTests: QuickSpec
                                 }
                             default:break
                             }
+                        })
+                    }
+                }
+            }
+            
+            context("that is force cached") {
+                it("should correctly store and return the cached request if the cache is valid") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                               success: { response in
+                            expect(response).toNot(beNil())
+                            let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                            let cachedResponse = originalRequest.cachedJSONResponse()
+                            expect(cachedResponse).toNot(beNil())
+                            let dic = cachedResponse as! [String:Any]
+                            expect(dic["param"] as? String).to(equal("value"))
+                                                
+                            //Since we are cache now, the stubs should not be needed
+                            MockingjayProtocol.removeAllStubs()
+                            randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                                   success: { response in
+                                expect(response).toNot(beNil())
+                                expect(response["param"] as? String).to(equal("value"))
+                                done()
+                            }, failure: { error, errorDetails in
+                            })
+                        }, failure: { error, errorDetails in
+                        })
+                    }
+                }
+                
+                it("should fail if the cache has been invalidated") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
+                    
+                    waitUntil(timeout:6) { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                               success: { response in
+                                                expect(response).toNot(beNil())
+                                                let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                let cachedResponse = originalRequest.cachedJSONResponse()
+                                                expect(cachedResponse).toNot(beNil())
+                                                
+                                                //Since we are cache now, the stubs should not be needed
+                                                MockingjayProtocol.removeAllStubs()
+                                                // Now let's wait for the cache to get invalidated
+                                                sleep(3)
+                                                randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                                                       success: { response in
+                                                }, failure: { error, errorDetails in
+                                                    //the request to network fails since there is no stub and no cache
+                                                    done()
+                                                })
+                        }, failure: { error, errorDetails in
+                        })
+                    }
+                }
+                
+                it("should correctly return cached responses from paginated requests") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next1"), builder: json(dictionaryNextResponse2))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next2"), builder: json(dictionaryNextResponse3))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next3"), builder: json(dictionaryNextResponse4))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary_next1",
+                                               paginated:true,
+                                               cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                               success: { response in
+                            expect(response["results"]).toNot(beNil())
+                            let results = response["results"] as! [[String:Any]]
+                            expect(results.count).to(equal(3))
+                                                
+                            let originalRequest1 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next1")!)
+                            expect(originalRequest1.cachedJSONResponse()).toNot(beNil())
+                            let originalRequest2 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next2")!)
+                            expect(originalRequest2.cachedJSONResponse()).toNot(beNil())
+                            let originalRequest3 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next3")!)
+                            expect(originalRequest3.cachedJSONResponse()).toNot(beNil())
+                                                
+                            //Since we are cache now, the stubs should not be needed
+                            MockingjayProtocol.removeAllStubs()
+                                                
+                            //paginated request should work through cache
+                            randomService?.request(path: "dictionary_next1",
+                                                   paginated:true,
+                                                   cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                                   success: { response in
+                                expect(response["results"]).toNot(beNil())
+                                let results = response["results"] as! [[String:Any]]
+                                expect(results.count).to(equal(3))
+                                done()
+                            }, failure: { error, errorDetails in
+                            })
+                        }, failure: { error, errorDetails in
+                        })
+                    }
+
+                }
+                
+                it("should correctly revalidates cache data when using cache policy: .reloadRevalidatingForceCacheData") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .reloadRevalidatingForceCacheData, maxAge: 2),
+                                               success: { response in
+                                                expect(response).toNot(beNil())
+                                                let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                let cachedResponse = originalRequest.cachedJSONResponse()
+                                                expect(cachedResponse).toNot(beNil())
+                                                let dic = cachedResponse as! [String:Any]
+                                                expect(dic["param"] as? String).to(equal("value"))
+                                                
+                                                MockingjayProtocol.removeAllStubs()
+                                                MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponseUpdated))
+                                                randomService?.request(path: "dictionary",
+                                                                       cachePolicy:CacheResponsePolicy(type: .reloadRevalidatingForceCacheData, maxAge: 2),
+                                                                       success: { response in
+                                                                        expect(response).toNot(beNil())
+                                                                        let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                                        let cachedResponse = originalRequest.cachedJSONResponse()
+                                                                        expect(cachedResponse).toNot(beNil())
+                                                                        let dic = cachedResponse as! [String:Any]
+                                                                        expect(dic["param"] as? String).to(equal("value2"))
+                                                                        done()
+                                                }, failure: { error, errorDetails in
+                                                })
+                        }, failure: { error, errorDetails in
                         })
                     }
                 }

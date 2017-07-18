@@ -176,6 +176,47 @@ public enum HTTPMethod: Int32 {
     }
 }
 
+/// Custom type of cache policy
+@objc
+public enum CacheResponsePolicyType : UInt {
+    
+    /// Cache based on HTTP-Header: Cache-Control
+    case cacheControlBased
+    
+    /// Force Cache this response, return from the cache immediatly otherwise load network
+    case forceCacheDataElseLoad
+    
+    /// Revalidates the cache, returns from network
+    case reloadRevalidatingForceCacheData
+    
+    /// If the cache policy supports force caching
+    var supportsForceCache:Bool {
+        switch self {
+        case .forceCacheDataElseLoad, .reloadRevalidatingForceCacheData: return true
+        default: return false
+        }
+    }
+}
+
+/// Describe how the cache should behave when receiving a network response
+@objc
+open class CacheResponsePolicy: NSObject {
+    // Cache policy type
+    let type:CacheResponsePolicyType
+    // Max age we would hold a cache, only used for forceCache, otherwise this is specified in the server response
+    let maxAge:Double
+    
+    public init(type:CacheResponsePolicyType, maxAge:Double) {
+        self.type = type
+        self.maxAge = maxAge
+    }
+    
+    /// Returns the default cache policy
+    open static var `default`:CacheResponsePolicy {
+        return CacheResponsePolicy(type:.cacheControlBased, maxAge:0)
+    }
+}
+
 /// Success/Error blocks for a NetworkManager response
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
 public typealias ErrorResponseBlock = (MSError, MSErrorDetails?) -> Void
@@ -190,6 +231,7 @@ public protocol NetworkManager {
                  method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
+                 cachePolicy:CacheResponsePolicy,
                  headers: CustomHTTPHeaders,
                  stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
