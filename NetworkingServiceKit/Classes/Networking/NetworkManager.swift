@@ -9,7 +9,7 @@
 import Foundation
 
 //Custom Makespace Error Response Object
-public struct MSErrorDetails {
+@objc public class MSErrorDetails: NSObject {
     /// Message describing the error
     public let message: String
     /// Body of network request
@@ -29,8 +29,33 @@ public struct MSErrorDetails {
         self.underlyingError = underlyingError
     }
     
-    public init(error: NSError) {
+    public convenience init(error: NSError) {
         self.init(message: error.localizedDescription, body: nil, path: nil, code: error.code, underlyingError: error)
+    }
+    
+    public convenience init(data: Data?, request: URLRequest?, code: Int, error: Error?) {
+        let components = request?.components
+        let body = components?.body
+        let path = components?.path
+        
+        var errorMessage: String?
+        
+        if let responseData = data,
+            let responseDataString = String(data: responseData, encoding:String.Encoding.utf8),
+            let responseDictionary = responseDataString.jsonDictionary {
+            
+            if let responseError = responseDictionary["error"] as? [String: Any],
+                let message = responseError[NSError.messageKey] as? String {
+                errorMessage = message
+            } else if let responseError = responseDictionary["errors"] as? [[String: Any]],
+                let responseFirstError = responseError.first,
+                let message = responseFirstError[NSError.messageKey] as? String {
+                //multiple error
+                errorMessage = message
+            }
+        }
+        
+        self.init(message: errorMessage ?? (error?.localizedDescription ?? ""), body: body, path: path, code: code, underlyingError: error)
     }
 }
 
@@ -100,7 +125,7 @@ public enum MSErrorType {
 }
 
 //Custom Makespace Error
-public struct MSError: Error {
+@objc public class MSError: NSObject, Error {
     /// Enum value describing the failure
     public let type: MSErrorType
     /// Details of the error
@@ -185,7 +210,7 @@ public extension MSError {
     }
     
     /// Returns a generic error to describe Core Data problems
-    static var genericLocalDataError: MSError {
+    static var genericPersistenceError: MSError {
         return MSError(type: .persistenceValidation(reason: .invalidData), error: nil)
     }
 }

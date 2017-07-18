@@ -11,11 +11,13 @@ import Foundation
 extension NSError {
 
     /// A key for userInfo to save our error message from the server
-    private static var errorMessageKey = "message"
+    static var messageKey: String {
+        return "message"
+    }
 
     /// Returns a user friendly error message from the error response
     public var errorMessage: String {
-        return self.userInfo[NSError.errorMessageKey] as? String ?? ""
+        return self.userInfo[NSError.messageKey] as? String ?? ""
     }
 
     /// Builds an NSError object from our MSError
@@ -29,6 +31,6 @@ extension NSError {
         errorMessage = errorMessage.replacingOccurrences(of: "\']", with: "")
         return NSError(domain: Bundle.main.appBundleIdentifier,
                        code: msError.details.code,
-                       userInfo: [NSError.errorMessageKey: errorMessage])
+                       userInfo: [NSError.messageKey: errorMessage])
     }
 }
