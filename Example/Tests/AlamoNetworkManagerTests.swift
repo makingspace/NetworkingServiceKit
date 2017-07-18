@@ -75,7 +75,7 @@ class AlamoNetworkManagerTests: QuickSpec
                             let results = response["results"] as! [[String : Any]]
                             expect(results).toNot(beNil())
                             done()
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -90,7 +90,7 @@ class AlamoNetworkManagerTests: QuickSpec
                         randomService?.request(path: "dictionary", success: { response in
                             expect(response).toNot(beNil())
                             done()
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -109,7 +109,7 @@ class AlamoNetworkManagerTests: QuickSpec
                             let results = response["results"] as! [[String:Any]]
                             expect(results.count).to(equal(3))
                             done()
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -125,7 +125,7 @@ class AlamoNetworkManagerTests: QuickSpec
                             expect(response).toNot(beNil())
                             expect(response.count).to(equal(0))
                             done()
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -138,10 +138,10 @@ class AlamoNetworkManagerTests: QuickSpec
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
-                        }, failure: { error, errorDetails in
-                            expect(error.responseCode).to(equal(500))
-                            switch error {
-                            case .responseValidationFailed(let reason):
+                        }, failure: { error in
+                            expect(error.details.code).to(equal(500))
+                            switch error.type {
+                            case .responseValidation(let reason):
                                 switch reason {
                                 case .internalServerError: done()
                                 default:break
@@ -155,19 +155,17 @@ class AlamoNetworkManagerTests: QuickSpec
             
             context("that returns a error on the response") {
                 it("should return an error of type .badRequest") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(404))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(410))
                     
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
-                        }, failure: { error, errorDetails in
-                            expect(error.responseCode).to(equal(404))
-                            switch error {
-                            case .responseValidationFailed(let reason):
+                        }, failure: { error in
+                            expect(error.details.code).to(equal(410))
+                            switch error.type {
+                            case .responseValidation(let reason):
                                 switch reason {
-                                case .badRequest(let error):
-                                    expect((error as NSError).code).to(equal(404))
-                                    done()
+                                case .badRequest: done()
                                 default:break
                                 }
                             default:break
@@ -184,14 +182,55 @@ class AlamoNetworkManagerTests: QuickSpec
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
-                        }, failure: { error, errorDetails in
-                            expect(error.responseCode).to(equal(401))
-                            switch error {
-                            case .responseValidationFailed(let reason):
+                        }, failure: { error in
+                            expect(error.details.code).to(equal(401))
+                            switch error.type {
+                            case .responseValidation(let reason):
                                 switch reason {
-                                case .tokenExpired(let code):
-                                    expect(code).to(equal(401))
-                                    done()
+                                case .tokenExpired: done()
+                                default:break
+                                }
+                            default:break
+                            }
+                        })
+                    }
+                }
+            }
+            context("that returns a 404") {
+                it("should return an error of type .notFound") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(404))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "error500", success: { response in
+                        }, failure: { error in
+                            expect(error.details.code).to(equal(404))
+                            switch error.type {
+                            case .responseValidation(let reason):
+                                switch reason {
+                                case .notFound: done()
+                                default:break
+                                }
+                            default:break
+                            }
+                        })
+                    }
+                }
+            }
+            
+            context("that returns a 403") {
+                it("should return an error of type .forbidden") {
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(403))
+                    
+                    waitUntil { done in
+                        let randomService = ServiceLocator.service(forType: RandomService.self)
+                        randomService?.request(path: "error500", success: { response in
+                        }, failure: { error in
+                            expect(error.details.code).to(equal(403))
+                            switch error.type {
+                            case .responseValidation(let reason):
+                                switch reason {
+                                case .forbidden: done()
                                 default:break
                                 }
                             default:break
@@ -223,9 +262,9 @@ class AlamoNetworkManagerTests: QuickSpec
                                 expect(response).toNot(beNil())
                                 expect(response["param"] as? String).to(equal("value"))
                                 done()
-                            }, failure: { error, errorDetails in
+                            }, failure: { error in
                             })
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -246,13 +285,14 @@ class AlamoNetworkManagerTests: QuickSpec
                                                 MockingjayProtocol.removeAllStubs()
                                                 // Now let's wait for the cache to get invalidated
                                                 sleep(3)
-                                                randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                                                randomService?.request(path: "dictionary",
+                                                                       cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                                        success: { response in
-                                                }, failure: { error, errorDetails in
+                                                }, failure: { error in
                                                     //the request to network fails since there is no stub and no cache
                                                     done()
                                                 })
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }
@@ -291,9 +331,9 @@ class AlamoNetworkManagerTests: QuickSpec
                                 let results = response["results"] as! [[String:Any]]
                                 expect(results.count).to(equal(3))
                                 done()
-                            }, failure: { error, errorDetails in
+                            }, failure: { error in
                             })
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
 
@@ -325,9 +365,9 @@ class AlamoNetworkManagerTests: QuickSpec
                                                                         let dic = cachedResponse as! [String:Any]
                                                                         expect(dic["param"] as? String).to(equal("value2"))
                                                                         done()
-                                                }, failure: { error, errorDetails in
+                                                }, failure: { error in
                                                 })
-                        }, failure: { error, errorDetails in
+                        }, failure: { error in
                         })
                     }
                 }

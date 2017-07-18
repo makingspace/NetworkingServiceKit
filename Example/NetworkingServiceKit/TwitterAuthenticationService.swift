@@ -33,7 +33,7 @@ open class TwitterAuthenticationService: AbstractBaseService {
                     success: { response in
                         let token = APITokenManager.store(tokenInfo: response)
                         completion(token != nil)
-            }, failure: { _, _ in
+            }, failure: { _ in
                 completion(false)
             })
         } else {
@@ -54,7 +54,7 @@ open class TwitterAuthenticationService: AbstractBaseService {
                     APITokenManager.clearAuthentication()
                     ServiceLocator.reloadExistingServices()
                     completion(true)
-        }, failure: { _, _ in
+        }, failure: { _ in
             completion(false)
         })
     }
