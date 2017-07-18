@@ -49,6 +49,7 @@ public protocol Service {
     ///   - method: HTTP method
     ///   - parameters: parameters for the request
     ///   - paginated: if we have to merge this request pagination
+    ///   - cachePolicy: specifices the policy to follow for caching responses
     ///   - headers: optional headers to include in the request
     ///   - success: success block
     ///   - failure: failure block
@@ -56,6 +57,7 @@ public protocol Service {
                  method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
+                 cachePolicy: CacheResponsePolicy,
                  headers: CustomHTTPHeaders,
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
@@ -131,6 +133,7 @@ open class AbstractBaseService: NSObject, Service {
     ///   - method: HTTP method, default is GET
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - cachePolicy: specifices the policy to follow for caching responses
     ///   - headers: custom headers that should be attached with this request
     ///   - success: success block with a response
     ///   - failure: failure block with an error
@@ -138,6 +141,7 @@ open class AbstractBaseService: NSObject, Service {
                  method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
+                 cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
@@ -145,6 +149,7 @@ open class AbstractBaseService: NSObject, Service {
                                     method: method,
                                     with: parameters,
                                     paginated: paginated,
+                                    cachePolicy: cachePolicy,
                                     headers: headers,
                                     stubs: self.stubs,
                                     success: success,

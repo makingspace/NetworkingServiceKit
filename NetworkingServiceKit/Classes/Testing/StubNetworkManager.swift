@@ -25,6 +25,7 @@ open class StubNetworkManager: NetworkManager {
     ///   - method: HTTP method, default is GET
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
+    ///   - cachePolicy: specifices the policy to follow for caching responses (unused for stub network responses)
     ///   - headers: custom headers that should be attached with this request
     ///   - stubs: a list of stubbed cases for this request to get compare against
     ///   - success: success block with a response
@@ -33,6 +34,7 @@ open class StubNetworkManager: NetworkManager {
                  method: NetworkingServiceKit.HTTPMethod = .get,
                  with parameters: RequestParameters = RequestParameters(),
                  paginated: Bool = false,
+                 cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                  stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
