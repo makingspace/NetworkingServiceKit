@@ -233,7 +233,10 @@ open class AlamoNetworkManager: NetworkManager {
         if let response = rawResponse as? [Any] {
             let responseDic = ["results": response]
             success(responseDic)
-        } else if let response = rawResponse as? [String:Any] {
+        }
+        else {
+            let response = rawResponse as? [String:Any] ?? [:]
+            
             if let nextPage = response["next"] as? String,
                 paginated {
                 //call a request with the next page
@@ -246,8 +249,8 @@ open class AlamoNetworkManager: NetworkManager {
                                  cachePolicy: cachePolicy,
                                  success: success,
                                  failure: failure)
-            } else {
-                //return inmediatly
+            }
+            else {
                 success(response)
             }
         }
