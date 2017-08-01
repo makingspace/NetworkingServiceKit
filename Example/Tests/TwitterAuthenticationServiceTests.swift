@@ -96,7 +96,7 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         }
     }
     
-    func authenticationTokenDidExpired() {
+    func authenticationTokenDidExpire() {
         self.delegateGot401 = true
     }
 }
