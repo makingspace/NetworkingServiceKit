@@ -8,7 +8,7 @@
 
 import UIKit
 public protocol ServiceLocatorDelegate {
-    func authenticationTokenDidExpired()
+    func authenticationTokenDidExpire()
 }
 
 /// Defines the level of loggin we want for our network manager
@@ -37,20 +37,22 @@ open class ServiceLocator: NSObject {
     private var token: APIToken?
 
     /// Inits default configuration and network manager
-    private override init() {
+    private init(delegate: ServiceLocatorDelegate? = nil) {
+        self.delegate = delegate
         self.currentServices = [String: Service]()
         self.loadedServiceTypes = [Service.Type]()
     }
 
     /// Resets the ServiceLocator singleton instance
     open class func reset() {
-        ServiceLocator.shared = ServiceLocator()
+        ServiceLocator.shared = ServiceLocator(delegate: ServiceLocator.shared.delegate)
     }
 
     /// Reloads token, networkManager and configuration with existing hooked services
     open class func reloadExistingServices() {
+        reset()
+        
         let serviceTypes = ServiceLocator.shared.loadedServiceTypes
-        ServiceLocator.shared = ServiceLocator()
         if let configType = APIConfiguration.apiConfigurationType,
             let authType = APIConfiguration.authConfigurationType,
             let tokenType = APITokenManager.tokenType {

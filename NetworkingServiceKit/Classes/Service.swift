@@ -123,7 +123,7 @@ open class AbstractBaseService: NSObject, Service {
 
     /// Returns if this service has a valid token for authentication with our systems
     open var isAuthenticated: Bool {
-        return (self.token != nil)
+        return (APITokenManager.currentToken != nil)
     }
 
     /// Creates and executes a request using our default Network Manager
@@ -156,7 +156,7 @@ open class AbstractBaseService: NSObject, Service {
                                     failure: { error in
                                         if error.hasTokenExpired && self.isAuthenticated {
                                             //If our error response was because our token expired, then lets tell the delegate
-                                            ServiceLocator.shared.delegate?.authenticationTokenDidExpired()
+                                            ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
                                         }
                                         failure(error)
         })
