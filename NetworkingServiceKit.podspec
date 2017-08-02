@@ -38,4 +38,5 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
     s.dependency 'AlamofireImage'
     s.dependency 'CryptoSwift'
     s.dependency 'SwiftyJSON'
+    s.dependency 'ReactiveSwift'
 end
