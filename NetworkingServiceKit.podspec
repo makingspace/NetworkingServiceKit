@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.9.2'
+  s.version          = '0.9.4'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -31,12 +31,19 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
     'OTHER_SWIFT_FLAGS[config=Staging]' => '-D STAGING'
   }
   s.ios.deployment_target = '9.0'
+  s.default_subspec = 'Core'
 
-  s.source_files = 'NetworkingServiceKit/Classes/**/*'
+  s.subspec 'Core' do |core|
+    core.source_files = 'NetworkingServiceKit/Classes/**/*'
 
-    s.dependency 'Alamofire'
-    s.dependency 'AlamofireImage'
-    s.dependency 'CryptoSwift'
-    s.dependency 'SwiftyJSON'
-    s.dependency 'ReactiveSwift'
+    core.dependency 'Alamofire'
+    core.dependency 'AlamofireImage'
+    core.dependency 'CryptoSwift'
+    core.dependency 'SwiftyJSON'
+  end
+
+  s.subspec 'ReactiveSwift' do |reactive_swift|
+    reactive_swift.dependency 'ReactiveSwift'
+    reactive_swift.source_files = 'NetworkingServiceKit/Reactive/*'
+  end
 end

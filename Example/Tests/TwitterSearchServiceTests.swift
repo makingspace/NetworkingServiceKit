@@ -139,7 +139,7 @@ class TwitterSearchServiceTestsAlamo: QuickSpec {
                     waitUntil { done in
                         let searchService = ServiceLocator.service(forType: TwitterSearchService.self)
                         searchService?.searchRecents(by: "#makespace", completion: { results in
-                            searchService?.searchNextRecentsPage(completion: { results in
+                            searchService?.searchNextRecentsPageProducer().on(value: { results in
                                 expect(results.count).to(equal(2))
                                 let resultFirst = results.first
                                 expect(resultFirst).toNot(beNil())
@@ -147,17 +147,18 @@ class TwitterSearchServiceTestsAlamo: QuickSpec {
                                 expect(resultFirst?.user.handle).to(equal("darkzlave"))
                                 expect(resultFirst?.user.imagePath).to(equal("https://lol.png"))
                                 done()
-                            })
+                            }).start()
                         })
                     }
                 }
             }
+            
             context("with a next page NON available") {
                 it("return empty results") {
                     let searchService = ServiceLocator.service(forType: TwitterSearchService.self)
-                    searchService?.searchNextRecentsPage(completion: { results in
+                    searchService?.searchNextRecentsPageProducer().on(value: { results in
                         expect(results.count).to(equal(0))
-                    })
+                    }).start()
                 }
             }
         }

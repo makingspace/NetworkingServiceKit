@@ -83,7 +83,7 @@ public extension Service {
                                                   stubs: stubs).on(failed: { error in
                                                     if error.hasTokenExpired && self.isAuthenticated {
                                                         //If our error response was because our token expired, then lets tell the delegate
-                                                        ServiceLocator.shared.delegate?.authenticationTokenDidExpired()
+                                                        ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
                                                     }
                                                   })
         }
