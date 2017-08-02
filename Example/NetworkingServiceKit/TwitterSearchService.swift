@@ -8,6 +8,7 @@
 
 import Foundation
 import NetworkingServiceKit
+import ReactiveSwift
 
 public struct TwitterUser {
     public let handle: String
@@ -76,34 +77,32 @@ open class TwitterSearchService: AbstractBaseService {
         })
     }
 
-    /// Continue the search for the last valid hashtag that was searched for
+    /// Continue the search for the last valid hashtag that was searched for (Reactive)
     ///
     /// - Parameter completion: a list of TwitterSearchResult based on the term/hashtag sent
-    public func searchNextRecentsPage(completion:@escaping (_ results: [TwitterSearchResult]) -> Void) {
+    public func searchNextRecentsPageProducer() -> SignalProducer<[TwitterSearchResult],MSError> {
         guard let nextPage = self.nextResultsPage else {
-            completion([TwitterSearchResult]())
-            return
+            return SignalProducer.empty
         }
-        request(path: "search/tweets.json\(nextPage)",
-                method: .get,
-                with: [:],
-                success: { response in
-                    var searchResults = [TwitterSearchResult]()
-                    if let results = response["statuses"] as? [[String:Any]] {
-                        for result in results {
-                            if let twitterResult = TwitterSearchResult(dictionary: result) {
-                                searchResults.append(twitterResult)
-                            }
-                        }
+        
+        return request(path: "search/tweets.json\(nextPage)").map { response -> [TwitterSearchResult] in
+            var searchResults = [TwitterSearchResult]()
+            
+            guard let response = response else { return searchResults }
+            
+            if let results = response["statuses"] as? [[String:Any]] {
+                for result in results {
+                    if let twitterResult = TwitterSearchResult(dictionary: result) {
+                        searchResults.append(twitterResult)
                     }
-                    //save next page
-                    if let metadata = response["search_metadata"] as? [String:Any],
-                        let nextPage = metadata["next_results"] as? String {
-                        self.nextResultsPage = nextPage
-                    }
-                    completion(searchResults)
-        }, failure: { _ in
-            completion([TwitterSearchResult]())
-        })
+                }
+            }
+            //save next page
+            if let metadata = response["search_metadata"] as? [String:Any],
+                let nextPage = metadata["next_results"] as? String {
+                self.nextResultsPage = nextPage
+            }
+            return searchResults
+        }
     }
 }
