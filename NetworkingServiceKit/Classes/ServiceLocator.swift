@@ -50,9 +50,9 @@ open class ServiceLocator: NSObject {
 
     /// Reloads token, networkManager and configuration with existing hooked services
     open class func reloadExistingServices() {
+        let serviceTypes = ServiceLocator.shared.loadedServiceTypes
         reset()
         
-        let serviceTypes = ServiceLocator.shared.loadedServiceTypes
         if let configType = APIConfiguration.apiConfigurationType,
             let authType = APIConfiguration.authConfigurationType,
             let tokenType = APITokenManager.tokenType {
