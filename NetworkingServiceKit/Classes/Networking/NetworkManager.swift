@@ -165,6 +165,16 @@ public enum MSErrorType {
     }
 }
 
+extension MSError: CustomNSError {
+    public var errorCode: Int {
+        return details.code
+    }
+    
+    public var errorUserInfo: [String : Any] {
+        return [NSLocalizedDescriptionKey: details.message]
+    }
+}
+
 // Mapped Error response failures
 public extension MSErrorType.ResponseFailureReason {
 
