@@ -91,6 +91,36 @@ let searchService = ServiceLocator.service(forType: TwitterSearchService.self, s
 
 Our example searchStub will get returned for all .get authenticated requests that are under the path **/1.1/search/tweets.json?q=#makespace** and the request will return after 0.5sec. For our TwitterSearchService this occurs all seemlessly without having to do any changes on the code for it to be tested.
 
+## ReactiveSwift
+NSK includes supports for [ReactiveSwift](https://github.com/ReactiveCocoa/ReactiveSwift) through `ReactiveSwiftNetworkManager`. This enable services to return `SignalProducer` instead of relying on completion blocks. This can easily enable chaining and mapping of network responses, for example:
+
+```swift
+
+func searchNextRecentsPageProducer() -> SignalProducer<[TwitterSearchResult],MSError> {
+    guard let nextPage = self.nextResultsPage else {
+        return SignalProducer.empty
+    }
+    let request = request(path: "search/tweets.json\(nextPage)")
+    return request.map { response -> [TwitterSearchResult] in
+        var searchResults = [TwitterSearchResult]()
+        
+        guard let response = response else { return searchResults }
+        
+        if let results = response["statuses"] as? [[String:Any]] {
+            for result in results {
+                if let twitterResult = TwitterSearchResult(dictionary: result) {
+                    searchResults.append(twitterResult)
+                }
+            }
+        }
+
+        return searchResults
+    }
+}
+
+```
+
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.

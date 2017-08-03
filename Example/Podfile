@@ -6,7 +6,8 @@ use_frameworks!
 
 target 'NetworkingServiceKit_Example' do
   pod 'NetworkingServiceKit', :path => '../'
-
+  pod 'NetworkingServiceKit/ReactiveSwift', :path => '../'
+  
   target 'NetworkingServiceKit_Tests' do
     inherit! :search_paths
 

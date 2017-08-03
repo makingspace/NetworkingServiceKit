@@ -9,6 +9,7 @@
 import UIKit
 import MapKit
 import NetworkingServiceKit
+import ReactiveSwift
 
 class ViewController: UIViewController {
 
@@ -75,11 +76,11 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource
         let approachingBottomIndex = currentResults.count - 2
         if indexPath.row == approachingBottomIndex {
             let twitterSearchService = ServiceLocator.service(forType: TwitterSearchService.self)
-            twitterSearchService?.searchNextRecentsPage(completion: { [weak self] results in
+            twitterSearchService?.searchNextRecentsPageProducer().on(value: { [weak self] results in
                 self?.currentResults.append(contentsOf: results)
                 self?.tweetsTableView.reloadData()
                 self?.showTweetsLocationsOnMap()
-            })
+            }).start()
         }
     }
 }
