@@ -37,8 +37,6 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
     core.source_files = 'NetworkingServiceKit/Classes/**/*'
 
     core.dependency 'Alamofire'
-    core.dependency 'AlamofireImage'
-    core.dependency 'CryptoSwift'
     core.dependency 'SwiftyJSON'
   end
 

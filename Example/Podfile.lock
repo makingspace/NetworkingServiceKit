@@ -1,8 +1,5 @@
 PODS:
   - Alamofire (4.5.0)
-  - AlamofireImage (3.2.0):
-    - Alamofire (~> 4.1)
-  - CryptoSwift (0.6.9)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
     - Mockingjay/XCTest (= 2.0.0)
@@ -14,13 +11,11 @@ PODS:
     - NetworkingServiceKit/Core (= 0.9.4)
   - NetworkingServiceKit/Core (0.9.4):
     - Alamofire
-    - AlamofireImage
-    - CryptoSwift
     - SwiftyJSON
   - NetworkingServiceKit/ReactiveSwift (0.9.4):
     - ReactiveSwift
-  - Nimble (5.1.1)
-  - Quick (1.0.0)
+  - Nimble (7.0.1)
+  - Quick (1.1.0)
   - ReactiveSwift (2.0.0):
     - Result (~> 3.2)
   - Result (3.2.3)
@@ -31,8 +26,8 @@ DEPENDENCIES:
   - Mockingjay
   - NetworkingServiceKit (from `../`)
   - NetworkingServiceKit/ReactiveSwift (from `../`)
-  - Nimble (~> 5.1.1)
-  - Quick (~> 1.0.0)
+  - Nimble
+  - Quick
 
 EXTERNAL SOURCES:
   NetworkingServiceKit:
@@ -40,17 +35,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
-  AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
-  CryptoSwift: a22f6ba238e9ce4d26ee7bf45b9ed82e7122d4a0
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
-  NetworkingServiceKit: c9859a24588bbe32bdb1893dbfeda390f3137c7c
-  Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
-  Quick: 8024e4a47e6cc03a9d5245ef0948264fc6d27cff
+  NetworkingServiceKit: 749cecf00c9ee136c5c4120b4c9074c3f4b4418d
+  Nimble: 657d000e11df8aebe27cdaf9d244de7f30ed87f7
+  Quick: dafc587e21eed9f4cab3249b9f9015b0b7a7f71d
   ReactiveSwift: 36339167e571774d936482d0f6512f5118a74731
   Result: 128640a6347e8d2ae48b142556739a2d13f90ce6
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   URITemplate: 720b8a56a281494d7c2d31ee33183986eaed2c67
 
-PODFILE CHECKSUM: fb0e42896a1ff194c9def2b623743251661bddaf
+PODFILE CHECKSUM: 0288e22a498f082261a1e0310efa64af672c34d3
 
 COCOAPODS: 1.2.1
