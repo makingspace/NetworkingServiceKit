@@ -107,13 +107,13 @@ public enum MSErrorType {
     /// - invalidData: Catchall for expected data being missing
     /// - persistenceFailure: Core Data failure
     public enum PersistenceFailureReason {
-        case invalidData
+        case invalidData(description: String?)
         case persistenceFailure
         
         public var description: String {
             switch self {
-            case .invalidData:
-                return "Invalid Data"
+            case .invalidData(let description):
+                return description ?? "Invalid Data"
             case .persistenceFailure:
                 return "Core Data Failure"
             }
@@ -221,7 +221,11 @@ public extension MSError {
     
     /// Returns a generic error to describe Core Data problems
     static var genericPersistenceError: MSError {
-        return MSError(type: .persistenceValidation(reason: .invalidData), error: nil)
+        return MSError(type: .persistenceValidation(reason: .invalidData(description: nil)), error: nil)
+    }
+    
+    static func dataError(description: String) -> MSError {
+        return MSError(type: .persistenceValidation(reason: .invalidData(description: description)), error: nil)
     }
 }
 
