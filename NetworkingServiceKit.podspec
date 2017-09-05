@@ -43,7 +43,12 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
   end
 
   s.subspec 'ReactiveSwift' do |reactive_swift|
+    reactive_swift.source_files = 'NetworkingServiceKit/Classes/**/*', 'NetworkingServiceKit/ReactiveSwift/*'
+    
+    reactive_swift.dependency 'Alamofire'
+    reactive_swift.dependency 'AlamofireImage'
+    reactive_swift.dependency 'CryptoSwift'
+    reactive_swift.dependency 'SwiftyJSON'
     reactive_swift.dependency 'ReactiveSwift'
-    reactive_swift.source_files = 'NetworkingServiceKit/ReactiveSwift/*'
   end
 end
