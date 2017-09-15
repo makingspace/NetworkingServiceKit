@@ -1,8 +1,8 @@
 PODS:
-  - Alamofire (4.5.0)
-  - AlamofireImage (3.2.0):
-    - Alamofire (~> 4.1)
-  - CryptoSwift (0.6.9)
+  - Alamofire (4.5.1)
+  - AlamofireImage (3.3.0):
+    - Alamofire (~> 4.5)
+  - CryptoSwift (0.7.1)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
     - Mockingjay/XCTest (= 2.0.0)
@@ -10,47 +10,76 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - NetworkingServiceKit (0.9.4):
-    - NetworkingServiceKit/Core (= 0.9.4)
-  - NetworkingServiceKit/Core (0.9.4):
+  - NetworkingServiceKit (1.0.0):
+    - NetworkingServiceKit/Core (= 1.0.0)
+  - NetworkingServiceKit/Core (1.0.0):
+    - Alamofire
+    - SwiftyJSON
+  - NetworkingServiceKit/ReactiveSwift (1.0.0):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
-    - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (0.9.4):
     - ReactiveSwift
-  - Nimble (5.1.1)
-  - Quick (1.0.0)
-  - ReactiveSwift (2.0.0):
+    - SwiftyJSON
+  - Nimble (7.0.1)
+  - Quick (1.1.0)
+  - ReactiveSwift (2.0.1):
     - Result (~> 3.2)
   - Result (3.2.3)
   - SwiftyJSON (3.1.4)
-  - URITemplate (2.0.1)
+  - URITemplate (2.1.0)
 
 DEPENDENCIES:
-  - Mockingjay
+  - Mockingjay (from `git@github.com:darkzlave/Mockingjay.git`, branch `master`)
   - NetworkingServiceKit (from `../`)
   - NetworkingServiceKit/ReactiveSwift (from `../`)
-  - Nimble (~> 5.1.1)
-  - Quick (~> 1.0.0)
+  - Nimble (from `git@github.com:Quick/Nimble.git`, branch `master`)
+  - Quick (from `git@github.com:Quick/Quick.git`, branch `master`)
+  - URITemplate (from `git@github.com:darkzlave/URITemplate.swift.git`, branch `master`)
 
 EXTERNAL SOURCES:
+  Mockingjay:
+    :branch: master
+    :git: git@github.com:darkzlave/Mockingjay.git
   NetworkingServiceKit:
     :path: ../
+  Nimble:
+    :branch: master
+    :git: git@github.com:Quick/Nimble.git
+  Quick:
+    :branch: master
+    :git: git@github.com:Quick/Quick.git
+  URITemplate:
+    :branch: master
+    :git: git@github.com:darkzlave/URITemplate.swift.git
+
+CHECKOUT OPTIONS:
+  Mockingjay:
+    :commit: cf544670b8d95f3f53716023ca665689a05a2784
+    :git: git@github.com:darkzlave/Mockingjay.git
+  Nimble:
+    :commit: a63252b16eba6cdebec4e4936388c90552165a68
+    :git: git@github.com:Quick/Nimble.git
+  Quick:
+    :commit: 3665ae9570b682a562df847cccbb46811864676a
+    :git: git@github.com:Quick/Quick.git
+  URITemplate:
+    :commit: 113d21e14d462a824f0a67587c75e10bcf8bf372
+    :git: git@github.com:darkzlave/URITemplate.swift.git
 
 SPEC CHECKSUMS:
-  Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
-  AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
-  CryptoSwift: a22f6ba238e9ce4d26ee7bf45b9ed82e7122d4a0
-  Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
-  NetworkingServiceKit: c9859a24588bbe32bdb1893dbfeda390f3137c7c
-  Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
-  Quick: 8024e4a47e6cc03a9d5245ef0948264fc6d27cff
-  ReactiveSwift: 36339167e571774d936482d0f6512f5118a74731
+  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  AlamofireImage: 2e784dc5d00f04903a52c1d169181469c805c3df
+  CryptoSwift: c290ac8976cf28c52c8b88bfe2c58c0302a0e0c0
+  Mockingjay: 95a5fbe594f963f7536d3975739df39f1366f4d1
+  NetworkingServiceKit: 0c729bbe4dbe3463f2079e01ef0712076a693fe5
+  Nimble: 1b6670c36e5750169b9e4cc2e9cfa82a7603c69e
+  Quick: 4700beb8056662b579facd79eaca7f04fb3d48e6
+  ReactiveSwift: 60a29ff35988a964fd2bb759755cb6594de523fc
   Result: 128640a6347e8d2ae48b142556739a2d13f90ce6
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
-  URITemplate: 720b8a56a281494d7c2d31ee33183986eaed2c67
+  URITemplate: bf971b2a5637e9fe19c64781309d1616689e4026
 
-PODFILE CHECKSUM: fb0e42896a1ff194c9def2b623743251661bddaf
+PODFILE CHECKSUM: c094b9ea9a0105359da668dfc37aa65bd9bd332f
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
