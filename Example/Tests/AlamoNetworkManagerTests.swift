@@ -65,10 +65,10 @@ class AlamoNetworkManagerTests: QuickSpec
         }
         describe("when executing a request") {
             context("that returns an array") {
-                
+
                 it("should have a response dictionary with an array of results inside") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/array"), builder: json(arrayResponse))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "array", success: { response in
@@ -80,11 +80,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a dictionary"){
                 it("should have a response dictionary with a dictionary response") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary", success: { response in
@@ -95,13 +95,13 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a paginated dictionary") {
                 it("should have a merged dictionary from all the requests") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next1"), builder: json(dictionaryNextResponse2))
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next2"), builder: json(dictionaryNextResponse3))
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next3"), builder: json(dictionaryNextResponse4))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary_next1", paginated:true, success: { response in
@@ -114,11 +114,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns an empty response") {
                 it("should have a empty dictionary") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/empty_dictionary"), builder: json([String : Any]()))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "empty_dictionary", success: { response in
@@ -130,11 +130,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a 500") {
                 it("should return an error of type .internalServerError") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(500))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
@@ -152,11 +152,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a error on the response") {
                 it("should return an error of type .badRequest") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(410))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
@@ -174,11 +174,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a 401") {
                 it("should return an error of type .tokenExpired") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(401))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
@@ -199,7 +199,7 @@ class AlamoNetworkManagerTests: QuickSpec
             context("that returns a 404") {
                 it("should return an error of type .notFound") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(404))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
@@ -217,11 +217,11 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
             }
-            
+
             context("that returns a 403") {
                 it("should return an error of type .forbidden") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/error500"), builder: http(403))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "error500", success: { response in
@@ -243,7 +243,7 @@ class AlamoNetworkManagerTests: QuickSpec
             context("that is force cached") {
                 it("should correctly store and return the cached request if the cache is valid") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
@@ -254,7 +254,7 @@ class AlamoNetworkManagerTests: QuickSpec
                             expect(cachedResponse).toNot(beNil())
                             let dic = cachedResponse as! [String:Any]
                             expect(dic["param"] as? String).to(equal("value"))
-                                                
+
                             //Since we are cache now, the stubs should not be needed
                             MockingjayProtocol.removeAllStubs()
                             randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
@@ -270,14 +270,14 @@ class AlamoNetworkManagerTests: QuickSpec
                 }
                 
                 it("should fail if the cache has been invalidated") {
-                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionaryInvalidated"), builder: json(dictionaryResponse))
                     
                     waitUntil(timeout:6) { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
-                        randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
+                        randomService?.request(path: "dictionaryInvalidated", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                success: { response in
                                                 expect(response).toNot(beNil())
-                                                let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionary")!)
+                                                let originalRequest = URLRequest(url: URL(string: "https://random.com/v3/dictionaryInvalidated")!)
                                                 let cachedResponse = originalRequest.cachedJSONResponse()
                                                 expect(cachedResponse).toNot(beNil())
                                                 
@@ -285,14 +285,16 @@ class AlamoNetworkManagerTests: QuickSpec
                                                 MockingjayProtocol.removeAllStubs()
                                                 // Now let's wait for the cache to get invalidated
                                                 sleep(3)
-                                                randomService?.request(path: "dictionary",
+                                                randomService?.request(path: "dictionaryInvalidated",
                                                                        cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                                        success: { response in
+                                                                        done()
                                                 }, failure: { error in
                                                     //the request to network fails since there is no stub and no cache
                                                     done()
                                                 })
                         }, failure: { error in
+                            done()
                         })
                     }
                 }
@@ -301,7 +303,7 @@ class AlamoNetworkManagerTests: QuickSpec
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next1"), builder: json(dictionaryNextResponse2))
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next2"), builder: json(dictionaryNextResponse3))
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary_next3"), builder: json(dictionaryNextResponse4))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary_next1",
@@ -311,17 +313,17 @@ class AlamoNetworkManagerTests: QuickSpec
                             expect(response["results"]).toNot(beNil())
                             let results = response["results"] as! [[String:Any]]
                             expect(results.count).to(equal(3))
-                                                
+
                             let originalRequest1 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next1")!)
                             expect(originalRequest1.cachedJSONResponse()).toNot(beNil())
                             let originalRequest2 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next2")!)
                             expect(originalRequest2.cachedJSONResponse()).toNot(beNil())
                             let originalRequest3 = URLRequest(url: URL(string: "https://random.com/v3/dictionary_next3")!)
                             expect(originalRequest3.cachedJSONResponse()).toNot(beNil())
-                                                
+
                             //Since we are cache now, the stubs should not be needed
                             MockingjayProtocol.removeAllStubs()
-                                                
+
                             //paginated request should work through cache
                             randomService?.request(path: "dictionary_next1",
                                                    paginated:true,
@@ -341,7 +343,7 @@ class AlamoNetworkManagerTests: QuickSpec
                 
                 it("should correctly revalidates cache data when using cache policy: .reloadRevalidatingForceCacheData") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
-                    
+
                     waitUntil { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .reloadRevalidatingForceCacheData, maxAge: 2),
@@ -352,7 +354,7 @@ class AlamoNetworkManagerTests: QuickSpec
                                                 expect(cachedResponse).toNot(beNil())
                                                 let dic = cachedResponse as! [String:Any]
                                                 expect(dic["param"] as? String).to(equal("value"))
-                                                
+
                                                 MockingjayProtocol.removeAllStubs()
                                                 MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponseUpdated))
                                                 randomService?.request(path: "dictionary",

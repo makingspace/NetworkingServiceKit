@@ -200,7 +200,7 @@ public extension MSErrorType.ResponseFailureReason {
 
 public extension MSError {
     /// Shortcut for identifying token expiration errors
-    public var hasTokenExpired: Bool {
+    @objc public var hasTokenExpired: Bool {
         switch type {
         case .responseValidation(let reason):
             return reason == .tokenExpired
@@ -210,7 +210,7 @@ public extension MSError {
     }
     
     /// Shortcut for identifying connectivity errors
-    public var isNetworkError: Bool {
+    @objc public var isNetworkError: Bool {
         switch type {
         case .responseValidation(let reason):
             return reason == .connectivity
@@ -220,7 +220,7 @@ public extension MSError {
     }
     
     /// Returns a generic error to describe Core Data problems
-    static var genericPersistenceError: MSError {
+    @objc static var genericPersistenceError: MSError {
         return MSError(type: .persistenceValidation(reason: .invalidData(description: nil)), error: nil)
     }
     

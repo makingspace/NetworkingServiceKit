@@ -21,3 +21,33 @@ class TweetCell: UITableViewCell {
         tweetImageView.setImageWith(url: URL(string: result.user.imagePath)!, placeholderImage: nil)
     }
 }
+
+extension UIImageView {
+    
+    /// Loads an image URL into this ImageView
+    ///
+    /// - Parameters:
+    ///   - url: the image url to set into this ImageView
+    ///   - placeholder: a placeholder image, if the request fails or the image is invalid
+    public func setImageWith(url: URL, placeholderImage placeholder: UIImage?) {
+        //Let's make it all manual for the sake of not adding another dependency
+        
+        let session = URLSession(configuration: .default)
+
+        let downloadPicTask = session.dataTask(with: url) { (data, response, error) in
+            if error == nil, let imageData = data  {
+                 DispatchQueue.main.sync {
+                    self.image = UIImage(data: imageData)
+                }
+            }
+            
+            DispatchQueue.main.sync {
+                if self.image == nil {
+                    self.image = placeholder
+                }
+            }
+        }
+        
+        downloadPicTask.resume()
+    }
+}

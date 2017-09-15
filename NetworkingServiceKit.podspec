@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '0.9.5'
+  s.version          = '1.0.0'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -37,8 +37,6 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
     core.source_files = 'NetworkingServiceKit/Classes/**/*'
 
     core.dependency 'Alamofire'
-    core.dependency 'AlamofireImage'
-    core.dependency 'CryptoSwift'
     core.dependency 'SwiftyJSON'
   end
 
