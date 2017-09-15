@@ -45,10 +45,10 @@ open class LocationService: AbstractBaseService {
             let group = DispatchGroup()
             for locationName in visibleLocationResults {
                 group.enter()
-                CLGeocoder().geocodeAddressString(locationName, completionHandler: { placemark, _ in
+                CLGeocoder().geocodeAddressString(String(locationName), completionHandler: { placemark, _ in
                     if let placemark = placemark?.first,
                         let location = placemark.location {
-                        annotations.append(LocationAnnotation(title: locationName, coordinate: location.coordinate))
+                        annotations.append(LocationAnnotation(title: String(locationName), coordinate: location.coordinate))
                     }
                     group.leave()
                 })

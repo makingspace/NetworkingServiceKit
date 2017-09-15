@@ -20,9 +20,9 @@ public protocol APIToken {
 /// Handles storing and clearing an existing APIToken implementation
 @objc
 open class APITokenManager: NSObject {
-    public static var tokenType: APIToken.Type?
+    @objc public static var tokenType: APIToken.Type?
     
-    public static var currentToken: APIToken? {
+    @objc public static var currentToken: APIToken? {
         if let tokenType = APITokenManager.tokenType {
             return tokenType.makePersistedToken()
         }
