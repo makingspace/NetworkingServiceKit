@@ -50,6 +50,10 @@ class NetworkURLProtocol: URLProtocol {
             let modifiedRequest = delegate.processIntercept(for: newRequest) {
             sessionTask = session?.dataTask(with: modifiedRequest as URLRequest)
             sessionTask?.resume()
+            
+            if ServiceLocator.logLevel != .none {
+                print("☢️ ServiceLocator: Intercepted request, NEW: \(modifiedRequest.url?.absoluteString ?? "")")
+            }
         }
     }
     
