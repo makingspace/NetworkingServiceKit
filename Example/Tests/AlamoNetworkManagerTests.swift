@@ -45,8 +45,34 @@ class RandomService : AbstractBaseService {
         return "v3"
     }
 }
+
+class AlamoNetworkManagerStubDelegate: ServiceLocatorDelegate
+{
+    func authenticationTokenDidExpire() {
+        
+    }
+    
+    func shouldInterceptRequest(with request: URLRequest) -> Bool {
+        if let requestPath = request.url?.absoluteString, requestPath.contains("requestToIntercept") {
+            return true
+        }
+        return false
+    }
+    
+    func processIntercept(for request: NSMutableURLRequest) -> URLRequest? {
+        if let requestPath = request.url?.absoluteString {
+            let newRequestPath = requestPath.replacingOccurrences(of: "requestToIntercept", with: "myInterceptedRequest")
+            request.url = URL(string: newRequestPath)
+        }
+        
+        return request as URLRequest
+    }
+    
+}
+
 class AlamoNetworkManagerTests: QuickSpec
 {
+    let networkDelegate = AlamoNetworkManagerStubDelegate()
     override func spec() {
         let arrayResponse = [["param" : "value"],["param" : "value"]] as [[String : Any]]
         let dictionaryResponse = ["param" : "value"] as [String : Any]
@@ -55,7 +81,10 @@ class AlamoNetworkManagerTests: QuickSpec
         let dictionaryNextResponse3 = ["next" : "https://random.com/v3/dictionary_next3", "results" : [["obj2" : "value"]]] as [String : Any]
         let dictionaryNextResponse4 = ["results" : [["obj3" : "value"]]] as [String : Any]
         
+        let responseIntercepted = ["intercept": true] as [String : Any]
+        
         beforeEach {
+            ServiceLocator.shouldInterceptRequests = false
             MockingjayProtocol.removeAllStubs()
             ServiceLocator.defaultNetworkClientType = AlamoNetworkManager.self
             ServiceLocator.set(services: [RandomService.self],
@@ -369,6 +398,24 @@ class AlamoNetworkManagerTests: QuickSpec
                                                                         done()
                                                 }, failure: { error in
                                                 })
+                        }, failure: { error in
+                        })
+                    }
+                }
+            }
+            
+            context("that is intercepted") {
+                it("should correctly return the intercepted request") {
+                    ServiceLocator.shouldInterceptRequests = true
+                    ServiceLocator.setDelegate(delegate: self.networkDelegate)
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/requestToIntercept"), builder: json([:]))
+                    MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/myInterceptedRequest"), builder: json(responseIntercepted))
+                    
+                    let randomService = ServiceLocator.service(forType: RandomService.self)
+                    waitUntil { done in
+                        randomService?.request(path: "requestToIntercept", success: { response in
+                            expect(response["intercept"]).toNot(beNil())
+                            done()
                         }, failure: { error in
                         })
                     }

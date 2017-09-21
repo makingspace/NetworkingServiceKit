@@ -23,8 +23,7 @@ open class AlamoNetworkManager: NetworkManager {
         sessionConfiguration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         sessionConfiguration.httpShouldSetCookies = false
         var protocolClasses = sessionConfiguration.protocolClasses ?? [AnyClass]()
-        protocolClasses.append(NetworkURLProtocol.self)
-        sessionConfiguration.protocolClasses = protocolClasses
+        sessionConfiguration.protocolClasses = [NetworkURLProtocol.self] as [AnyClass] + protocolClasses
         //Setup our cache
         let capacity = 100 * 1024 * 1024 // 100 MBs
         let urlCache = URLCache(memoryCapacity: capacity, diskCapacity: capacity, diskPath: nil)
