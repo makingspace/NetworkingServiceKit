@@ -27,7 +27,8 @@ class NetworkURLProtocol: URLProtocol {
     /// - Returns: if we should intercept
     override class func canInit(with request: URLRequest) -> Bool {
         let baseURL = APIConfiguration.current.baseURL
-        if let delegate = ServiceLocator.shared.delegate,
+        if ServiceLocator.shouldInterceptRequests,
+            let delegate = ServiceLocator.shared.delegate,
             let urlString = request.url?.absoluteString,
             urlString.contains(baseURL) {
             return delegate.shouldInterceptRequest(with: request)
