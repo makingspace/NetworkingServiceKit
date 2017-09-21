@@ -23,7 +23,9 @@ extension URLRequest {
         }
         
         // Don't process requests that should be intercepted
-        if let delegate = ServiceLocator.shared.delegate, delegate.shouldInterceptRequest(with: self) {
+        if ServiceLocator.shouldInterceptRequests,
+            let delegate = ServiceLocator.shared.delegate,
+            delegate.shouldInterceptRequest(with: self) {
             return nil
         }
         
