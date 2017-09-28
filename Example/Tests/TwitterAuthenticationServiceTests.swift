@@ -96,7 +96,16 @@ class TwitterAuthenticationServiceTests: QuickSpec, ServiceLocatorDelegate {
         }
     }
     
+    // MARK: ServiceLocatorDelegate
     func authenticationTokenDidExpire() {
         self.delegateGot401 = true
+    }
+    
+    func shouldInterceptRequest(with request: URLRequest) -> Bool {
+        return false
+    }
+    
+    func processIntercept(for request: NSMutableURLRequest) -> URLRequest? {
+        return nil
     }
 }

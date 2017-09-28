@@ -8,7 +8,33 @@
 
 import UIKit
 public protocol ServiceLocatorDelegate {
+    
+    /// Handle tokens that just expire
     func authenticationTokenDidExpire()
+    
+    /// Assess if this request should be intercepted for any kinda of reason through. Makespace app filter intercepts based on predefined regexes
+    /// NOTE: This intercepts all URLRequests been made on the app that match a baseURL of the APIConfiguration.current.baseURL
+    ///
+    /// - Parameter request: request to be intercepted¿
+    /// - Returns: if we want or not to intercept
+    func shouldInterceptRequest(with request: URLRequest) -> Bool
+    
+    /// Intercept a request that has been previously marked as we should intercept
+    ///
+    /// - Parameter request: request to be process as intercepted
+    /// - Returns: updated request
+    func processIntercept(for request: NSMutableURLRequest) -> URLRequest?
+}
+
+extension ServiceLocatorDelegate {
+    
+    func shouldInterceptRequest(with request: URLRequest) -> Bool {
+        return false
+    }
+    
+    func processIntercept(for request: NSMutableURLRequest) -> URLRequest? {
+        return nil
+    }
 }
 
 /// Defines the level of loggin we want for our network manager
@@ -25,6 +51,19 @@ open class ServiceLocator: NSObject {
     
     /// Our Default behavior for printing network logs
     public static var logLevel:SLLogLevel = .short
+    
+    /// If any requests going out of the app should be intercepted
+    public static var shouldInterceptRequests:Bool = false {
+        didSet {
+            if shouldInterceptRequests {
+                /// Register our custom URL protocol for intercepting requests
+                URLProtocol.registerClass(NetworkURLProtocol.self)
+            } else {
+                /// Register our custom URL protocol for intercepting requests
+                URLProtocol.unregisterClass(NetworkURLProtocol.self)
+            }
+        }
+    }
 
     /// Defines a private singleton, all interactions should be done through static methods
     internal static var shared: ServiceLocator = ServiceLocator()

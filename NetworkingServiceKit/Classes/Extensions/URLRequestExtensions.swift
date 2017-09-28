@@ -22,6 +22,13 @@ extension URLRequest {
                 return nil
         }
         
+        // Don't process requests that should be intercepted
+        if ServiceLocator.shouldInterceptRequests,
+            let delegate = ServiceLocator.shared.delegate,
+            delegate.shouldInterceptRequest(with: self) {
+            return nil
+        }
+        
         let data = cachedResponse.data
         let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
         return json
