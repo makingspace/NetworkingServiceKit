@@ -26,13 +26,13 @@ public protocol APIConfigurationType {
 }
 
 /// Handles the current server connection and authentication for a valid APIConfigurationType and APIConfigurationAuth
-public class APIConfiguration: NSObject {
+@objc public class APIConfiguration: NSObject {
     public static var apiConfigurationType: APIConfigurationType.Type?
     public static var authConfigurationType: APIConfigurationAuth.Type?
-    public let baseURL: String
-    public let webURL: String
-    public let APIKey: String
-    public let APISecret: String
+    @objc public let baseURL: String
+    @objc public let webURL: String
+    @objc public let APIKey: String
+    @objc public let APISecret: String
     
     internal init(type: APIConfigurationType, auth: APIConfigurationAuth) {
         self.baseURL = type.URL
@@ -48,7 +48,7 @@ public class APIConfiguration: NSObject {
     }
     
     /// Returns the current APIConfiguration, either staging or production
-    public static var current: APIConfiguration {
+    @objc public static var current: APIConfiguration {
         guard let configurationType = APIConfiguration.apiConfigurationType,
             let authType = APIConfiguration.authConfigurationType else {
                 print("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
