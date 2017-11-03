@@ -298,10 +298,10 @@ class AlamoNetworkManagerTests: QuickSpec
                     }
                 }
                 
-                xit("should fail if the cache has been invalidated") {
+                it("should fail if the cache has been invalidated") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionaryInvalidated"), builder: json(dictionaryResponse))
                     
-                    waitUntil(timeout:6) { done in
+                    waitUntil(timeout:10) { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionaryInvalidated", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                success: { response in
@@ -313,7 +313,7 @@ class AlamoNetworkManagerTests: QuickSpec
                                                 //Since we are cache now, the stubs should not be needed
                                                 MockingjayProtocol.removeAllStubs()
                                                 // Now let's wait for the cache to get invalidated
-                                                sleep(3)
+                                                sleep(1)
                                                 randomService?.request(path: "dictionaryInvalidated",
                                                                        cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 2),
                                                                        success: { response in
