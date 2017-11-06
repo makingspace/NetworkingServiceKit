@@ -26,7 +26,7 @@ public protocol ServiceLocatorDelegate {
     func processIntercept(for request: NSMutableURLRequest) -> URLRequest?
 }
 
-extension ServiceLocatorDelegate {
+public extension ServiceLocatorDelegate {
     
     func shouldInterceptRequest(with request: URLRequest) -> Bool {
         return false
