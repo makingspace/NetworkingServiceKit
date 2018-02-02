@@ -37,6 +37,33 @@ open class AlamoNetworkManager: NetworkManager {
         return session
     }()
     
+    public func upload(path: String,
+                       withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
+                       progressBlock: @escaping (Progress) -> Void,
+                       headers: CustomHTTPHeaders,
+                       stubs: [ServiceStub],
+                       success: @escaping SuccessResponseBlock,
+                       failure: @escaping ErrorResponseBlock) {
+        sessionManager.upload(multipartFormData: constructingBlock, to: path, headers: headers) { result in
+            switch result {
+            case .failure(let error):
+                failure(MSError.dataError(description: error.localizedDescription))
+            case .success(let request, _, _):
+                guard let task = request.task else {
+                    failure(MSError.dataError(description: "Malformed Upload Request"))
+                    return
+                }
+                
+                request.responseJSON { rawResponse in
+                    success(rawResponse.value as? [String: Any] ?? [:])
+                }
+                request.uploadProgress { progressBlock($0) }
+                
+                task.resume()
+            }
+        }
+    }
+    
     // MARK: - Request handling
     
     /// Creates and executes a request using Alamofire
@@ -56,7 +83,7 @@ open class AlamoNetworkManager: NetworkManager {
                         paginated: Bool = false,
                         cachePolicy:CacheResponsePolicy,
                         headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                        stubs: [ServiceStub],
+                        stubs: [ServiceStub] = [],
                         success: @escaping SuccessResponseBlock,
                         failure: @escaping ErrorResponseBlock) {
         

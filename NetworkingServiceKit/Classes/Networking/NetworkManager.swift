@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 //Custom Makespace Error Response Object
 @objc public class MSErrorDetails: NSObject {
@@ -328,6 +329,14 @@ public protocol NetworkManager {
                  stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock)
-
+    
+    func upload(path: String,
+                withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
+                progressBlock: @escaping (Progress) -> Void,
+                headers: CustomHTTPHeaders,
+                stubs: [ServiceStub],
+                success: @escaping SuccessResponseBlock,
+                failure: @escaping ErrorResponseBlock)
+    
     init(with configuration: APIConfiguration)
 }
