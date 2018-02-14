@@ -49,17 +49,12 @@ open class AlamoNetworkManager: NetworkManager {
             case .failure(let error):
                 failure(MSError.dataError(description: error.localizedDescription))
             case .success(let request, _, _):
-                guard let task = request.task else {
-                    failure(MSError.dataError(description: "Malformed Upload Request"))
-                    return
-                }
-                
                 request.responseJSON { rawResponse in
                     success(rawResponse.value as? [String: Any] ?? [:])
                 }
                 request.uploadProgress { progressBlock($0) }
                 
-                task.resume()
+                request.resume()
             }
         }
     }
