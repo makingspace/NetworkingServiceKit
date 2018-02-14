@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 /// Defines the necessary methods that a service should implement
 public protocol Service {
@@ -145,7 +146,7 @@ open class AbstractBaseService: NSObject, Service {
                  headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
-        self.networkManager.request(path: servicePath(for: path),
+        networkManager.request(path: servicePath(for: path),
                                     method: method,
                                     with: parameters,
                                     paginated: paginated,
@@ -159,6 +160,27 @@ open class AbstractBaseService: NSObject, Service {
                                             ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
                                         }
                                         failure(error)
+        })
+    }
+    
+    open func upload(path: String,
+                     withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
+                     progressBlock: ((Progress) -> Void)? = nil,
+                headers: CustomHTTPHeaders = CustomHTTPHeaders(),
+                success: @escaping SuccessResponseBlock,
+                failure: @escaping ErrorResponseBlock) {
+        networkManager.upload(path: servicePath(for: path),
+                              withConstructingBlock: constructingBlock,
+                              progressBlock: { progressBlock?($0) },
+                              headers: headers,
+                              stubs: self.stubs,
+                              success: success,
+                              failure: { error in
+            if error.hasTokenExpired && self.isAuthenticated {
+                //If our error response was because our token expired, then lets tell the delegate
+                ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
+            }
+            failure(error)
         })
     }
 

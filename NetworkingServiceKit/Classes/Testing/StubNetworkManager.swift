@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 open class StubNetworkManager: NetworkManager {
     
@@ -39,6 +40,25 @@ open class StubNetworkManager: NetworkManager {
                  stubs: [ServiceStub],
                  success: @escaping SuccessResponseBlock,
                  failure: @escaping ErrorResponseBlock) {
+        executeStub(forPath: path, withParameters: parameters, andStubs: stubs, success: success, failure: failure)
+    }
+    
+    public func upload(path: String,
+                       withConstructingBlock
+        constructingBlock: @escaping (MultipartFormData) -> Void,
+                       progressBlock: @escaping (Progress) -> Void,
+                       headers: CustomHTTPHeaders,
+                       stubs: [ServiceStub],
+                       success: @escaping SuccessResponseBlock,
+                       failure: @escaping ErrorResponseBlock) {
+        executeStub(forPath: path, andStubs: stubs, success: success, failure: failure)
+    }
+    
+    private func executeStub(forPath path: String,
+                             withParameters parameters: RequestParameters = RequestParameters(),
+                             andStubs stubs: [ServiceStub],
+                             success: @escaping SuccessResponseBlock,
+                             failure: @escaping ErrorResponseBlock) {
         let matchingRequests = stubs.filter { path.contains($0.request.path) && ($0.request.parameters == nil ||
             NSDictionary(dictionary: parameters).isEqual(to: NSDictionary(dictionary: $0.request.parameters ?? [:]) as! [AnyHashable : Any])) }
         
