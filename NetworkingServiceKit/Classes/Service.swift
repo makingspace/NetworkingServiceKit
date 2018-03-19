@@ -33,12 +33,12 @@ public protocol Service {
     
     /// Default service path
     var servicePath: String { get }
-
+    
     /// Builds a service query path with our version and default root path
     ///
     /// - Parameter query: the query to build
     /// - Returns: a compose query with the baseURL, service version and service path included
-    func servicePath(for query: String) -> String
+    func servicePath(for query: String, withBaseUrlOverride overrideURL: String?) -> String
     
     /// True if our auth token is valid
     var isAuthenticated: Bool { get }
@@ -47,6 +47,7 @@ public protocol Service {
     ///
     /// - Parameters:
     ///   - path: a full URL
+    ///   - baseUrlOverride: manual override of default base URL
     ///   - method: HTTP method
     ///   - parameters: parameters for the request
     ///   - paginated: if we have to merge this request pagination
@@ -55,6 +56,7 @@ public protocol Service {
     ///   - success: success block
     ///   - failure: failure block
     func request(path: String,
+                 baseUrlOverride: String?,
                  method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
@@ -70,17 +72,16 @@ public protocol Service {
 
 /// Abstract Base Service, sets up a default implementations of the Service protocol. Defaults the service path and version into empty strings.
 open class AbstractBaseService: NSObject, Service {
-
     open var networkManager: NetworkManager
-
+    
     open var token: APIToken?
     
     open var stubs:[ServiceStub] = [ServiceStub]()
-
+    
     open var currentConfiguration: APIConfiguration {
         return self.networkManager.configuration
     }
-
+    
     /// Init method for an Service, each service must have the current token auth and access to the networkManager to execute requests
     ///
     /// - Parameters:
@@ -90,28 +91,28 @@ open class AbstractBaseService: NSObject, Service {
         self.token = token
         self.networkManager = networkManager
     }
-
+    
     /// Currently supported version of the service
     open var serviceVersion: String {
         return ""
     }
-
+    
     /// Name here your service path
     open var servicePath: String {
         return ""
     }
-
+    
     /// Returns the baseURL for this service, default is the current configuration URL
     open var baseURL: String {
         return currentConfiguration.baseURL
     }
-
+    
     /// Returns a local path for an API request, this includes the service version and name. i.e v4/accounts/user_profile
     ///
     /// - Parameter query: api local path
     /// - Returns: local path to the api for the given query
-    open func servicePath(for query: String) -> String {
-        var fullPath = self.baseURL
+    open func servicePath(for query: String, withBaseUrlOverride overrideURL: String? = nil) -> String {
+        var fullPath = overrideURL ?? self.baseURL
         if (!self.servicePath.isEmpty) {
             fullPath += "/" + self.servicePath
         }
@@ -121,16 +122,17 @@ open class AbstractBaseService: NSObject, Service {
         fullPath += "/" + query
         return fullPath
     }
-
+    
     /// Returns if this service has a valid token for authentication with our systems
     open var isAuthenticated: Bool {
         return (APITokenManager.currentToken != nil)
     }
-
+    
     /// Creates and executes a request using our default Network Manager
     ///
     /// - Parameters:
     ///   - path: full path to the URL
+    ///   - baseUrlOverride: manual override of default base URL
     ///   - method: HTTP method, default is GET
     ///   - parameters: URL or body parameters depending on the HTTP method, default is empty
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
@@ -139,36 +141,37 @@ open class AbstractBaseService: NSObject, Service {
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     open func request(path: String,
-                 method: NetworkingServiceKit.HTTPMethod = .get,
-                 with parameters: RequestParameters = RequestParameters(),
-                 paginated: Bool = false,
-                 cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
-                 headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                 success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorResponseBlock) {
-        networkManager.request(path: servicePath(for: path),
-                                    method: method,
-                                    with: parameters,
-                                    paginated: paginated,
-                                    cachePolicy: cachePolicy,
-                                    headers: headers,
-                                    stubs: self.stubs,
-                                    success: success,
-                                    failure: { error in
-                                        if error.hasTokenExpired && self.isAuthenticated {
-                                            //If our error response was because our token expired, then lets tell the delegate
-                                            ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
-                                        }
-                                        failure(error)
+                      baseUrlOverride: String? = nil,
+                      method: NetworkingServiceKit.HTTPMethod = .get,
+                      with parameters: RequestParameters = RequestParameters(),
+                      paginated: Bool = false,
+                      cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
+                      headers: CustomHTTPHeaders = CustomHTTPHeaders(),
+                      success: @escaping SuccessResponseBlock,
+                      failure: @escaping ErrorResponseBlock) {
+        networkManager.request(path: servicePath(for: path, withBaseUrlOverride: baseUrlOverride),
+                               method: method,
+                               with: parameters,
+                               paginated: paginated,
+                               cachePolicy: cachePolicy,
+                               headers: headers,
+                               stubs: self.stubs,
+                               success: success,
+                               failure: { error in
+                                if error.hasTokenExpired && self.isAuthenticated {
+                                    //If our error response was because our token expired, then lets tell the delegate
+                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
+                                }
+                                failure(error)
         })
     }
     
     open func upload(path: String,
                      withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
                      progressBlock: ((Progress) -> Void)? = nil,
-                headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                success: @escaping SuccessResponseBlock,
-                failure: @escaping ErrorResponseBlock) {
+                     headers: CustomHTTPHeaders = CustomHTTPHeaders(),
+                     success: @escaping SuccessResponseBlock,
+                     failure: @escaping ErrorResponseBlock) {
         networkManager.upload(path: servicePath(for: path),
                               withConstructingBlock: constructingBlock,
                               progressBlock: { progressBlock?($0) },
@@ -176,12 +179,12 @@ open class AbstractBaseService: NSObject, Service {
                               stubs: self.stubs,
                               success: success,
                               failure: { error in
-            if error.hasTokenExpired && self.isAuthenticated {
-                //If our error response was because our token expired, then lets tell the delegate
-                ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
-            }
-            failure(error)
+                                if error.hasTokenExpired && self.isAuthenticated {
+                                    //If our error response was because our token expired, then lets tell the delegate
+                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
+                                }
+                                failure(error)
         })
     }
-
+    
 }
