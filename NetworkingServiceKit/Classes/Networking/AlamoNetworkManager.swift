@@ -266,7 +266,7 @@ open class AlamoNetworkManager: NetworkManager {
                 //call a request with the next page
                 self.getNextPage(forURL: nextPage,
                                  method: method,
-                                 with: parameters,
+                                 with: [:],
                                  onExistingResponse: response,
                                  encoding: encoding,
                                  headers: headers,
