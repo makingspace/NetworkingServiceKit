@@ -35,7 +35,7 @@ open class LocationService: AbstractBaseService {
                               completion: @escaping (_ annotations: [LocationAnnotation]) -> Void) {
 
         if let visibleIndexes = visibleIndexes, visibleIndexes.count > 0 {
-            let flatVisibleIndexRows = visibleIndexes.flatMap { $0.row }
+            let flatVisibleIndexRows = visibleIndexes.compactMap { $0.row }
             let visibleSearchResults = results.enumerated().filter { index, result -> Bool in
                 return flatVisibleIndexRows.contains(index) && !result.user.location.isEmpty
             }
