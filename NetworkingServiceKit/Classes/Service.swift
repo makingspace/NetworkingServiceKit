@@ -36,7 +36,9 @@ public protocol Service {
     
     /// Builds a service query path with our version and default root path
     ///
-    /// - Parameter query: the query to build
+    /// - Parameters:
+    ///   - query: the query to build
+    ///   - overrideURL: manual override of default base URL
     /// - Returns: a compose query with the baseURL, service version and service path included
     func servicePath(for query: String, withBaseUrlOverride overrideURL: String?) -> String
     
@@ -109,7 +111,9 @@ open class AbstractBaseService: NSObject, Service {
     
     /// Returns a local path for an API request, this includes the service version and name. i.e v4/accounts/user_profile
     ///
-    /// - Parameter query: api local path
+    /// - Parameters:
+    ///   - query: api local path
+    ///   - overrideURL: manual override of default base URL
     /// - Returns: local path to the api for the given query
     open func servicePath(for query: String, withBaseUrlOverride overrideURL: String? = nil) -> String {
         var fullPath = overrideURL ?? self.baseURL
