@@ -39,8 +39,9 @@ public protocol Service {
     /// - Parameters:
     ///   - query: the query to build
     ///   - overrideURL: manual override of default base URL
+    ///   - overrideVersion: manual override of the service version
     /// - Returns: a compose query with the baseURL, service version and service path included
-    func servicePath(for query: String, withBaseUrlOverride overrideURL: String?) -> String
+    func servicePath(for query: String, baseUrlOverride overrideURL: String?, serviceVersionOverride overrideVersion: String?) -> String
     
     /// True if our auth token is valid
     var isAuthenticated: Bool { get }
@@ -50,6 +51,7 @@ public protocol Service {
     /// - Parameters:
     ///   - path: a full URL
     ///   - baseUrlOverride: manual override of default base URL
+    ///   - serviceVersionOverride: manual override of the service version
     ///   - method: HTTP method
     ///   - parameters: parameters for the request
     ///   - paginated: if we have to merge this request pagination
@@ -59,6 +61,7 @@ public protocol Service {
     ///   - failure: failure block
     func request(path: String,
                  baseUrlOverride: String?,
+                 serviceVersionOverride: String?,
                  method: NetworkingServiceKit.HTTPMethod,
                  with parameters: RequestParameters,
                  paginated: Bool,
@@ -114,13 +117,17 @@ open class AbstractBaseService: NSObject, Service {
     /// - Parameters:
     ///   - query: api local path
     ///   - overrideURL: manual override of default base URL
+    ///   - overrideVersion: manual override of the service version
     /// - Returns: local path to the api for the given query
-    open func servicePath(for query: String, withBaseUrlOverride overrideURL: String? = nil) -> String {
+    open func servicePath(for query: String, baseUrlOverride overrideURL: String?, serviceVersionOverride overrideVersion: String?) -> String {
         var fullPath = overrideURL ?? self.baseURL
         if (!self.servicePath.isEmpty) {
             fullPath += "/" + self.servicePath
         }
-        if (!self.serviceVersion.isEmpty) {
+        if let version = overrideVersion {
+            fullPath += "/" + version
+        }
+        else if (!self.serviceVersion.isEmpty) {
             fullPath += "/" + self.serviceVersion
         }
         fullPath += "/" + query
@@ -146,6 +153,7 @@ open class AbstractBaseService: NSObject, Service {
     ///   - failure: failure block with an error
     open func request(path: String,
                       baseUrlOverride: String? = nil,
+                      serviceVersionOverride: String? = nil,
                       method: NetworkingServiceKit.HTTPMethod = .get,
                       with parameters: RequestParameters = RequestParameters(),
                       paginated: Bool = false,
@@ -153,7 +161,7 @@ open class AbstractBaseService: NSObject, Service {
                       headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                       success: @escaping SuccessResponseBlock,
                       failure: @escaping ErrorResponseBlock) {
-        networkManager.request(path: servicePath(for: path, withBaseUrlOverride: baseUrlOverride),
+        networkManager.request(path: servicePath(for: path, baseUrlOverride: baseUrlOverride, serviceVersionOverride: serviceVersionOverride),
                                method: method,
                                with: parameters,
                                paginated: paginated,
@@ -171,12 +179,14 @@ open class AbstractBaseService: NSObject, Service {
     }
     
     open func upload(path: String,
+                     baseUrlOverride: String? = nil,
+                     serviceVersionOverride: String? = nil,
                      withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
                      progressBlock: ((Progress) -> Void)? = nil,
                      headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                      success: @escaping SuccessResponseBlock,
                      failure: @escaping ErrorResponseBlock) {
-        networkManager.upload(path: servicePath(for: path),
+        networkManager.upload(path: servicePath(for: path, baseUrlOverride: baseUrlOverride, serviceVersionOverride: serviceVersionOverride),
                               withConstructingBlock: constructingBlock,
                               progressBlock: { progressBlock?($0) },
                               headers: headers,
