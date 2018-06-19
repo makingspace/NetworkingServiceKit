@@ -103,6 +103,7 @@ public extension Service {
     ///   - headers: custom headers that should be attached with this request
     public func request(path: String,
                         baseUrlOverride: String? = nil,
+                        serviceVersionOverride: String? = nil,
                         method: NetworkingServiceKit.HTTPMethod = .get,
                         with parameters: RequestParameters = RequestParameters(),
                         paginated: Bool = false,
@@ -110,7 +111,9 @@ public extension Service {
                         headers: CustomHTTPHeaders = CustomHTTPHeaders()) ->  SignalProducer<[String:Any]?, MSError> {
         
         if let ReactiveSwiftNetworkManager = self.networkManager as? ReactiveSwiftNetworkManager {
-            return ReactiveSwiftNetworkManager.request(path: servicePath(for: path, withBaseUrlOverride: baseUrlOverride),
+            return ReactiveSwiftNetworkManager.request(path: servicePath(for: path,
+                                                                         baseUrlOverride: baseUrlOverride,
+                                                                         serviceVersionOverride: serviceVersionOverride),
                                                   method: method,
                                                   with: parameters,
                                                   paginated: paginated,
