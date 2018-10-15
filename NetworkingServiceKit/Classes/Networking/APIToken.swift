@@ -13,7 +13,7 @@ import Foundation
 public protocol APIToken {
     var authorization: String { get }
     static func makePersistedToken() -> APIToken?
-    static func make(from tokenResponse: Any?) -> APIToken?
+    static func make(from tokenResponse: Any) -> APIToken?
     static func clearToken()
 }
 
@@ -34,7 +34,7 @@ open class APITokenManager: NSObject {
     }
 
     @discardableResult
-    public static func store(tokenInfo: Any?) -> APIToken? {
+    public static func store(tokenInfo: Any) -> APIToken? {
         if let type = APITokenManager.tokenType {
             return type.make(from: tokenInfo)
         }

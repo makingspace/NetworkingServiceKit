@@ -36,9 +36,10 @@ public class TwitterAPIToken: NSObject, APIToken {
     public var authorization: String {
         return self.accessToken
     }
-
-    public static func make(from tokenResponse: [String:Any], email: String?) -> APIToken? {
-        if let tokenType = tokenResponse[TwitterAPITokenKey.tokenTypeKey.responseKey] as? String,
+    
+    public static func make(from tokenResponse: Any) -> APIToken? {
+        if let tokenResponse = tokenResponse as? [String: Any],
+            let tokenType = tokenResponse[TwitterAPITokenKey.tokenTypeKey.responseKey] as? String,
             let accessToken = tokenResponse[TwitterAPITokenKey.accessTokenKey.responseKey] as? String {
             let token = TwitterAPIToken(tokenType: tokenType, accessToken: accessToken)
             self.set(object: tokenType, for: .tokenTypeKey)
