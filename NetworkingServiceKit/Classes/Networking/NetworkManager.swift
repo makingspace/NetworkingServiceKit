@@ -305,7 +305,7 @@ open class CacheResponsePolicy: NSObject {
     }
     
     /// Returns the default cache policy
-    open static var `default`:CacheResponsePolicy {
+    public static var `default`:CacheResponsePolicy {
         return CacheResponsePolicy(type:.cacheControlBased, maxAge:0)
     }
 }
