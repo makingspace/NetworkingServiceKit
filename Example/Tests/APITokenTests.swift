@@ -21,7 +21,6 @@ class APITokenTests: QuickSpec {
         }
         
         describe("when setting up access token information") {
-            let userEmail = "email1@email.com"
             context("if we have an access token") {
                 
                 it("should return the appropiate information for the given email") {
@@ -31,7 +30,7 @@ class APITokenTests: QuickSpec {
                                         "expires_in" : 100,
                                         "scope" : "mobile"] as [String : Any]
                     APITokenManager.tokenType = TwitterAPIToken.self
-                    let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
+                    let apiToken = APITokenManager.store(tokenInfo: dataResponse)
                     expect(apiToken).toNot(beNil())
                     
                     let accessToken = TwitterAPIToken.object(for: TwitterAPITokenKey.accessTokenKey) as! String
@@ -48,7 +47,7 @@ class APITokenTests: QuickSpec {
                                         "expires_in" : 100,
                                         "scope" : "mobile"] as [String : Any]
                     APITokenManager.tokenType = TwitterAPIToken.self
-                    let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
+                    let apiToken = APITokenManager.store(tokenInfo: dataResponse)
                     expect(apiToken).toNot(beNil())
                     
                     ServiceLocator.set(services: [TwitterSearchService.self],
@@ -69,7 +68,7 @@ class APITokenTests: QuickSpec {
                                         "expires_in" : 100,
                                         "scope" : "mobile"] as [String : Any]
                     APITokenManager.tokenType = TwitterAPIToken.self
-                    let apiToken = APITokenManager.store(tokenInfo: dataResponse, for: userEmail)
+                    let apiToken = APITokenManager.store(tokenInfo: dataResponse)
                     expect(apiToken).toNot(beNil())
                     APITokenManager.clearAuthentication()
                     
