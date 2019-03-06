@@ -10,12 +10,12 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - NetworkingServiceKit (1.4.0):
-    - NetworkingServiceKit/Core (= 1.4.0)
-  - NetworkingServiceKit/Core (1.4.0):
+  - NetworkingServiceKit (1.5.0):
+    - NetworkingServiceKit/Core (= 1.5.0)
+  - NetworkingServiceKit/Core (1.5.0):
     - Alamofire
     - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (1.4.0):
+  - NetworkingServiceKit/ReactiveSwift (1.5.0):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
@@ -81,7 +81,7 @@ SPEC CHECKSUMS:
   AlamofireImage: 78d67ccbb763d87ba44b21583d2153500a195630
   CryptoSwift: 1c07ca50843dd48bc54e6ea53d7a4dba3b645716
   Mockingjay: 95a5fbe594f963f7536d3975739df39f1366f4d1
-  NetworkingServiceKit: fc9ebbe1a4f73fdbc16b78b74f9006bd31a99e4c
+  NetworkingServiceKit: 50e2be9bf0542834438cf1aa393f6e0fad008265
   Nimble: 6e4123b6d882a0f8c7f950236a3251d678cf12a2
   Quick: 1a3fc6d2b9143276258d816c904b983a1df916a2
   ReactiveSwift: a2bb9ace428a109e9c0209615645d9d286c8c433
