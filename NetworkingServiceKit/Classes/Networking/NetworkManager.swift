@@ -103,30 +103,21 @@ public enum MSErrorType {
         }
     }
     
-    /// Enum used for errors associated with local failures
-    ///
-    /// - invalidData: Catchall for expected data being missing
-    /// - persistenceFailure: Core Data failure
-    public enum PersistenceFailureReason {
-        case invalidData(description: String?)
-        case persistenceFailure
-        
-        public var description: String {
-            switch self {
-            case .invalidData(let description):
-                return description ?? "Invalid Data"
-            case .persistenceFailure:
-                return "Core Data Failure"
-            }
+    case responseValidation(reason: ResponseFailureReason)
+    case persistenceFailure
+    case invalidData(description: String)
+    
+    public var description: String {
+        switch self {
+        case .responseValidation(let reason): return reason.description
+        case .persistenceFailure: return "Core Data Failure"
+        case .invalidData(let description): return description
         }
     }
-    
-    case responseValidation(reason: ResponseFailureReason)
-    case persistenceValidation(reason: PersistenceFailureReason)
 }
 
-//Custom Makespace Error
-@objc public class MSError: NSObject, Error {
+//Custom Error Wrapper
+@objc open class MSError: NSObject, Error {
     /// Enum value describing the failure
     public let type: MSErrorType
     /// Details of the error
@@ -154,14 +145,7 @@ public enum MSErrorType {
             self.details = MSErrorDetails(error: error)
         }
         else {
-            let description: String
-            switch type {
-            case .persistenceValidation(let reason):
-                description = reason.description
-            case .responseValidation(let reason):
-                description = reason.description
-            }
-            self.details = MSErrorDetails(message: description, body: nil, path: nil, code: 0, underlyingError: nil)
+            self.details = MSErrorDetails(message: type.description, body: nil, path: nil, code: 0, underlyingError: nil)
         }
     }
 }
@@ -222,11 +206,11 @@ public extension MSError {
     
     /// Returns a generic error to describe Core Data problems
     @objc static var genericPersistenceError: MSError {
-        return MSError(type: .persistenceValidation(reason: .invalidData(description: nil)), error: nil)
+        return MSError(type: .persistenceFailure, error: nil)
     }
     
     static func dataError(description: String) -> MSError {
-        return MSError(type: .persistenceValidation(reason: .invalidData(description: description)), error: nil)
+        return MSError(type: .invalidData(description: description), error: nil)
     }
 }
 
