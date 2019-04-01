@@ -48,7 +48,7 @@ class RandomService : AbstractBaseService {
 
 class AlamoNetworkManagerStubDelegate: ServiceLocatorDelegate
 {
-    func authenticationTokenDidExpire() {
+    func authenticationTokenDidExpire(forService service: Service) {
         
     }
     

@@ -172,7 +172,7 @@ open class AbstractBaseService: NSObject, Service {
                                failure: { error in
                                 if error.hasTokenExpired && self.isAuthenticated {
                                     //If our error response was because our token expired, then lets tell the delegate
-                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
+                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire(forService: self)
                                 }
                                 failure(error)
         })
@@ -195,7 +195,7 @@ open class AbstractBaseService: NSObject, Service {
                               failure: { error in
                                 if error.hasTokenExpired && self.isAuthenticated {
                                     //If our error response was because our token expired, then lets tell the delegate
-                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire()
+                                    ServiceLocator.shared.delegate?.authenticationTokenDidExpire(forService: self)
                                 }
                                 failure(error)
         })

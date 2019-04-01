@@ -10,7 +10,7 @@ import UIKit
 public protocol ServiceLocatorDelegate {
     
     /// Handle tokens that just expire
-    func authenticationTokenDidExpire()
+    func authenticationTokenDidExpire(forService service: Service)
     
     /// Assess if this request should be intercepted for any kinda of reason through. Makespace app filter intercepts based on predefined regexes
     /// NOTE: This intercepts all URLRequests been made on the app that match a baseURL of the APIConfiguration.current.baseURL
