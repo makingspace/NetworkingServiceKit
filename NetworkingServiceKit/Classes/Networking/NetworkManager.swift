@@ -166,7 +166,7 @@ public extension MSErrorType.ResponseFailureReason {
     /// Conveience initializer
     ///
     /// - Parameter code: response code of the error
-    public init(code: Int) {
+    init(code: Int) {
         switch code {
         case 401:
             self = .tokenExpired
@@ -185,7 +185,7 @@ public extension MSErrorType.ResponseFailureReason {
 
 public extension MSError {
     /// Shortcut for identifying token expiration errors
-    @objc public var hasTokenExpired: Bool {
+    @objc var hasTokenExpired: Bool {
         switch type {
         case .responseValidation(let reason):
             return reason == .tokenExpired
@@ -195,7 +195,7 @@ public extension MSError {
     }
     
     /// Shortcut for identifying connectivity errors
-    @objc public var isNetworkError: Bool {
+    @objc var isNetworkError: Bool {
         switch type {
         case .responseValidation(let reason):
             return reason == .connectivity
@@ -298,7 +298,7 @@ open class CacheResponsePolicy: NSObject {
 public typealias SuccessResponseBlock = ([String:Any]) -> Void
 public typealias ErrorResponseBlock = (MSError) -> Void
 //Custom parameter typealias
-public typealias CustomHTTPHeaders = [String: String]
+public typealias CustomHTTPHeaders = HTTPHeaders
 public typealias RequestParameters = [String: Any]
 
 /// Protocol for defining a Network Manager

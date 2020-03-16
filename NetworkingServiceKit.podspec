@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '1.6.0'
+  s.version          = '1.7.0'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -30,7 +30,7 @@ NetworkingServiceKit is the reincarnation of the standard iOS monolith api clien
     'OTHER_SWIFT_FLAGS[config=Debug]' => '-D DEBUG',
     'OTHER_SWIFT_FLAGS[config=Staging]' => '-D STAGING'
   }
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '10.0'
   s.default_subspec = 'Core'
 
   s.subspec 'Core' do |core|

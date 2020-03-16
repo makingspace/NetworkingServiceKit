@@ -9,10 +9,8 @@
 import Foundation
 import Alamofire
 
-class AlamoAuthenticationAdapter: RequestAdapter {
-
-    // MARK: - RequestAdapter
-    func adapt(_ urlRequest: URLRequest) throws -> URLRequest {
+class AlamoAuthenticationAdapter: RequestInterceptor {
+    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var urlRequest = urlRequest
         //attach authentication if any token has been stored
         if let token = APITokenManager.currentToken, (urlRequest.value(forHTTPHeaderField: "Authorization") == nil) {
@@ -21,9 +19,9 @@ class AlamoAuthenticationAdapter: RequestAdapter {
         //specify our custom user agent
         urlRequest.setValue(AlamoAuthenticationAdapter.agent, forHTTPHeaderField: "User-Agent")
 
-        return urlRequest
+        completion(Result.success(urlRequest))
     }
-
+    
     /// Custom makespace agent header
     private static var agent: String {
         let name = UIDevice.current.name
