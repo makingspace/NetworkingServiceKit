@@ -18,7 +18,7 @@ open class AlamoNetworkManager: NetworkManager {
     }
     
     /// default session manager to be use with Alamofire
-    private let sessionManager: SessionManager = {
+    private let session: SessionManager = {
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         sessionConfiguration.httpShouldSetCookies = false
