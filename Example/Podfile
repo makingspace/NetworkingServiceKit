@@ -8,7 +8,7 @@ target 'NetworkingServiceKit_Example' do
   pod 'NetworkingServiceKit/ReactiveSwift', :path => '../'
   
   target 'NetworkingServiceKit_Tests' do
-    inherit! :search_paths
+    inherit! :search_pathsu
 
     pod 'Quick',:git => 'git@github.com:Quick/Quick.git', :branch => 'master'
     pod 'Nimble',:git => 'git@github.com:Quick/Nimble.git', :branch => 'master'
