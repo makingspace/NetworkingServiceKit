@@ -10,12 +10,12 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - NetworkingServiceKit (1.6.0):
-    - NetworkingServiceKit/Core (= 1.6.0)
-  - NetworkingServiceKit/Core (1.6.0):
+  - NetworkingServiceKit (1.7.0):
+    - NetworkingServiceKit/Core (= 1.7.0)
+  - NetworkingServiceKit/Core (1.7.0):
     - Alamofire
     - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (1.6.0):
+  - NetworkingServiceKit/ReactiveSwift (1.7.0):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
@@ -78,13 +78,13 @@ SPEC CHECKSUMS:
   AlamofireImage: 3d1a2010519e58675318735580eb856e88840ff7
   CryptoSwift: 1283821600233bdbeb96d7b389c3288c3bf77211
   Mockingjay: 95a5fbe594f963f7536d3975739df39f1366f4d1
-  NetworkingServiceKit: 353434f4f46a3242f3af1b5964873a97e978f0e2
+  NetworkingServiceKit: 63c61451c659a377be37946cc6864ef341ddae2a
   Nimble: 66110543b37eed1302fa50f2ad411f22d2548373
   Quick: 8bf351656d824b9cc6e292b41494c8f18562a5e9
   ReactiveSwift: 07ddf579f4eb3ee3bd656214f0461aaf2c0fd639
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   URITemplate: bf971b2a5637e9fe19c64781309d1616689e4026
 
-PODFILE CHECKSUM: 05af5169b56fb9768a5deec586403c74b26704b7
+PODFILE CHECKSUM: 8547eba6b18e5dd0be800484ec4960b227c890c9
 
 COCOAPODS: 1.8.4
