@@ -101,7 +101,7 @@ public extension Service {
     ///   - paginated: if the request should follow pagination, success only if all pages are completed
     ///   - cachePolicy: specifices the policy to follow for caching responses
     ///   - headers: custom headers that should be attached with this request
-    public func request(path: String,
+    func request(path: String,
                         baseUrlOverride: String? = nil,
                         serviceVersionOverride: String? = nil,
                         method: NetworkingServiceKit.HTTPMethod = .get,

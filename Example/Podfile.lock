@@ -1,8 +1,8 @@
 PODS:
-  - Alamofire (4.7.3)
-  - AlamofireImage (3.4.1):
-    - Alamofire (~> 4.7)
-  - CryptoSwift (0.12.0)
+  - Alamofire (5.0.4)
+  - AlamofireImage (4.0.3):
+    - Alamofire (< 6.0.0, >= 5.0.2)
+  - CryptoSwift (1.3.0)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
     - Mockingjay/XCTest (= 2.0.0)
@@ -10,23 +10,21 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - NetworkingServiceKit (1.6.0):
-    - NetworkingServiceKit/Core (= 1.6.0)
-  - NetworkingServiceKit/Core (1.6.0):
+  - NetworkingServiceKit (1.7.0):
+    - NetworkingServiceKit/Core (= 1.7.0)
+  - NetworkingServiceKit/Core (1.7.0):
     - Alamofire
     - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (1.6.0):
+  - NetworkingServiceKit/ReactiveSwift (1.7.0):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
     - ReactiveSwift
     - SwiftyJSON
-  - Nimble (7.3.1)
-  - Quick (1.3.2)
-  - ReactiveSwift (4.0.0):
-    - Result (~> 4.0)
-  - Result (4.0.0)
-  - SwiftyJSON (4.2.0)
+  - Nimble (8.0.4)
+  - Quick (2.2.0)
+  - ReactiveSwift (6.2.1)
+  - SwiftyJSON (5.0.0)
   - URITemplate (2.1.0)
 
 DEPENDENCIES:
@@ -38,12 +36,11 @@ DEPENDENCIES:
   - "URITemplate (from `git@github.com:darkzlave/URITemplate.swift.git`, branch `master`)"
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - AlamofireImage
     - CryptoSwift
     - ReactiveSwift
-    - Result
     - SwiftyJSON
 
 EXTERNAL SOURCES:
@@ -67,28 +64,27 @@ CHECKOUT OPTIONS:
     :commit: cf544670b8d95f3f53716023ca665689a05a2784
     :git: "git@github.com:darkzlave/Mockingjay.git"
   Nimble:
-    :commit: c72edbbd6358090f8f1c4b6141538ebc88d167d9
+    :commit: eea5843b34beb559dd51cf004953f75028e47add
     :git: "git@github.com:Quick/Nimble.git"
   Quick:
-    :commit: 59e5dd8747ffbbc0d23f0c6093d93b23c61699f0
+    :commit: 173a8213431cde87f831ed7a47e5e42467b72c3c
     :git: "git@github.com:Quick/Quick.git"
   URITemplate:
     :commit: 113d21e14d462a824f0a67587c75e10bcf8bf372
     :git: "git@github.com:darkzlave/URITemplate.swift.git"
 
 SPEC CHECKSUMS:
-  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
-  AlamofireImage: 78d67ccbb763d87ba44b21583d2153500a195630
-  CryptoSwift: 1c07ca50843dd48bc54e6ea53d7a4dba3b645716
+  Alamofire: 0fe5fd24b4298dc377a6550da7d5f1b30e286fcb
+  AlamofireImage: 3d1a2010519e58675318735580eb856e88840ff7
+  CryptoSwift: 1283821600233bdbeb96d7b389c3288c3bf77211
   Mockingjay: 95a5fbe594f963f7536d3975739df39f1366f4d1
-  NetworkingServiceKit: 6480a8b41339737d431499f06d95e6a751b866d8
-  Nimble: 6e4123b6d882a0f8c7f950236a3251d678cf12a2
-  Quick: 1a3fc6d2b9143276258d816c904b983a1df916a2
-  ReactiveSwift: a2bb9ace428a109e9c0209615645d9d286c8c433
-  Result: 7645bb3f50c2ce726dd0ff2fa7b6f42bbe6c3713
-  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  NetworkingServiceKit: 63c61451c659a377be37946cc6864ef341ddae2a
+  Nimble: 66110543b37eed1302fa50f2ad411f22d2548373
+  Quick: 8bf351656d824b9cc6e292b41494c8f18562a5e9
+  ReactiveSwift: 07ddf579f4eb3ee3bd656214f0461aaf2c0fd639
+  SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   URITemplate: bf971b2a5637e9fe19c64781309d1616689e4026
 
-PODFILE CHECKSUM: c094b9ea9a0105359da668dfc37aa65bd9bd332f
+PODFILE CHECKSUM: 8547eba6b18e5dd0be800484ec4960b227c890c9
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.9.1

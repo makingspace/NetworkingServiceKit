@@ -18,9 +18,9 @@ open class AlamoNetworkManager: NetworkManager {
     }
     
     /// default session manager to be use with Alamofire
-    private let session: SessionManager = {
+    private let session: Session = {
         let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
+        sessionConfiguration.headers = HTTPHeaders.default
         sessionConfiguration.httpShouldSetCookies = false
         var protocolClasses = sessionConfiguration.protocolClasses ?? [AnyClass]()
         sessionConfiguration.protocolClasses = [NetworkURLProtocol.self] as [AnyClass] + protocolClasses
@@ -30,10 +30,9 @@ open class AlamoNetworkManager: NetworkManager {
         sessionConfiguration.urlCache = urlCache
         //This is the default value but let's make it clear caching by default depends on the response Cache-Control header
         sessionConfiguration.requestCachePolicy = URLRequest.CachePolicy.useProtocolCachePolicy
-        let session = SessionManager(configuration: sessionConfiguration)
-        session.startRequestsImmediately = false
-        //custom adapter for inserting our authentication
-        session.adapter = AlamoAuthenticationAdapter()
+        let session = Session(configuration: sessionConfiguration,
+                              startRequestsImmediately: false,
+                              interceptor: AlamoAuthenticationAdapter())
         return session
     }()
     
@@ -44,17 +43,14 @@ open class AlamoNetworkManager: NetworkManager {
                        stubs: [ServiceStub],
                        success: @escaping SuccessResponseBlock,
                        failure: @escaping ErrorResponseBlock) {
-        sessionManager.upload(multipartFormData: constructingBlock, to: path, headers: headers) { result in
-            switch result {
-            case .failure(let error):
-                failure(MSError.dataError(description: error.localizedDescription))
-            case .success(let request, _, _):
-                request.responseJSON { rawResponse in
-                    success(rawResponse.value as? [String: Any] ?? [:])
-                }
-                request.uploadProgress { progressBlock($0) }
-                
-                request.resume()
+        session.upload(multipartFormData: constructingBlock, to: path).uploadProgress { progress in
+            progressBlock(progress)
+        }.responseJSON { response in
+            if let json = response.value as? [String: Any] {
+                success(json)
+            }
+            else {
+                failure(MSError.dataError(description: (response.error?.localizedDescription ?? "Upload Failed")))
             }
         }
     }
@@ -82,50 +78,50 @@ open class AlamoNetworkManager: NetworkManager {
                         success: @escaping SuccessResponseBlock,
                         failure: @escaping ErrorResponseBlock) {
         
-        guard let httpMethod = Alamofire.HTTPMethod(rawValue: method.string) else { return }
+        let httpMethod = Alamofire.HTTPMethod(rawValue: method.string)
         
         //lets use URL encoding only for GETs / DELETEs OR use a specific encoding for arrays
         var encoding: ParameterEncoding = method == .get || method == .delete ? URLEncoding.default : JSONEncoding.default
         encoding = parameters.validArrayRequest() ? ArrayEncoding() : encoding
         encoding = parameters.validStringRequest() ? StringEncoding() : encoding
         
-        let request = sessionManager.request(path,
-                                             method: httpMethod,
-                                             parameters: parameters,
-                                             encoding: encoding,
-                                             headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
-                                                
-                                                //Print response if we have a verbose log mode
-                                                AlamoNetworkManager.logNetwork(rawResponse: rawResponse)
-                                                
-                                                //Return valid response
-                                                if rawResponse.error == nil {
-                                                    // Cached our response through URLCache
-                                                    AlamoNetworkManager.cache(response: rawResponse.response,
-                                                                              with: rawResponse.data,
-                                                                              for: rawResponse.request,
-                                                                              using: cachePolicy)
-                                                    // Process valid response
-                                                    self.process(rawResponse: rawResponse.value,
-                                                                 method: httpMethod,
-                                                                 parameters: parameters,
-                                                                 encoding: encoding,
-                                                                 paginated: paginated,
-                                                                 cachePolicy: cachePolicy,
-                                                                 headers: headers,
-                                                                 success: success,
-                                                                 failure: failure)
-                                                } else if let error = self.buildError(fromResponse: rawResponse) {
-                                                    //Figure out if we have an error and an error response
-                                                    failure(error)
-                                                } else {
-                                                    //if the request is succesful but has no response (validation for http code has passed also)
-                                                    success([String: Any]())
-                                                }
+        let request = session.request(path,
+                                      method: httpMethod,
+                                      parameters: parameters,
+                                      encoding: encoding,
+                                      headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
+                                        
+                                        //Print response if we have a verbose log mode
+                                        AlamoNetworkManager.logNetwork(rawResponse: rawResponse)
+                                        
+                                        //Return valid response
+                                        if rawResponse.error == nil {
+                                            // Cached our response through URLCache
+                                            AlamoNetworkManager.cache(response: rawResponse.response,
+                                                                      with: rawResponse.data,
+                                                                      for: rawResponse.request,
+                                                                      using: cachePolicy)
+                                            // Process valid response
+                                            self.process(rawResponse: rawResponse.value,
+                                                         method: httpMethod,
+                                                         parameters: parameters,
+                                                         encoding: encoding,
+                                                         paginated: paginated,
+                                                         cachePolicy: cachePolicy,
+                                                         headers: headers,
+                                                         success: success,
+                                                         failure: failure)
+                                        } else if let error = self.buildError(fromResponse: rawResponse) {
+                                            //Figure out if we have an error and an error response
+                                            failure(error)
+                                        } else {
+                                            //if the request is succesful but has no response (validation for http code has passed also)
+                                            success([String: Any]())
+                                        }
         }
-
+        
         if cachePolicy.type == .forceCacheDataElseLoad,
-            let urlRequest = request.request,
+            let urlRequest = try? request.convertible.asURLRequest(),
             let cachedResponse = urlRequest.cachedJSONResponse() {
             //Process valid response
             self.process(rawResponse: cachedResponse,
@@ -169,46 +165,46 @@ open class AlamoNetworkManager: NetworkManager {
                      success: @escaping SuccessResponseBlock,
                      failure: @escaping ErrorResponseBlock) {
         
-        let request = sessionManager.request(urlString,
-                                             method: method,
-                                             parameters: parameters,
-                                             encoding: encoding,
-                                             headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
-                                                
-                                                //Print response if we have a verbose log mode
-                                                AlamoNetworkManager.logNetwork(rawResponse: rawResponse)
-                                                
-                                                //Return valid response
-                                                if let response = rawResponse.value as? [String:Any],
-                                                    rawResponse.error == nil {
-                                                    // Cached our response through URLCache
-                                                    AlamoNetworkManager.cache(response: rawResponse.response,
-                                                                              with: rawResponse.data,
-                                                                              for: rawResponse.request,
-                                                                              using: cachePolicy)
-                                                    
-                                                    //Process valid response
-                                                    self.processNextPage(response: response,
-                                                                         forURL: urlString,
-                                                                         method: method,
-                                                                         parameters: parameters,
-                                                                         onExistingResponse: aggregateResponse,
-                                                                         encoding: encoding,
-                                                                         headers: headers,
-                                                                         cachePolicy: cachePolicy,
-                                                                         success: success,
-                                                                         failure: failure)
-                                                    } else if let error = self.buildError(fromResponse: rawResponse) {
-                                                        //Figure out if we have an error and an error response
-                                                        failure(error)
-                                                    } else {
-                                                    //if the request is succesful but has no response (validation for http code has passed also)
-                                                    success([String: Any]())
-                                                }
+        let request = session.request(urlString,
+                                      method: method,
+                                      parameters: parameters,
+                                      encoding: encoding,
+                                      headers: headers).validate(statusCode: AlamoNetworkManager.validStatusCodes).responseJSON { rawResponse in
+                                        
+                                        //Print response if we have a verbose log mode
+                                        AlamoNetworkManager.logNetwork(rawResponse: rawResponse)
+                                        
+                                        //Return valid response
+                                        if let response = rawResponse.value as? [String:Any],
+                                            rawResponse.error == nil {
+                                            // Cached our response through URLCache
+                                            AlamoNetworkManager.cache(response: rawResponse.response,
+                                                                      with: rawResponse.data,
+                                                                      for: rawResponse.request,
+                                                                      using: cachePolicy)
+                                            
+                                            //Process valid response
+                                            self.processNextPage(response: response,
+                                                                 forURL: urlString,
+                                                                 method: method,
+                                                                 parameters: parameters,
+                                                                 onExistingResponse: aggregateResponse,
+                                                                 encoding: encoding,
+                                                                 headers: headers,
+                                                                 cachePolicy: cachePolicy,
+                                                                 success: success,
+                                                                 failure: failure)
+                                        } else if let error = self.buildError(fromResponse: rawResponse) {
+                                            //Figure out if we have an error and an error response
+                                            failure(error)
+                                        } else {
+                                            //if the request is succesful but has no response (validation for http code has passed also)
+                                            success([String: Any]())
+                                        }
         }
         
         if cachePolicy.type == .forceCacheDataElseLoad,
-            let urlRequest = request.request,
+            let urlRequest = try? request.convertible.asURLRequest(),
             let cachedResponse = urlRequest.cachedJSONResponse() as? [String:Any] {
             
             //Process valid response
@@ -337,7 +333,7 @@ open class AlamoNetworkManager: NetworkManager {
     ///
     /// - Parameter rawResponse: response from the request
     /// - Returns: a valid error reason and details if they were returned in the correct format
-    func buildError(fromResponse rawResponse: DataResponse<Any>) -> MSError?
+    func buildError(fromResponse rawResponse: DataResponse<Any, AFError>) -> MSError?
     {
         if let error = rawResponse.error,
             let statusCode = rawResponse.response?.statusCode,
@@ -357,7 +353,7 @@ open class AlamoNetworkManager: NetworkManager {
         
         return nil
     }
-
+    
     // MARK: - Debugging
     
     /// Prints a debug of a network response
