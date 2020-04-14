@@ -136,7 +136,9 @@ open class AlamoNetworkManager: NetworkManager {
             AlamoNetworkManager.log("CACHED \(request.description)")
         } else {
             request.resume()
-            AlamoNetworkManager.log(request.description)
+            if let desc = try? request.convertible.asURLRequest().description {
+                AlamoNetworkManager.log(desc)
+            }
         }
     }
     
@@ -221,7 +223,9 @@ open class AlamoNetworkManager: NetworkManager {
             AlamoNetworkManager.log("CACHED \(request.description)")
         } else {
             request.resume()
-            AlamoNetworkManager.log(request.description)
+            if let desc = try? request.convertible.asURLRequest().description {
+                AlamoNetworkManager.log(desc)
+            }
         }
     }
     
