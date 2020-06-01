@@ -93,7 +93,6 @@ open class AlamoNetworkManager: NetworkManager {
                                         
                                         //Print response if we have a verbose log mode
                                         AlamoNetworkManager.logNetwork(rawResponse: rawResponse)
-                                        
                                         //Return valid response
                                         if rawResponse.error == nil {
                                             // Cached our response through URLCache
@@ -133,7 +132,7 @@ open class AlamoNetworkManager: NetworkManager {
                          headers: headers,
                          success: success,
                          failure: failure)
-            AlamoNetworkManager.log("CACHED \(request.description)")
+            AlamoNetworkManager.log("CACHED \(urlRequest.description)")
         } else {
             request.resume()
             if let desc = try? request.convertible.asURLRequest().description {
@@ -220,7 +219,7 @@ open class AlamoNetworkManager: NetworkManager {
                                  cachePolicy: cachePolicy,
                                  success: success,
                                  failure: failure)
-            AlamoNetworkManager.log("CACHED \(request.description)")
+            AlamoNetworkManager.log("CACHED \(urlRequest.description)")
         } else {
             request.resume()
             if let desc = try? request.convertible.asURLRequest().description {
@@ -339,20 +338,24 @@ open class AlamoNetworkManager: NetworkManager {
     /// - Returns: a valid error reason and details if they were returned in the correct format
     func buildError(fromResponse rawResponse: DataResponse<Any, AFError>) -> MSError?
     {
-        if let error = rawResponse.error,
-            let statusCode = rawResponse.response?.statusCode,
-            !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
-            
-            let details = MSErrorDetails(data: rawResponse.data, request: rawResponse.request, code: statusCode, error: error)
-            let reason = MSErrorType.ResponseFailureReason(code: statusCode)
-            
-            return MSError(type: .responseValidation(reason: reason), details: details)
-        }
-        else if let error = rawResponse.error as NSError?, error.code.isNetworkErrorCode {
-            
-            let components = rawResponse.request?.components
-            let details = MSErrorDetails(message: error.localizedDescription, body: components?.body, path: components?.path, code: error.code, underlyingError: error)
-            return MSError(type: .responseValidation(reason: .connectivity), details: details)
+        if let afError = rawResponse.error {
+            if let statusCode = rawResponse.response?.statusCode,
+                !AlamoNetworkManager.validStatusCodes.contains(statusCode) {
+                
+                let details = MSErrorDetails(data: rawResponse.data, request: rawResponse.request, code: statusCode, error: afError)
+                let reason = MSErrorType.ResponseFailureReason(code: statusCode)
+                
+                return MSError(type: .responseValidation(reason: reason), details: details)
+            }
+            else {
+                let error = (afError.underlyingError ?? afError) as NSError
+                if error.code.isNetworkErrorCode {
+                    
+                    let components = rawResponse.request?.components
+                    let details = MSErrorDetails(message: error.localizedDescription, body: components?.body, path: components?.path, code: error.code, underlyingError: error)
+                    return MSError(type: .responseValidation(reason: .connectivity), details: details)
+                }
+            }
         }
         
         return nil
