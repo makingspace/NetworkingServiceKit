@@ -52,7 +52,7 @@ open class AlamoNetworkManager: NetworkManager {
             else {
                 failure(MSError.dataError(description: (response.error?.localizedDescription ?? "Upload Failed")))
             }
-        }
+        }.resume()
     }
     
     // MARK: - Request handling
