@@ -36,6 +36,10 @@ open class AlamoNetworkManager: NetworkManager {
         return session
     }()
     
+    public func cancelAllRequests() {
+        session.cancelAllRequests()
+    }
+    
     public func upload(path: String,
                        withConstructingBlock constructingBlock: @escaping (MultipartFormData) -> Void,
                        progressBlock: @escaping (Progress) -> Void,

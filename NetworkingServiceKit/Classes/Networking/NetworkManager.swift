@@ -322,5 +322,11 @@ public protocol NetworkManager {
                 success: @escaping SuccessResponseBlock,
                 failure: @escaping ErrorResponseBlock)
     
+    func cancelAllRequests()
+    
     init(with configuration: APIConfiguration)
+}
+
+extension NetworkManager {
+    public func cancelAllRequests() { } // optional method
 }
