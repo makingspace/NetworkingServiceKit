@@ -116,7 +116,8 @@ open class ServiceLocator: NSObject {
     open class func set(services serviceTypes: [Service.Type],
                          api apiConfigurationType: APIConfigurationType.Type,
                          auth authConfigurationType: APIConfigurationAuth.Type,
-                         token tokenType: APIToken.Type) {
+                         token tokenType: APIToken.Type,
+                         bundleId: String = Bundle.main.appBundleIdentifier) {
         //Set of services that we support
         ServiceLocator.shared.loadedServiceTypes = serviceTypes
 
@@ -129,7 +130,7 @@ open class ServiceLocator: NSObject {
         ServiceLocator.shared.token = APITokenManager.currentToken
         
         //Init our Default Network Client
-        let configuration = APIConfiguration.current
+        let configuration = APIConfiguration.current(bundleId: bundleId)
         ServiceLocator.shared.configuration = configuration
         ServiceLocator.shared.networkManager = ServiceLocator.defaultNetworkClientType.init(with: configuration)
 

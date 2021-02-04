@@ -9,7 +9,8 @@
 import Foundation
 
 extension Bundle {
-    //Returns a non optional bundle identifier
+    
+    /// Returns a non optional bundle identifier, if bundle identifier is nil it will return `"com.app"`
     public var appBundleIdentifier: String {
         return self.bundleIdentifier ?? "com.app"
     }
