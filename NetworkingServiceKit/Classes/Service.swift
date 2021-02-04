@@ -214,10 +214,11 @@ public extension AbstractBaseService {
         return service
     }
     
-    static func resolved(stubs: [ServiceStub]) -> Self {
+    static func stubbed(_ stubs: [ServiceStub]) -> Self {
         guard let service = ServiceLocator.service(forType: self, stubs: stubs) else {
             fatalError("Service of type \(Self.self) not found. Make sure you register it in the ServiceLocator first")
         }
         return service
     }
+    
 }
