@@ -1,8 +1,8 @@
 PODS:
-  - Alamofire (5.0.4)
-  - AlamofireImage (4.0.3):
-    - Alamofire (< 6.0.0, >= 5.0.2)
-  - CryptoSwift (1.3.0)
+  - Alamofire (5.4.1)
+  - AlamofireImage (4.1.0):
+    - Alamofire (~> 5.1)
+  - CryptoSwift (1.3.8)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
     - Mockingjay/XCTest (= 2.0.0)
@@ -10,20 +10,20 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - NetworkingServiceKit (1.7.2):
-    - NetworkingServiceKit/Core (= 1.7.2)
-  - NetworkingServiceKit/Core (1.7.2):
+  - NetworkingServiceKit (1.8.0):
+    - NetworkingServiceKit/Core (= 1.8.0)
+  - NetworkingServiceKit/Core (1.8.0):
     - Alamofire
     - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (1.7.2):
+  - NetworkingServiceKit/ReactiveSwift (1.8.0):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
     - ReactiveSwift
     - SwiftyJSON
-  - Nimble (8.0.4)
-  - Quick (2.2.0)
-  - ReactiveSwift (6.2.1)
+  - Nimble (9.0.0)
+  - Quick (3.0.0)
+  - ReactiveSwift (6.5.0)
   - SwiftyJSON (5.0.0)
   - URITemplate (2.1.0)
 
@@ -64,24 +64,24 @@ CHECKOUT OPTIONS:
     :commit: cf544670b8d95f3f53716023ca665689a05a2784
     :git: "git@github.com:darkzlave/Mockingjay.git"
   Nimble:
-    :commit: eea5843b34beb559dd51cf004953f75028e47add
+    :commit: e4aa2014de13b90b06eaf183c67be3e390e927da
     :git: "git@github.com:Quick/Nimble.git"
   Quick:
-    :commit: 173a8213431cde87f831ed7a47e5e42467b72c3c
+    :commit: b4c453374011d5210710436c39e701ec2f26889e
     :git: "git@github.com:Quick/Quick.git"
   URITemplate:
     :commit: 113d21e14d462a824f0a67587c75e10bcf8bf372
     :git: "git@github.com:darkzlave/URITemplate.swift.git"
 
 SPEC CHECKSUMS:
-  Alamofire: 0fe5fd24b4298dc377a6550da7d5f1b30e286fcb
-  AlamofireImage: 3d1a2010519e58675318735580eb856e88840ff7
-  CryptoSwift: 1283821600233bdbeb96d7b389c3288c3bf77211
+  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
+  AlamofireImage: c4a2ba349885fb3064feb74d2e547bd42ce9be10
+  CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
   Mockingjay: 95a5fbe594f963f7536d3975739df39f1366f4d1
-  NetworkingServiceKit: 31e4061c75751856f861a8104aa3a9a70341ca77
-  Nimble: 66110543b37eed1302fa50f2ad411f22d2548373
-  Quick: 8bf351656d824b9cc6e292b41494c8f18562a5e9
-  ReactiveSwift: 07ddf579f4eb3ee3bd656214f0461aaf2c0fd639
+  NetworkingServiceKit: 182c35cc269179b9c7a3c4b2c1afc126f1579037
+  Nimble: 3b4ec3fd40f1dc178058e0981107721c615643d8
+  Quick: e3073b67c415e9793b3efa45273d24fd383cdd6c
+  ReactiveSwift: 8d159904084e908856cde90b2e28823f3c7e485f
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   URITemplate: bf971b2a5637e9fe19c64781309d1616689e4026
 
