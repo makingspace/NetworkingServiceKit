@@ -10,9 +10,8 @@ target 'NetworkingServiceKit_Example' do
   target 'NetworkingServiceKit_Tests' do
     inherit! :search_paths
 
-    pod 'Quick',:git => 'git@github.com:Quick/Quick.git', :branch => 'master'
-    pod 'Nimble',:git => 'git@github.com:Quick/Nimble.git', :branch => 'master'
-    pod 'URITemplate', :git => 'git@github.com:darkzlave/URITemplate.swift.git', :branch => 'master'
-    pod 'Mockingjay', :git => 'git@github.com:darkzlave/Mockingjay.git', :branch => 'master'
+    pod 'Quick'
+    pod 'Nimble'
+    pod 'Mockingjay', :git => 'https://github.com/kylef/Mockingjay.git', :tag => '3.0.0-alpha.1'
   end
 end
