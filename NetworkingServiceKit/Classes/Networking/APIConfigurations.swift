@@ -49,14 +49,9 @@ public protocol APIConfigurationType {
     
     /// Returns the current APIConfiguration, either staging or production
     @objc public static var current: APIConfiguration {
-        guard let configurationType = APIConfiguration.apiConfigurationType,
-            let authType = APIConfiguration.authConfigurationType else {
-                print("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
-                return APIConfiguration()
-        }
-        return APIConfiguration(type: self.currentConfigurationType(with: configurationType),
-                                auth: authType.init(bundleId: Bundle.main.appBundleIdentifier))
+        return current()
     }
+    
     public static func currentConfigurationType(with configuration: APIConfigurationType.Type) -> APIConfigurationType {
         let environmentDictionary = ProcessInfo.processInfo.environment
         if let environmentConfiguration = environmentDictionary[APIConfigurationKey] {
@@ -64,5 +59,14 @@ public protocol APIConfigurationType {
         }
         
         return configuration.defaultConfiguration
+    }
+    
+    @objc public static func current(bundleId: String = Bundle.main.appBundleIdentifier) -> APIConfiguration {
+        guard let configurationType = APIConfiguration.apiConfigurationType,
+              let authType = APIConfiguration.authConfigurationType else {
+            fatalError("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
+        }
+        return APIConfiguration(type: self.currentConfigurationType(with: configurationType),
+                                auth: authType.init(bundleId: bundleId))
     }
 }

@@ -161,7 +161,9 @@ open class AbstractBaseService: NSObject, Service {
                       headers: CustomHTTPHeaders = CustomHTTPHeaders(),
                       success: @escaping SuccessResponseBlock,
                       failure: @escaping ErrorResponseBlock) {
-        networkManager.request(path: servicePath(for: path, baseUrlOverride: baseUrlOverride, serviceVersionOverride: serviceVersionOverride),
+        networkManager.request(path: servicePath(for: path,
+                                                 baseUrlOverride: baseUrlOverride,
+                                                 serviceVersionOverride: serviceVersionOverride),
                                method: method,
                                with: parameters,
                                paginated: paginated,
@@ -199,6 +201,24 @@ open class AbstractBaseService: NSObject, Service {
                                 }
                                 failure(error)
         })
+    }
+    
+}
+
+
+public extension AbstractBaseService {
+    static var resolved : Self {
+        guard let service = ServiceLocator.service(forType: self) else {
+            fatalError("Service of type \(Self.self) not found. Make sure you register it in the ServiceLocator first")
+        }
+        return service
+    }
+    
+    static func stubbed(_ stubs: [ServiceStub]) -> Self {
+        guard let service = ServiceLocator.service(forType: self, stubs: stubs) else {
+            fatalError("Service of type \(Self.self) not found. Make sure you register it in the ServiceLocator first")
+        }
+        return service
     }
     
 }

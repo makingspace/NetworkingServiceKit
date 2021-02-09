@@ -32,20 +32,20 @@ open class StubNetworkManager: NetworkManager {
     ///   - success: success block with a response
     ///   - failure: failure block with an error
     open func request(path: String,
-                 method: NetworkingServiceKit.HTTPMethod = .get,
-                 with parameters: RequestParameters = RequestParameters(),
-                 paginated: Bool = false,
-                 cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
-                 headers: CustomHTTPHeaders = CustomHTTPHeaders(),
-                 stubs: [ServiceStub],
-                 success: @escaping SuccessResponseBlock,
-                 failure: @escaping ErrorResponseBlock) {
+                      method: NetworkingServiceKit.HTTPMethod = .get,
+                      with parameters: RequestParameters = RequestParameters(),
+                      paginated: Bool = false,
+                      cachePolicy: CacheResponsePolicy = CacheResponsePolicy.default,
+                      headers: CustomHTTPHeaders = CustomHTTPHeaders(),
+                      stubs: [ServiceStub],
+                      success: @escaping SuccessResponseBlock,
+                      failure: @escaping ErrorResponseBlock) {
         executeStub(forPath: path, withParameters: parameters, andStubs: stubs, success: success, failure: failure)
     }
     
     public func upload(path: String,
                        withConstructingBlock
-        constructingBlock: @escaping (MultipartFormData) -> Void,
+                        constructingBlock: @escaping (MultipartFormData) -> Void,
                        progressBlock: @escaping (Progress) -> Void,
                        headers: CustomHTTPHeaders,
                        stubs: [ServiceStub],
@@ -60,7 +60,7 @@ open class StubNetworkManager: NetworkManager {
                              success: @escaping SuccessResponseBlock,
                              failure: @escaping ErrorResponseBlock) {
         let matchingRequests = stubs.filter { path.contains($0.request.path) && ($0.request.parameters == nil ||
-            NSDictionary(dictionary: parameters).isEqual(to: NSDictionary(dictionary: $0.request.parameters ?? [:]) as! [AnyHashable : Any])) }
+                                                                                    NSDictionary(dictionary: parameters).isEqual(to: NSDictionary(dictionary: $0.request.parameters ?? [:]) as! [AnyHashable : Any])) }
         
         if let matchingRequest = matchingRequests.first {
             
@@ -104,7 +104,7 @@ open class StubNetworkManager: NetworkManager {
         var body: String? = nil
         
         if let response = response,
-            let responseError = response["error"] as? [String: Any] {
+           let responseError = response["error"] as? [String: Any] {
             message = responseError["message"] as? String
             let jsonData = try! JSONSerialization.data(withJSONObject: response, options: .prettyPrinted)
             
