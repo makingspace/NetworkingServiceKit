@@ -64,9 +64,7 @@ public protocol APIConfigurationType {
     @objc public static func current(bundleId: String = Bundle.main.appBundleIdentifier) -> APIConfiguration {
         guard let configurationType = APIConfiguration.apiConfigurationType,
               let authType = APIConfiguration.authConfigurationType else {
-            //TODO: Patrick, why is this error being "erased" with a print? how severe would this error be?
-            print("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
-            return APIConfiguration()
+            fatalError("Error: ServiceLocator couldn't find the current APIConfiguration, make sure to define your own types for APIConfiguration.apiConfigurationType and APIConfiguration.authConfigurationType")
         }
         return APIConfiguration(type: self.currentConfigurationType(with: configurationType),
                                 auth: authType.init(bundleId: bundleId))
