@@ -8,14 +8,14 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NetworkingServiceKit'
-  s.version          = '1.7.3'
+  s.version          = '1.8.0'
   s.summary          = 'A service layer of networking microservices for iOS.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
 #   * Try to keep it short, snappy and to the point.
 #   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+#   * Finally, don't worry about the indent, CocoaPods strips it! 
 
   s.description      = <<-DESC
 NetworkingServiceKit is the reincarnation of the standard iOS monolith api client. Using a modular approach to services, the framework enables the user to select which services they will need to have running. Also, NetworkingServiceKit takes a different approach when it comes to using Network Clients like AFNetworking/Alamofire. All requests are routed through a protocol, which makes the library loosely coupled from the networking implementation.

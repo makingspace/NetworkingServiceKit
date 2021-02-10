@@ -21,8 +21,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tweetsTableView.estimatedRowHeight = 85
-        tweetsTableView.rowHeight = UITableViewAutomaticDimension
-        mapView.region = MKCoordinateRegionForMapRect(MKMapRectWorld)
+        tweetsTableView.rowHeight = UITableView.automaticDimension
+        mapView.region = MKCoordinateRegion(MKMapRect.world)
         mapView.centerCoordinate = CLLocationCoordinate2D(latitude: 40.709540, longitude: -74.008078) //center in NYC
         //Do initial search 
         searchBar(searchBar, textDidChange: "Makespace")

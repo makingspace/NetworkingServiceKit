@@ -273,7 +273,7 @@ class AlamoNetworkManagerTests: QuickSpec
                 it("should correctly store and return the cached request if the cache is valid") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionary"), builder: json(dictionaryResponse))
                     
-                    waitUntil(timeout: 10, action: { done in
+                    waitUntil(timeout: .seconds(10), action: { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionary", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 200),
                                                success: { response in
@@ -301,7 +301,7 @@ class AlamoNetworkManagerTests: QuickSpec
                 it("should fail if the cache has been invalidated") {
                     MockingjayProtocol.addStub(matcher: http(.get, uri: "/v3/dictionaryInvalidated"), builder: json(dictionaryResponse))
                     
-                    waitUntil(timeout:10) { done in
+                    waitUntil(timeout:.seconds(10)) { done in
                         let randomService = ServiceLocator.service(forType: RandomService.self)
                         randomService?.request(path: "dictionaryInvalidated", cachePolicy:CacheResponsePolicy(type: .forceCacheDataElseLoad, maxAge: 200),
                                                success: { response in
