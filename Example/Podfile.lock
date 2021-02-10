@@ -22,7 +22,7 @@ PODS:
     - ReactiveSwift
     - SwiftyJSON
   - Nimble (9.0.0)
-  - Quick (3.1.1)
+  - Quick (3.1.2)
   - ReactiveSwift (6.5.0)
   - SwiftyJSON (5.0.0)
   - URITemplate (3.0.0)
@@ -64,7 +64,7 @@ SPEC CHECKSUMS:
   Mockingjay: 97656c6f59879923976a0a52ef09da45756cca82
   NetworkingServiceKit: 182c35cc269179b9c7a3c4b2c1afc126f1579037
   Nimble: 3b4ec3fd40f1dc178058e0981107721c615643d8
-  Quick: ea9a702cdf4bfd561c47006f1e48c084dfca309e
+  Quick: 60f0ea3b8e0cfc0df3259a5c06a238ad8b3c46e0
   ReactiveSwift: 8d159904084e908856cde90b2e28823f3c7e485f
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   URITemplate: 58e0d47f967006c5d59888af5356c4a8ed3b197d
