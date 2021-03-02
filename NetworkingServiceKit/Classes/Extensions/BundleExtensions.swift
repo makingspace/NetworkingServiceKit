@@ -22,6 +22,9 @@ extension Bundle {
 
     //Returns a a non optional bundleVersion
     public var bundleVersion: String {
-        return self.infoDictionary?["CFBundleVersion"] as? String ?? "1.0.0"
+        let marketingVersion = infoDictionary?["CFBundleShortVersionString"] as? String //e.g. 1.2.0
+        let buildNumber = self.infoDictionary?["CFBundleVersion"] as? String//e.g. 0
+        
+        return marketingVersion  ?? buildNumber ?? "1.0.0"
     }
 }
