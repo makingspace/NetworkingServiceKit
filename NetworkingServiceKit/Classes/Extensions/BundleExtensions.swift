@@ -20,7 +20,7 @@ extension Bundle {
         return self.infoDictionary?["CFBundleExecutable"] as? String ?? "com.app"
     }
 
-    //Returns a a non optional bundleVersion
+    //Returns a a non optional bundleVersion, it uses the marketing version, e.g. 1.2.0, and if not found it uses the bundle version, which is normally the build number, e.g. 7. in 1.2.0(7)
     public var bundleVersion: String {
         let marketingVersion = infoDictionary?["CFBundleShortVersionString"] as? String //e.g. 1.2.0
         let buildNumber = self.infoDictionary?["CFBundleVersion"] as? String//e.g. 0
