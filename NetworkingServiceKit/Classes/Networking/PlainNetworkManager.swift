@@ -8,6 +8,8 @@
 import Foundation
 import Alamofire
 
+/// WIP: A networking manager that uses `URLSession` and `URLSessionTask` directly.
+/// This would allow for background url sessions
 open class PlainNetworkManager : NSObject, NetworkManager {
     public var configuration: APIConfiguration
     private var progressHandlersByTaskID = [Int : (success: SuccessResponseBlock,
@@ -56,8 +58,6 @@ open class PlainNetworkManager : NSObject, NetworkManager {
                                       headers: headers.dictionary,
                                       expectedStatusCode: expected200to300,
                                       timeOutInterval: 10)
-        
-//        let task = backgroundSession.request(request, success: success, failure: failure)
         let task = backgroundSession.dataTask(with: request)
         progressHandlersByTaskID[task.taskIdentifier] = (success, failure)
         task.resume()
@@ -70,7 +70,7 @@ open class PlainNetworkManager : NSObject, NetworkManager {
                        stubs: [ServiceStub],
                        success: @escaping SuccessResponseBlock,
                        failure: @escaping ErrorResponseBlock) {
-        
+     //TODO: complete this
     }
 }
 
@@ -253,7 +253,7 @@ extension PlainNetworkManager:  URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         guard let handler = progressHandlersByTaskID[dataTask.taskIdentifier] else {return}
         
-        //Parse the data using the same alamofire parser and send it.
+        //TODO: Parse the data using the same alamofire parser and send it.
 //        handler.success(data)
     }
 }
