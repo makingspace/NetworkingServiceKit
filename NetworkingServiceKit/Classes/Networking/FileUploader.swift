@@ -42,7 +42,7 @@ class FileUploader: NSObject {
         
         if let imageURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
             .appendingPathComponent(targetURL.lastPathComponent)
-            .appendingPathComponent("\(Int.random(in: 1...100000000))") {
+            .appendingPathComponent(UUID().uuidString) {
             do {
                 try data.write(to: imageURL)
                 let task = urlSession.uploadTask( with: request, fromFile: imageURL)
