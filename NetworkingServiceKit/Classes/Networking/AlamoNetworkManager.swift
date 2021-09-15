@@ -371,6 +371,11 @@ open class AlamoNetworkManager: NetworkManager {
     ///
     /// - Parameter rawResponse: response to get printed
     private static func logNetwork(rawResponse:Any) {
+        if let dataResponse = rawResponse as? AFDataResponse<Any>, let request = dataResponse.request {
+            ServiceLocator.shared.handlerAPIRequestsInfo?(APIRequestsInfo(path: request.url?.absoluteString,
+                                                                          method: request.httpMethod,
+                                                                          body: request.httpBody))
+        }
         if ServiceLocator.logLevel == .verbose {
             print("🔵 ServiceLocator: ")
             debugPrint(rawResponse)

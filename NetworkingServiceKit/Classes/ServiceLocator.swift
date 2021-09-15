@@ -44,14 +44,24 @@ public enum SLLogLevel: Int {
     case short //print only requests
     case verbose //print request and response bodies
 }
-
+public struct APIRequestsInfo {
+    public let path: String?
+    public let method: String?
+    public let body: Data?
+    init(path:String?, method: String?, body: Data?) {
+        self.path = path
+        self.method = method
+        self.body = body
+    }
+}
+public typealias HandlerAPIRequestsInfo = (APIRequestsInfo) -> Void
 open class ServiceLocator: NSObject {
     /// Our Default Networking Client for Alamofire, replace to override our network request implementation
     public static var defaultNetworkClientType: NetworkManager.Type = AlamoNetworkManager.self
     
     /// Our Default behavior for printing network logs
     public static var logLevel:SLLogLevel = .short
-    
+    public var handlerAPIRequestsInfo: HandlerAPIRequestsInfo?
     /// If any requests going out of the app should be intercepted
     public static var shouldInterceptRequests:Bool = false {
         didSet {
@@ -117,7 +127,8 @@ open class ServiceLocator: NSObject {
                          api apiConfigurationType: APIConfigurationType.Type,
                          auth authConfigurationType: APIConfigurationAuth.Type,
                          token tokenType: APIToken.Type,
-                         bundleId: String = Bundle.main.appBundleIdentifier) {
+                         bundleId: String = Bundle.main.appBundleIdentifier,
+                         handlerAPIRequestsInfo: HandlerAPIRequestsInfo? = nil) {
         //Set of services that we support
         ServiceLocator.shared.loadedServiceTypes = serviceTypes
 
@@ -142,6 +153,7 @@ open class ServiceLocator: NSObject {
                                                               networkManager: ServiceLocator.shared.networkManager)
             return dict
         }
+        ServiceLocator.shared.handlerAPIRequestsInfo = handlerAPIRequestsInfo
     }
 
     /// Returns a service for a specific type
