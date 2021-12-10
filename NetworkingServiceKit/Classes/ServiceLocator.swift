@@ -100,7 +100,8 @@ open class ServiceLocator: NSObject {
             ServiceLocator.set(services: serviceTypes,
                                api: configType,
                                auth: authType,
-                               token: tokenType, interceptor: interceptor)
+                               token: tokenType,
+                               interceptor: interceptor)
         }
     }
 

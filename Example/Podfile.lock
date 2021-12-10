@@ -10,12 +10,12 @@ PODS:
     - URITemplate (~> 3.0)
   - Mockingjay/XCTest (3.0.0-alpha.1):
     - Mockingjay/Core
-  - NetworkingServiceKit (1.8.0):
-    - NetworkingServiceKit/Core (= 1.8.0)
-  - NetworkingServiceKit/Core (1.8.0):
+  - NetworkingServiceKit (1.8.1):
+    - NetworkingServiceKit/Core (= 1.8.1)
+  - NetworkingServiceKit/Core (1.8.1):
     - Alamofire
     - SwiftyJSON
-  - NetworkingServiceKit/ReactiveSwift (1.8.0):
+  - NetworkingServiceKit/ReactiveSwift (1.8.1):
     - Alamofire
     - AlamofireImage
     - CryptoSwift
@@ -32,10 +32,10 @@ DEPENDENCIES:
   - NetworkingServiceKit (from `../`)
   - NetworkingServiceKit/ReactiveSwift (from `../`)
   - Nimble
-  - Quick (= 3.1.1)
+  - Quick
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - AlamofireImage
     - CryptoSwift
@@ -62,13 +62,13 @@ SPEC CHECKSUMS:
   AlamofireImage: c4a2ba349885fb3064feb74d2e547bd42ce9be10
   CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
   Mockingjay: 97656c6f59879923976a0a52ef09da45756cca82
-  NetworkingServiceKit: 182c35cc269179b9c7a3c4b2c1afc126f1579037
+  NetworkingServiceKit: b695a33376c38c8d56151635bb103d9eae5a8e7e
   Nimble: 3b4ec3fd40f1dc178058e0981107721c615643d8
   Quick: ea9a702cdf4bfd561c47006f1e48c084dfca309e
   ReactiveSwift: 8d159904084e908856cde90b2e28823f3c7e485f
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
   URITemplate: 58e0d47f967006c5d59888af5356c4a8ed3b197d
 
-PODFILE CHECKSUM: e8cd7ef3ed922cdf0609d785fdc96b003fb2b5fe
+PODFILE CHECKSUM: d17e5d5031d259548b18efdd0d30c3e4ea330bb3
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
