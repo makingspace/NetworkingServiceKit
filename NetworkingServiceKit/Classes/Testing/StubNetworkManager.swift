@@ -10,10 +10,10 @@ import Foundation
 import Alamofire
 
 open class StubNetworkManager: NetworkManager {
-    
     open var configuration: APIConfiguration
-    
-    required public init(with configuration: APIConfiguration) {
+
+    public required init(with configuration: APIConfiguration,
+                         interceptor: RequestInterceptor?) {
         self.configuration = configuration
     }
     

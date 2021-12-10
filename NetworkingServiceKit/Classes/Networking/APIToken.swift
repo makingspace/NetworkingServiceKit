@@ -12,6 +12,7 @@ import Foundation
 @objc
 public protocol APIToken {
     var authorization: String { get }
+    var refresh: String? { get }
     static func makePersistedToken() -> APIToken?
     static func make(from tokenResponse: Any) -> APIToken?
     static func clearToken()

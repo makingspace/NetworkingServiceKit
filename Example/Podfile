@@ -1,5 +1,5 @@
-source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '10.0'
+source 'https://cdn.cocoapods.org/'
+platform :ios, '13.0'
 inhibit_all_warnings!
 use_frameworks!
 
@@ -10,7 +10,7 @@ target 'NetworkingServiceKit_Example' do
   target 'NetworkingServiceKit_Tests' do
     inherit! :search_paths
 
-    pod 'Quick', '3.1.1'
+    pod 'Quick'
     pod 'Nimble'
     pod 'Mockingjay', :git => 'https://github.com/kylef/Mockingjay.git', :tag => '3.0.0-alpha.1'
   end

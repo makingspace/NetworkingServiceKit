@@ -324,7 +324,8 @@ public protocol NetworkManager {
     
     func cancelAllRequests()
     
-    init(with configuration: APIConfiguration)
+    init(with configuration: APIConfiguration,
+         interceptor: RequestInterceptor?)
 }
 
 extension NetworkManager {

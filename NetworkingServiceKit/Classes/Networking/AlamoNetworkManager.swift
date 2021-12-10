@@ -13,16 +13,14 @@ open class AlamoNetworkManager: NetworkManager {
     private static let validStatusCodes = (200...299)
     public var configuration: APIConfiguration
     
-    required public init(with configuration: APIConfiguration) {
+    required public init(with configuration: APIConfiguration,
+                        interceptor: RequestInterceptor?) {
         self.configuration = configuration
-    }
-    
-    /// default session manager to be use with Alamofire
-    private let session: Session = {
+         
         let sessionConfiguration = URLSessionConfiguration.default
         sessionConfiguration.headers = HTTPHeaders.default
         sessionConfiguration.httpShouldSetCookies = false
-        var protocolClasses = sessionConfiguration.protocolClasses ?? [AnyClass]()
+        let protocolClasses = sessionConfiguration.protocolClasses ?? [AnyClass]()
         sessionConfiguration.protocolClasses = [NetworkURLProtocol.self] as [AnyClass] + protocolClasses
         //Setup our cache
         let capacity = 100 * 1024 * 1024 // 100 MBs
@@ -30,11 +28,15 @@ open class AlamoNetworkManager: NetworkManager {
         sessionConfiguration.urlCache = urlCache
         //This is the default value but let's make it clear caching by default depends on the response Cache-Control header
         sessionConfiguration.requestCachePolicy = URLRequest.CachePolicy.useProtocolCachePolicy
-        let session = Session(configuration: sessionConfiguration,
+        
+        self.session = Session(configuration: sessionConfiguration,
                               startRequestsImmediately: false,
-                              interceptor: AlamoAuthenticationAdapter())
-        return session
-    }()
+                              interceptor: interceptor ?? AlamoAuthenticationAdapter())
+            
+    }
+    
+    /// default session manager to be use with Alamofire
+    private let session: Session!
     
     public func cancelAllRequests() {
         session.cancelAllRequests()

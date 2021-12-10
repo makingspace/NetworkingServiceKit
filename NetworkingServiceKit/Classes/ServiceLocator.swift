@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 public protocol ServiceLocatorDelegate {
     
     /// Handle tokens that just expire
@@ -85,10 +86,11 @@ open class ServiceLocator: NSObject {
     /// Resets the ServiceLocator singleton instance
     open class func reset() {
         ServiceLocator.shared = ServiceLocator(delegate: ServiceLocator.shared.delegate)
+        ServiceLocator.shouldInterceptRequests = true
     }
 
     /// Reloads token, networkManager and configuration with existing hooked services
-    open class func reloadExistingServices() {
+    open class func reloadExistingServices(withInterceptor interceptor: RequestInterceptor?) {
         let serviceTypes = ServiceLocator.shared.loadedServiceTypes
         reset()
         
@@ -98,7 +100,7 @@ open class ServiceLocator: NSObject {
             ServiceLocator.set(services: serviceTypes,
                                api: configType,
                                auth: authType,
-                               token: tokenType)
+                               token: tokenType, interceptor: interceptor)
         }
     }
 
@@ -113,11 +115,13 @@ open class ServiceLocator: NSObject {
     ///   - apiConfigurationType: the type of APIConfigurationType this services will access
     ///   - authConfigurationType: the type of APIConfigurationAuth this services will include in their requests
     ///   - tokenType: the type of APIToken that will guarantee auth for our service requests
+    ///   - interceptor: the optional request interceptor, should we wish to override the default AlamoRequestAdapter
     open class func set(services serviceTypes: [Service.Type],
                          api apiConfigurationType: APIConfigurationType.Type,
                          auth authConfigurationType: APIConfigurationAuth.Type,
                          token tokenType: APIToken.Type,
-                         bundleId: String = Bundle.main.appBundleIdentifier) {
+                         bundleId: String = Bundle.main.appBundleIdentifier,
+                        interceptor: RequestInterceptor?) {
         //Set of services that we support
         ServiceLocator.shared.loadedServiceTypes = serviceTypes
 
@@ -132,7 +136,8 @@ open class ServiceLocator: NSObject {
         //Init our Default Network Client
         let configuration = APIConfiguration.current(bundleId: bundleId)
         ServiceLocator.shared.configuration = configuration
-        ServiceLocator.shared.networkManager = ServiceLocator.defaultNetworkClientType.init(with: configuration)
+        ServiceLocator.shared.networkManager = ServiceLocator.defaultNetworkClientType.init(with: configuration,
+                                                                                            interceptor: interceptor)
 
         //Allocate services
         ServiceLocator.shared.currentServices = ServiceLocator.shared.loadedServiceTypes.reduce(
